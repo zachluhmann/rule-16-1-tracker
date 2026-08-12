@@ -1,10 +1,18 @@
 # Project audit — 2026-08-11
 
-> **Note added after the audit:** MDL 3180 was read later the same day and the
-> headline moved from 6/13 to 7/14. The 57% pin-cite finding below is unchanged
-> in substance — MDL 3180 was coded to the current standard, with verbatim
-> quotations, so the well-sourced tier is now eight rows and the thin tier is
-> still six.
+> **Status update, 2026-08-12.** MDL 3180 was read and the headline moved from
+> 6/13 to **7/14**. Of the findings below: **C1, C2 and C3 are resolved**
+> (block rate defined once as 1 of 16 (6%) and used everywhere; `NOT_CHECKED`
+> documented as a sixth vocabulary value; every typed enum now documented in the
+> README codebook). **The two firm quotations were verified against their
+> sources** and the page says so. **F01 is resolved** — the "tentative agenda"
+> construction is now quoted from MDL 3180 ¶3, where it is pin-cited, rather than
+> attributed to MDL 3162 where it was not.
+>
+> **The structural finding below is still open and is still the largest one.**
+> The thin tier is unchanged at six rows; MDL 3180 was coded to the current
+> standard, so the well-sourced tier is now eight. The share of unbacked
+> affirmative codes fell from 57% to **52%** only because the denominator grew.
 
 Adversarial pass over everything built in this session: the dataset, the four
 prose documents, the submission, and the landing page. Mechanical checks were
@@ -18,15 +26,18 @@ unverified, and one structural finding larger than the cite-check caught.**
 
 ## THE STRUCTURAL FINDING
 
-### 57% of the dataset's affirmative codes are not backed by quoted language
+### 52% of the dataset's affirmative codes are not backed by quoted language
 
 The cite-check ledger (F03) reported this as "six thin rows." Quantified, it is
 much larger:
 
 | | |
 |---|---|
-| `YES` codes across the dataset | **242** |
-| In rows whose `pin_cites` contains no quoted language | **138 (57%)** |
+| `YES` codes across the fourteen coded rows | **266** |
+| In rows whose `pin_cites` contains no quoted language | **138 (52%)** |
+
+*(Recomputed 2026-08-12. It was 138 of 242 = 57% before MDL 3180 was coded; the
+numerator has not moved, only the denominator. Nothing was fixed.)*
 
 | MDL | `YES` codes | `pin_cites` |
 |---|---:|---|
@@ -49,8 +60,8 @@ narrower and worse:
    ledger finding F01 happened. The MDL 3162 "tentative agenda" quotation
    appears nowhere in the data because there was no quoted language in that row
    to appear in.
-3. **Four of the six citing MDLs are in this tier** (3162, 3171, 3174, 3175).
-   The headline — six of thirteen — rests substantially on rows that do not meet
+3. **Four of the seven citing MDLs are in this tier** (3162, 3171, 3174, 3175).
+   The headline — seven of fourteen — rests substantially on rows that do not meet
    the evidentiary standard the later rows set.
 
 **Fix:** back-fill quoted language into those six rows. One reading session once
@@ -89,32 +100,27 @@ Cleared to empty with the underlying fact preserved in `pin_cites`.
 
 ---
 
-## CONTRADICTIONS STILL OPEN — these need your decision, not mine
+## CONTRADICTIONS — all three resolved 2026-08-12
 
-**C1 — The block rate is published as two different numbers.**
-`README.md`'s status block and `index.html` both say **13%**; README's seventh
-pass says **6%**. Both are defensible and they measure different things:
+**C1 — The block rate was published as two different numbers.** ✅ **RESOLVED.**
+`README.md` and `index.html` said **13%**; README's seventh pass said **6%**.
+Reading MDL 3180 collapsed the ambiguity: the `PUBLIC_COPY_LOCATED` status no
+longer exists in the data. **The published definition is now one sentence — the
+block rate is the share of MDLs whose existing order could not be read, currently
+1 of 16 (6%)** — and it appears in that form in the README status block, the
+landing page limitations, and `build.py`'s output.
 
-- **13%** = 2 of 16 not readable (MDL 3180 + MDL 3187)
-- **6%** = 1 of 16 with no public copy anywhere (MDL 3187 alone; 3180's order
-  has a located free copy that simply has not been opened)
+**C2 — `party_invoked_rule` used `NOT_CHECKED`, outside the five-value
+vocabulary.** ✅ **RESOLVED.** Added to the codebook as a documented sixth value
+meaning "this variable has not been examined for this row," which is genuinely
+different from `UNCLEAR`. Still 13 of 16 rows.
 
-Pick one, define it in one sentence, and use it everywhere. **My recommendation
-is 13%**, because it measures what a reader cares about — how much of the
-universe you have actually read — and because 6% requires explaining a
-`PUBLIC_COPY_LOCATED` status that exists nowhere but this project.
-
-**C2 — `party_invoked_rule` uses `NOT_CHECKED`, which is outside the five-value
-vocabulary** and is not documented in the codebook. It is the only out-of-vocab
-value in any coded column. Either add it to the codebook as a sixth value
-(meaning "this variable has not been examined for this row," which is genuinely
-different from `UNCLEAR`) or convert those thirteen rows to blank.
-
-**C3 — The enum columns have grown without documentation.**
-`report_form` now carries seven values, `source_status` five, `rule_vocabulary`
-six. Every one was added for a good reason and none is in the README codebook,
-which still describes `report_form` as "`JOINT` · `SEPARATE_BY_SIDE` · `OTHER`."
-Anyone reading the codebook and then the CSV will think the data is corrupt.
+**C3 — The enum columns had grown without documentation.** ✅ **RESOLVED.** The
+codebook now carries a **Typed enums** table listing every value that actually
+appears in the CSV for `source_status`, `rule_role`, `report_form`,
+`rule_vocabulary` and `report_channel`, marked exhaustive as of 2026-08-12.
+`rule_role`'s `TRANSCRIPTION` value, which drove two rows and appeared in no
+documentation, is now in the typology with worked examples.
 
 ---
 
@@ -132,11 +138,14 @@ against a source. They are now listed in `PROTOCOL.md` under
   varied approaches") attributed to Crowell and Sidley. Neither was verified.
   Publishing an unverified quotation attributed to a named firm, on a page whose
   entire pitch is quotation discipline, is the most self-undermining thing in
-  the project.
+  the project. ✅ **RESOLVED** — both checked against the source alerts on
+  2026-08-11; the page now links each alert and says the quotations were
+  verified, with the date.
 - **"Nobody has counted"** is the premise of the whole thing. It rests on one
   preemption search. The submission hedges it correctly ("To my knowledge no one
   has assembled the population"); the landing page states it flat. Match the
-  page to the letter.
+  page to the letter. ✅ **RESOLVED** — the page now reads "To my knowledge
+  nobody has assembled the population and counted it."
 
 Also worth internalizing: **the April 14, 2026 agenda book does not mention Rule
 16.1 or MDL practice anywhere.** I have been describing the Advisory Committee as
@@ -167,14 +176,18 @@ Recorded because a clean check is information too.
 
 ## Order of operations
 
-1. **C1** — pick a block-rate definition. Five minutes, and it is publicly
-   inconsistent right now.
-2. **Strike or verify the two firm quotations on the landing page**, and hedge
-   "nobody has counted" to match the submission's phrasing.
-3. **F01** from the cite-check ledger — the unpinned "tentative agenda"
-   quotation in the submission's lead example.
-4. **The 57% back-fill** — one reading session, and it converts the project's
-   biggest structural weakness into its strongest claim.
-5. **C2 and C3** — codebook maintenance, low risk, do it before the DOI deposit
-   since the codebook ships with the data.
-6. Everything in `PUBLISH.md` Steps 0–4, unchanged.
+1. ~~**C1** — pick a block-rate definition.~~ ✅ done 2026-08-12.
+2. ~~**Strike or verify the two firm quotations**, and hedge "nobody has
+   counted."~~ ✅ done.
+3. ~~**F01** — the unpinned "tentative agenda" quotation.~~ ✅ done — now quoted
+   from MDL 3180 ¶3, where it is pin-cited.
+4. ~~**C2 and C3** — codebook maintenance.~~ ✅ done 2026-08-12.
+5. **The 52% back-fill — the one that is still open, and the biggest.** One
+   reading session against six rows (3162, 3163, 3166, 3171, 3174, 3175), and it
+   converts the project's largest structural weakness into its strongest claim.
+   Do it before the DOI deposit, since the codebook and the CSV ship together.
+6. **MDL 3187** — one PACER pull, four documents. The last blocked row.
+7. **The pre-effective-date question**, still entirely unexplored. `PROTOCOL.md`
+   Guardrail 10 defines the method; the `pre_effective_date` column exists and is
+   empty. It is the largest unclaimed finding left.
+8. Everything else in `PUBLISH.md` Steps 1–4.

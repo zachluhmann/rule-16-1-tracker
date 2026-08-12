@@ -5,11 +5,11 @@ applied Fed. R. Civ. P. 16.1 — the first MDL-specific Federal Rule — since i
 took effect on December 1, 2025.**
 
 Live site: **https://zachluhmann.github.io/rule-16-1-tracker/** · Data: `rule-16-1-tracker.csv` (16 MDLs, 61
-variables) and `party-invocations.csv` · Licence: **CC BY 4.0** · DOI: `[DOI]`
+variables) and `party-invocations.csv` · Licence: **CC BY 4.0** · DOI: pending
 
 Every initial management order in the JPML's post-effective-date universe, coded
 from the order text against every enumerated topic in Rule 16.1(b)(2) and (b)(3).
-**Six of the thirteen readable orders cite the Rule; seven never mention it** —
+**Seven of the fourteen readable orders cite the Rule; seven never mention it** —
 and several of those seven do more of what the Rule contemplates than the ones
 that cite it.
 
@@ -39,7 +39,7 @@ doesn't exist yet. This produces it.
 ```
 PROTOCOL.md              The coding discipline, universe definition, the
                          retrieval ladder, and the promotion plan. Read first.
-rule-16-1-tracker.csv    The order layer. 16 rows, 61 columns, 13 coded.
+rule-16-1-tracker.csv    The order layer. 16 rows, 61 columns, 14 coded.
 party-invocations.csv    The invocation layer — Rule 16.1 reports and party
                          filings that cite the Rule. Keyed to the FILING, not
                          the MDL, because one of them is not in an MDL.
@@ -75,34 +75,33 @@ remembering a conversation; the files are the memory. **Read in this order:**
 | 4 | `README.md` (this file) | Codebook + findings log. **Read the log from the bottom up** — later passes correct earlier ones, deliberately left visible. |
 | 5 | `Rule-16.1-...ledger.md` | Verification ledger for the submission. Stable finding IDs, F01–F05. |
 
-**Three gates, and two of them are not mine to open:**
+**Two gates, and neither is mine to open:**
 
-1. **A browser.** MDL 3180's *Initial Procedure Order* has a free public copy at a
-   known URL. Ten seconds. It could move the headline from 6/13 to 7/14 and
-   change thirteen figures in the submission.
-2. **A PACER login.** MDL 3187's four orders and MDL 3175's ECF 74 (the third
+1. **A PACER login.** MDL 3187's four orders and MDL 3175's ECF 74 (the third
    Rule 16.1 report). A few dollars, probably free under the quarterly waiver.
-3. **CourtListener quota.** 125/day, rolling. The pre-effective-date question and
-   the 57% pin-cite back-fill both need a fresh day.
+2. **CourtListener quota.** 125/day, rolling. The pre-effective-date question and
+   the 52% pin-cite back-fill both need a fresh day.
 
-**Two decisions that are yours, not the data's:** which block-rate definition to
-publish (see `AUDIT.md` C1), and whether to strike or verify the two firm
-quotations currently on the public landing page.
+*(The third gate — a browser, to read MDL 3180's* Initial Procedure Order *— was
+opened on 2026-08-11. It cites the Rule twice. Headline 6/13 → 7/14.)*
+
+**One decision that is yours, not the data's:** whether the two firm quotations
+on the landing page stay. Both were verified against their sources on 2026-08-11,
+so the objection is now editorial rather than evidentiary.
 
 ---
 
-## CURRENT STATUS — 2026-08-11
+## CURRENT STATUS — 2026-08-12
 
 | | |
 |---|---|
 | Universe (post-2025-12-01 MDLs), reconciled to the JPML Aug. 3, 2026 report | **16** |
-| Readable initial order in hand and coded | **13** |
+| Readable initial order in hand and coded | **14** |
 | No qualifying order yet *(a finding, not a gap)* | **1** — 3176 |
-| Order identified, free public copy located, not yet read | **1** — 3180 |
 | Blocked, orders confirmed to exist, no public copy found | **1** — 3187 |
-| Block rate | **13%** — 2 of 16 not yet readable (published definition) |
+| Block rate | **6%** — 1 of 16 whose existing order could not be read *(published definition; `AUDIT.md` C1 resolved)* |
 
-**HEADLINE: 6 of 13 MDLs with a readable initial order cite Fed. R. Civ. P. 16.1.
+**HEADLINE: 7 of 14 MDLs with a readable initial order cite Fed. R. Civ. P. 16.1.
 Seven never mention it.** The first three rows coded said 3/3 — because they came
 from a full-text search, which can only find documents that use the phrase. See
 "SECOND PASS" below; that selection-bias result is the most citable thing here.
@@ -140,12 +139,35 @@ only records the times you were right is not a research record.
 
 ## Codebook
 
-Every column takes one of five values — `YES`, `NO`, `NOT_ADDRESSED`,
-`UNCLEAR`, `PENDING` — except the free-text fields marked *(text)*.
+Every coded column takes one of six values — `YES`, `NO`, `NOT_ADDRESSED`,
+`UNCLEAR`, `PENDING`, `NOT_CHECKED` — except the free-text fields marked
+*(text)* and the typed enums documented below.
+
+| Value | Means |
+|---|---|
+| `YES` | The document affirmatively does this |
+| `NO` | The document affirmatively declines to do this |
+| `NOT_ADDRESSED` | The document is silent |
+| `UNCLEAR` | The document is ambiguous; the language is quoted in `pin_cites` rather than resolved |
+| `PENDING` | The document that would answer this has not issued yet |
+| `NOT_CHECKED` | **This variable has not been examined for this row.** Distinct from `UNCLEAR`: nothing was looked at. Currently used only in `party_invoked_rule`, 13 of 16 rows. |
 
 `NOT_ADDRESSED` means the order is silent. `NO` means the order affirmatively
 declines. **That distinction is the most common coding error and it is the one
 that will get the dataset attacked**, so be strict about it.
+
+### Typed enums
+
+These columns do not use the six-value vocabulary. Every value below is one that
+actually appears in the CSV; the lists are exhaustive as of 2026-08-12.
+
+| Column | Values |
+|---|---|
+| `source_status` | `TEXT_AVAILABLE` (order read in full) · `TEXT_ORDER_ON_DOCKET` (the docket entry **is** the complete order) · `NO_ORDER_YET` (no qualifying order has issued — a finding, not a gap) · `NEEDS_PACER_PULL` (order confirmed to exist, no free public copy found) |
+| `rule_role` | `AGENDA` · `TRANSCRIPTION` · `RESIDUAL` · `INCORPORATION` · `NOT_INVOKED` · `UNCLEAR` |
+| `report_form` | `JOINT` · `JOINT_DEFENDANT_PREPARED` · `SEPARATE_BY_SIDE` · `SEPARATE_BY_PARTY_GROUP` · `CONDITIONAL_ON_DISAGREEMENT` · `NOT_ADDRESSED` · `UNCLEAR` |
+| `rule_vocabulary` | What authority the order actually names, in the order's own terms: `16.1` · `16.1+MCL4` · `16` · `16+RULE1` · `16+26(f)+MCL4` · `MCL4` · `NONE` |
+| `report_channel` | `DOCKET` · `CHAMBERS_EMAIL` |
 
 ### Identity
 
@@ -162,28 +184,33 @@ that will get the dataset attacked**, so be strict about it.
 | Column | Meaning |
 |---|---|
 | `cites_rule` | Does any order in this MDL **cite Rule 16.1 by name**? |
-| `rule_role` | **What the court does with it.** `AGENDA` · `RESIDUAL` · `INCORPORATION` · `NOT_INVOKED` |
-| `report_form` | `JOINT` · `SEPARATE_BY_SIDE` · `OTHER` — 16.1(b)(1) contemplates the parties "meet and submit **a** report"; not everyone orders one |
+| `rule_role` | **What the court does with it.** See the typology below. |
+| `report_form` | Who prepares the 16.1(b)(1) report — see the typed enums above. 16.1(b)(1) contemplates the parties "meet and submit **a** report"; not everyone orders one |
 
-`cites_rule` was the original headline. **After coding three MDLs it is already
-clear that it is the less interesting half.** All three cite the rule — and each
-does something structurally different with it:
+`cites_rule` was the original headline. It is the less interesting half. A binary
+cannot see that courts which cite the Rule do structurally different things with
+it, and that distinction is the most interesting thing in the data. Five values,
+each with a worked example:
 
-- **`AGENDA`** — the rule *is* the conference agenda. Judge Bates (MDL 3162):
-  the items listed in Rule 16.1 "shall … constitute a tentative agenda," and the
-  order then reproduces (b)(2)(A)–(E) and (b)(3)(A)–(G) essentially verbatim
-  before adding four topics of its own.
-- **`RESIDUAL`** — the court sets its own agenda and bolts the rule on as a
+- **`AGENDA`** — the Rule *is* the conference agenda. Judge Quraishi (MDL 3180),
+  Initial Procedure Order No. 1 ¶3: "The items listed in Federal Rule of Civil
+  Procedure 16.1, as well as sections 21.1, 21.11, 22.6, 22.61, 22.62, and 26.3
+  of the Manual for Complex Litigation, Fourth ('MCL 4th') shall, to the extent
+  applicable, constitute a tentative agenda for the Initial Management
+  Conference." The order then reproduces (b)(2)(A)(i)–(vii) and (b)(3)(A)–(G) at
+  ¶5(a)–(l) before adding items of its own. Judge Bates's IPO No. 1 in MDL 3162
+  (¶¶3, 5) is the same form order.
+- **`TRANSCRIPTION`** — the order reproduces the Rule's enumerated topics as its
+  own text, with or without attribution. Judge Robart (MDL 3174) and Judge
+  Gettleman (MDL 3170) both do this.
+- **`RESIDUAL`** — the court sets its own agenda and bolts the Rule on as a
   catch-all. Judge Lin (MDL 3171) enumerates seventeen items, then adds "any
   topics not already listed but included in Federal Rule of Civil Procedure
   16.1(b)."
 - **`INCORPORATION`** — bare reference, no enumeration at all. Judge Peterson
   (MDL 3175), in a two-page order: a joint report "that addresses each of the
   matters listed in the rule."
-
-A binary `cites_rule` cannot see that distinction, and that distinction is the
-most interesting thing in the data so far. **This is the schema iteration the
-first-weekend plan predicts — it arrived at N=2, not N=3.** Expect more.
+- **`NOT_INVOKED`** — the order never names the Rule. Seven of fourteen.
 
 An order that does everything 16.1 contemplates without ever naming the rule is
 `cites_rule = NO`, `rule_role = NOT_INVOKED`, and is a *finding*, not a failure.
@@ -910,84 +937,86 @@ of its single-report mechanism, in week six.
 
 ---
 
-# WHERE THIS STANDS — 2026-08-11, end of day
+# WHERE THIS STANDS — 2026-08-12
 
 Everything above is the working log, in order, corrections and all. This section
 is the state of the dataset. **Read only this if you read only one thing.**
+Every figure below was recomputed from `rule-16-1-tracker.csv` on 2026-08-12.
 
 ## Coverage
 
 | | |
 |---|---|
 | Universe of post-2025-12-01 MDLs, reconciled to the JPML's Aug. 3, 2026 report | **16** |
-| Readable initial order in hand and coded | **13** |
+| Readable initial order in hand and coded | **14** |
 | No qualifying order yet *(a finding about the court, not a gap in the data)* | **1** — 3176 |
-| Blocked pending PACER retrieval | **2** — 3180, 3187 |
-| Block rate | **13%** — down from 57% |
+| Blocked, order confirmed to exist, no public copy found | **1** — 3187 |
+| Block rate | **6%** — 1 of 16, down from 57% |
 
-Two PACER pulls finish the backfill. Total cost under a dollar, and free under the
-$30/quarter waiver.
+One PACER pull finishes the backfill: MDL 3187's four orders. Under a dollar, and
+free under the $30/quarter waiver.
 
 ## The headline
 
-**6 of 13 MDLs with a readable initial order cite Fed. R. Civ. P. 16.1.**
+**7 of 14 MDLs with a readable initial order cite Fed. R. Civ. P. 16.1.**
 
 | Cite the rule | Do not mention it |
 |---|---|
-| 3162 Bates · 3167 Shelby · 3170 Gettleman · 3171 Lin · 3174 Robart · 3175 Peterson | 3163 Marston · 3166 Seeborg · 3172 Baker · 3178 Subramanian · 3179 Griesbach · 3181 Staton · 3185 Ross |
+| 3162 Bates · 3167 Shelby · 3170 Gettleman · 3171 Lin · 3174 Robart · 3175 Peterson · 3180 Quraishi | 3163 Marston · 3166 Seeborg · 3172 Baker · 3178 Subramanian · 3179 Griesbach · 3181 Staton · 3185 Ross |
 
 The first three rows coded said 3/3, because they came out of a full-text search
 and a full-text search can only find documents that use the phrase. Enumerating
-the JPML universe and reading every docket moved it to 46%.
+the JPML universe and reading every docket moved it to 50%.
 
-## Cross-cutting counts, n = 13 orders
+## Cross-cutting counts, n = 14 orders
 
 **The rule's own topics** — how often the initial order addresses each:
 
 | 16.1 topic | Column | n |
 |---|---|---|
-| Leadership counsel (umbrella) | `b2a_leadership` | **13/13** |
-| Discovery (b)(3)(C) | `b3c_discovery` | 11/13 |
-| Additional conferences (b)(2)(C) | `b2c_conference_schedule` | 11/13 |
-| Principal issues (b)(3)(G) | `b3g_principal_issues` | 11/13 |
-| Related actions (b)(2)(E) | `b2e_related_actions` | 10/13 |
-| Consolidated pleadings (b)(3)(A) | `b3a_consolidated_pleadings` | 10/13 |
-| Pretrial motions (b)(3)(D) | `b3d_pretrial_motions` | 10/13 |
-| Vacate/modify prior orders (b)(2)(B) | `b2b_vacate_modify` | 9/13 |
-| Magistrate or master (b)(3)(F) | `b3f_magistrate_master` | 8/13 |
-| Factual-basis exchange (b)(3)(B) | `b3b_factual_basis_exchange` | 7/13 |
-| **Direct filing (b)(2)(D)** | `b2d_direct_filing` | **5/13** |
-| **Facilitating resolution (b)(3)(E)** | `b3e_settlement_facilitation` | **5/13** |
+| Leadership counsel (umbrella) | `b2a_leadership` | **14/14** |
+| Discovery (b)(3)(C) | `b3c_discovery` | 12/14 |
+| Additional conferences (b)(2)(C) | `b2c_conference_schedule` | 12/14 |
+| Principal issues (b)(3)(G) | `b3g_principal_issues` | 12/14 |
+| Related actions (b)(2)(E) | `b2e_related_actions` | 11/14 |
+| Consolidated pleadings (b)(3)(A) | `b3a_consolidated_pleadings` | 11/14 |
+| Pretrial motions (b)(3)(D) | `b3d_pretrial_motions` | 11/14 |
+| Vacate/modify prior orders (b)(2)(B) | `b2b_vacate_modify` | 10/14 |
+| Magistrate or master (b)(3)(F) | `b3f_magistrate_master` | 9/14 |
+| Factual-basis exchange (b)(3)(B) | `b3b_factual_basis_exchange` | 8/14 |
+| **Direct filing (b)(2)(D)** | `b2d_direct_filing` | **6/14** |
+| **Facilitating resolution (b)(3)(E)** | `b3e_settlement_facilitation` | **6/14** |
 
 Leadership is universal — every single order addresses it, including the seven
 that never name the rule. The two least-addressed topics are direct filing and
-settlement facilitation, at 5 of 13 each.
+settlement facilitation, at 6 of 14 each.
 
 **The leadership sub-items** — this is where the rule is most detailed and courts
 are least uniform:
 
 | 16.1(b)(2)(A) sub-item | n |
 |---|---|
-| Structure (ii) | 12/13 |
-| Timing (i) | 11/13 |
-| Selection procedure (iii) | 11/13 |
-| Responsibilities (iv) | 9/13 |
-| **Compensation (vii)** | **8/13** |
-| Communication with nonleadership (v) | 6/13 |
-| Limits on nonleadership (vi) | 5/13 |
-| **Periodic review (iii)** | **4/13** |
+| Structure (ii) | 13/14 |
+| Timing (i) | 12/14 |
+| Selection procedure (iii) | 12/14 |
+| Responsibilities (iv) | 10/14 |
+| **Compensation (vii)** | **9/14** |
+| Communication with nonleadership (v) | 7/14 |
+| Limits on nonleadership (vi) | 6/14 |
+| **Periodic review (iii)** | **5/14** |
 
 **The contested and the null:**
 
-- **TPLF disclosure under (b)(4): 0/13.** Still a clean null, and the null is the
+- **TPLF disclosure under (b)(4): 0/14.** Still a clean null, and the null is the
   answer to what the TPLF Subcommittee is asking.
 - **Census or plaintiff fact sheet: still nobody has ordered one from
   plaintiffs.** Marston is closest — a **court-initiated** census inquiry. Lin
-  inverted it onto the defendant. The defense bar lost this in rulemaking and has
-  not won it back in practice.
-- **Bellwether: 1/13.** The rule says nothing about bellwethers and neither, so
+  inverted it onto the defendant. Bates and Quraishi both *ask whether* one would
+  be beneficial without ordering one. The defense bar lost this in rulemaking and
+  has not won it back in practice.
+- **Bellwether: 1/14.** The rule says nothing about bellwethers and neither, so
   far, do the courts.
-- **Common benefit fees front-loaded contra the Committee Note: 4/13** — Marston,
+- **Common benefit fees front-loaded contra the Committee Note: 4/14** — Marston,
   Lin, Peterson, Staton. (Baker's MDL 3172 asks for a "proposed fee and
   compensation structure" and is coded `UNCLEAR`, not `YES` — it does not say
   whether a common-benefit assessment is contemplated.) Staton's is the most explicit: applicants must state
@@ -1008,8 +1037,12 @@ are least uniform:
 | 65 | 3167 | Shelby |
 | 84 | 3175 | Peterson |
 | 105 | 3162 | Bates |
+| 119 | 3180 | Quraishi |
 | 126 | 3174 | Robart |
 | **198** | 3172 | Baker |
+
+n = 12 of the 14 coded orders. MDL 3178 and MDL 3179 set no conference date in
+the order and are excluded rather than counted as zero.
 
 Rule 16.1(a) says the court "should schedule an initial management conference"
 and sets no time. Practice ranges from three weeks to twenty-eight. **This is the
@@ -1018,14 +1051,14 @@ answers a question the rule left completely open.
 
 ## What the whole thing says
 
-Three claims the data now supports, in ascending order of interest:
+Four claims the data now supports, in ascending order of interest:
 
-1. **A rule with no mandatory requirement produced no common practice.** Thirteen
-   readable orders, thirteen distinguishable approaches, a 9x spread in
+1. **A rule with no mandatory requirement produced no common practice.** Fourteen
+   readable orders, fourteen distinguishable approaches, a 9x spread in
    time-to-conference and a 3x+ spread in order length.
 
 2. **Search-based measurement of rule uptake is systematically biased upward.**
-   It reports ~100%; universe-based measurement reports 46%. That is a finding
+   It reports ~100%; universe-based measurement reports 50%. That is a finding
    about method that applies far beyond Rule 16.1.
 
 3. **The most likely story is not that Rule 16.1 was ignored — it is that Rule
@@ -1036,23 +1069,36 @@ Three claims the data now supports, in ascending order of interest:
    and bar, three districts, independently. Every order that never cites the rule
    still does the rule's work — under the Manual's name, or under no name at all.
 
+4. **Where the rule *is* used, it travels as a form.** Judge Quraishi's Initial
+   Procedure Order No. 1 in MDL 3180 (D.N.J., June 2026) is the same form order
+   Judge Bates entered in MDL 3162 (D.D.C., January 2026) — including three added
+   items that appear verbatim in both and in neither the Rule nor the Committee
+   Note. Two districts, six months apart. The unit of diffusion is not the Rule
+   text; it is somebody's order.
+
 And one thing the report layer says that the orders cannot: **the rule's single
 report mechanism failed on the record in week six**, in MDL 3170, with counsel
 quoting the Committee Note while explaining why they could not comply with it.
 
 ## The four things to do next
 
-1. **Two PACER pulls** — MDL 3180 ECF 3 (`pacer_doc_id` 119024034589) and MDL
-   3187's initial order. Install RECAP first so the text lands in the public
-   archive.
-2. **Build `reports.csv`.** The report layer is probably the better paper, and
+1. **One PACER pull** — MDL 3187's four orders (ECF 2, 8, 9, 10) and MDL 3175's
+   ECF 74, the third Rule 16.1 report. Install RECAP first so the text lands in
+   the public archive.
+2. **Back-fill the six thin rows.** 3162, 3163, 3166, 3171, 3174 and 3175 carry
+   paragraph pointers without verbatim quoted language — 52% of the dataset's
+   affirmative codes. Four of the seven citing orders are in that tier. One
+   reading session converts the project's biggest structural weakness into its
+   strongest claim. See `AUDIT.md`.
+3. **Build `reports.csv`.** The report layer is probably the better paper, and
    reports are easier to find than orders because they name the rule in their own
    docket text. `collect.py` now has the queries.
-3. **Back-code `party_invoked_rule`** across all sixteen rows. Two are confirmed
-   (3170 by document, 3179 by an earlier search whose pin cite was not captured —
-   do **not** code that one `YES` from memory).
-4. **Then write.** The spine: *search says 100%, the universe says 46%, and the
-   54% is doing the rule's work under the Manual's name.*
+4. **Back-code `party_invoked_rule`** across all sixteen rows. Three are confirmed
+   by document (3162, 3170, 3175); 3179 rests on an earlier search whose pin cite
+   was never captured — do **not** code that one `YES` from memory.
+
+**The spine, when it gets written:** *search says 100%, the universe says 50%,
+and the other 50% is doing the rule's work under the Manual's name.*
 
 ---
 

@@ -12,23 +12,25 @@ appearing in that book.
 
 ---
 
-## Step 0 — close the two open rows (do this first, it takes an hour)
+## Step 0 — close the open rows
 
-- [ ] **MDL 3180.** Open
-      `https://www.aboutlawsuits.com/wp-content/uploads/2026-6-11-dupixent-order-1.pdf`
-      in a browser. It is the court's *Initial Procedure Order*, June 11, 2026,
-      ECF 3. Read it, code the row, and **check whether it cites Rule 16.1** —
-      the reported terminology ("Initial Management Report," "proposed initial
-      management order") suggests it may. If it does, every "six of thirteen" in
-      the submission becomes **seven of fourteen**. Search the PDF and update
-      before sending.
+- [x] **MDL 3180 — DONE 2026-08-11.** *Initial Procedure Order No. 1* obtained
+      and read in full. **It cites Rule 16.1 twice and is an AGENDA-type order.**
+      Headline moved 6/13 → **7/14**. The submission was rewritten: every figure
+      updated, a new Part III added on the MDL 3162 / MDL 3180 form order, and
+      ledger findings F02 and F05 fixed in the process.
 - [ ] **MDL 3187.** One PACER session, four documents:
       ECF 2 (`07907490590`), ECF 8 (`07907513132`), ECF 9 (`07907520997`),
       ECF 10 (`07907521776`). Install the RECAP extension first so the text
       lands in the public archive. Start with ECF 2.
-- [ ] Re-run the counts in `README.md` → "WHERE THIS STANDS" and **propagate any
-      change into the submission.** The submission quotes eleven separate
-      figures; they must match the CSV exactly on the day it is sent.
+- [x] **Re-run the counts in `README.md` → "WHERE THIS STANDS" — DONE
+      2026-08-12.** Every figure in that section, and every figure on the landing
+      page, was recomputed from the CSV. The landing page's four stat tiles, the
+      uptake percentage, and the chart's `n` are now **computed from the embedded
+      data at load time**, so the page cannot drift from the CSV again — which is
+      exactly what had happened: the site published 6/13 for a day after the CSV
+      said 7/14. **The submission still quotes the old figures and has not been
+      re-run.**
 
 ## Step 0.5 — DONE (sixth pass, 2026-08-11)
 
@@ -65,36 +67,40 @@ appearing in that book.
 ledger. **49 items checked, 48 traced, 1 not traceable, 5 findings open.**
 Three must clear before the letter goes:
 
-- [ ] **F01 (FAILED).** The quotation "shall … constitute a tentative agenda" —
-      the lead example of the four-posture typology in Part II.B — appears
-      nowhere in either CSV, only in README prose. Re-read MDL 3162's Initial
-      Procedure Order No. 1 (doc 464378026, ¶¶3 and 5), pin-cite the language
-      into the row, **or strike the quotation.** Part I of the letter promises
-      that every affirmative finding carries a pin cite; this one does not.
-- [ ] **F02 (FAILED).** Part II.D's interval range is **n=11, not 13** — MDL
+- [x] **F01 — RESOLVED 2026-08-12** *(in the README and on the site; the letter
+      still needs the same edit)*. The "tentative agenda" construction is now
+      quoted from **MDL 3180 ¶3**, where it is pin-cited verbatim, instead of
+      being attributed to MDL 3162 where it was not. Judge Bates's IPO No. 1 is
+      cited alongside as the same form order, by paragraph.
+- [ ] **F02 (FAILED).** Part II.D's interval range is **n=12 of 14** — MDL
       3178 and MDL 3179 have no recorded conference date, and the letter does
-      not disclose the exclusion inside a section framed on thirteen orders.
-      One-clause fix: "The eleven orders for which a conference date is
-      recorded show intervals of …"
-- [ ] **F03 (FAILED).** The dataset is **two-tiered**. Six rows (3162, 3163,
-      3166, 3171, 3174, 3175) carry `pin_cites` of 161–333 characters —
-      paragraph pointers with no verbatim language. The other seven carry
-      1,308–2,406 characters with quotes. The thin six are the earliest coded,
-      and three of the four postures in Part II.B come from that tier. Either
+      not disclose the exclusion. One-clause fix: "The twelve orders for which a
+      conference date is recorded show intervals of …" *(The landing page and
+      README now state this correctly; the letter does not.)*
+- [ ] **F03 (FAILED) — the one that still matters.** The dataset is
+      **two-tiered**. Six rows (3162, 3163, 3166, 3171, 3174, 3175) carry
+      `pin_cites` of 161–333 characters — paragraph pointers with no verbatim
+      language — and hold **138 of the 266 affirmative codes (52%)**. The other
+      eight carry 685–2,406 characters with quotes. The thin six are the earliest
+      coded, and **four of the seven citing orders are in that tier**. Either
       back-fill quotes (about an hour once the API resets) or disclose the two
-      tiers in Part VIII. Doing neither is what makes a dataset attackable.
-- [ ] F04 (`SHIP`): `[URL]` and `[DOI]` must resolve before sending — Part IX
-      offers the dataset to the reporters at those two addresses.
+      tiers in Part VIII. *(The landing page and `AUDIT.md` disclose it; the
+      letter does not.)*
+- [ ] F04 (`SHIP`): the URL now resolves —
+      https://zachluhmann.github.io/rule-16-1-tracker/ — and should replace
+      `[URL]`. **`[DOI]` still does not exist**; either deposit to Dataverse
+      first or cut the DOI offer from Part IX rather than send a dead address.
 - [ ] F05 (`FORM`): Part I says "fifty-plus variables"; the tracker has **61**.
 
-**Re-verify after any edit** — editing after verification invalidates it, and if
-MDL 3180 moves the headline from 6/13 to 7/14 then all thirteen numeric claims
-in the letter need recomputing.
+**Re-verify after any edit** — editing after verification invalidates it. **MDL
+3180 did move the headline from 6/13 to 7/14, so all thirteen numeric claims in
+the letter need recomputing before it is sent.** The README, the landing page and
+`AUDIT.md` have been recomputed; the letter has not.
 
 ## Step 1 — verification pass
 
 - [ ] Re-read every row where `cites_rule = YES` and confirm the quoted language
-      against the order. These six carry the headline.
+      against the order. These seven carry the headline.
 - [ ] Confirm the two transcription departures against the order text and the
       official rule text. *(Both verified 2026-08-11: MDL 3174 Part III carries
       the (b)(3) label onto what is (b)(4); MDL 3170 omits (b)(3)(E). Rule text
@@ -135,22 +141,29 @@ in the letter need recomputing.
 
 ## Step 3 — the citable artifact
 
-- [x] **Landing page BUILT — `index.html`.** Self-contained, no build step, no
-      dependencies. Push to GitHub Pages as-is and the canonical URL exists today.
+- [x] **Landing page LIVE — 2026-08-12 —
+      https://zachluhmann.github.io/rule-16-1-tracker/** Self-contained, no build
+      step, no dependencies. Repo: https://github.com/zachluhmann/rule-16-1-tracker
+      **The canonical URL exists and resolves. Do not restructure the path.**
       It already carries: the suggested-citation block, the three coding rules,
       the limitations stated openly (including the two-tier pin-cite problem from
       ledger finding F03), the block rate, the neutrality statement, a sortable
       16-row table linking every source to CourtListener, the invocation table,
       the interval chart, and a changelog. Light and dark, palette validated.
-      **Placeholders still to fill:** `[Author]`, `[canonical URL]`, the perma
-      link, `[DOI]`, `[Month]`. Regenerate the embedded data from the CSVs
-      whenever a row changes — the page hard-codes a snapshot.
+      **All placeholders filled** — author, canonical URL and month resolve; the
+      perma link and DOI were cut rather than published as dead brackets, and the
+      page says both are pending. **The four stat tiles, the uptake percentage
+      and the chart's `n` are computed from the embedded data at load**, so the
+      page can no longer disagree with the CSV. Still run `python build.py` after
+      any row change — the *data* is a snapshot even though the *figures* are not.
 - [ ] **Harvard Dataverse deposit** → DOI. Deposit the CSV, `PROTOCOL.md`, and
       `README.md` together. The protocol is what makes the CSV auditable; a CSV
-      alone invites the objection that the coding is unexplained.
-- [ ] **One canonical URL that never moves.** GitHub Pages is fine. Do not
-      restructure it later — both appellate citations of the Charlotin database
-      relied on a stable path, one live and one through perma.cc.
+      alone invites the objection that the coding is unexplained. **Do this before
+      the letter goes** — Part IX offers the reporters a DOI that does not exist.
+- [x] **One canonical URL that never moves** —
+      https://zachluhmann.github.io/rule-16-1-tracker/. Do not restructure it —
+      both appellate citations of the Charlotin database relied on a stable path,
+      one live and one through perma.cc.
 - [ ] **CC-BY**, stated on the page.
 - [ ] **Visible `last updated` date** and a versioned changelog. Tag this one
       `v1.0`.
@@ -180,18 +193,25 @@ in the letter need recomputing.
 
 ## Suggested citation
 
-Put this verbatim on the landing page.
+**This is now live on the landing page in exactly this form:**
 
 > **Suggested citation:**
-> [Full Name], *Rule 16.1 Tracker: Initial Management Orders in Multidistrict
-> Litigation Since December 1, 2025* (v1.0, [Month] 2026), [canonical URL]
-> [https://perma.cc/XXXX-XXXX] (last visited [date]).
+> Zach Luhmann, *Rule 16.1 Tracker: Initial Management Orders in Multidistrict
+> Litigation Since December 1, 2025* (v1.0, August 2026),
+> https://zachluhmann.github.io/rule-16-1-tracker/ (last visited [date]).
 >
-> **Dataset:** [Full Name], *Rule 16.1 Tracker* (Harvard Dataverse 2026),
+> Licensed CC BY 4.0. Corrections and challenges to any coding decision are
+> welcome and are logged publicly in the changelog. A permanent archival copy
+> and a dataset DOI are pending and will be added here when they issue.
+
+The perma.cc link and the Dataverse DOI were **cut rather than published as dead
+brackets.** Add them back, in this form, once they exist:
+
+> … https://zachluhmann.github.io/rule-16-1-tracker/ [https://perma.cc/XXXX-XXXX]
+> (last visited [date]).
+>
+> **Dataset:** Zach Luhmann, *Rule 16.1 Tracker* (Harvard Dataverse 2026),
 > https://doi.org/[DOI].
->
-> Licensed CC-BY 4.0. Corrections and challenges to any coding decision are
-> welcome at [email] and are logged publicly in the changelog.
 
 ---
 
