@@ -53,10 +53,13 @@ https://www.jpml.uscourts.gov/pending-mdls-0 — not any secondary source, and
 not a list you assembled by search. Completeness is the product; reconcile
 against the JPML PDF every month and log the reconciliation date.
 
-> ⚠️ The seed CSV is a starting point assembled from docket research, and it has
-> gaps in the MDL number sequence (3164, 3165, 3168–3170, 3173, 3177,
-> 3182–3184, 3186). Some are denied petitions; some may be real MDLs missing
-> from the seed. **Reconcile against the JPML PDF before publishing anything.**
+> ✅ **RESOLVED 2026-08-11 by reconciliation against the JPML's August 3, 2026
+> report.** The seed's apparent gaps (3164, 3165, 3168, 3169, 3173, 3177,
+> 3182–3184, 3186) are **not gaps**: those JPML docket numbers belong to
+> petitions that were denied or withdrawn. **3170 was the exception** — a real,
+> in-scope MDL missing from the seed entirely. A JPML "MDL No." is a docket
+> number for a *motion*, not proof an MDL exists. Reconcile monthly anyway; that
+> is what caught 3170.
 
 ---
 
@@ -89,6 +92,15 @@ Every `YES` requires a pin cite in the corresponding `_cite` column
 ---
 
 ## Citation plumbing — this is empirically load-bearing
+
+> ⚠️ **AUDIT FLAG 2026-08-11 — the two citations below are UNVERIFIED.** They
+> came into this file early and were never checked against a source. A web search
+> corroborates that *Fletcher v. Experian Info. Sols.* exists and involves the
+> Fifth Circuit and AI-hallucinated citations; it does **not** confirm the docket
+> number, the date, or that the opinion cited Charlotin's database. *Parnell*
+> returned nothing at all. **Verify both before repeating either in anything
+> public**, and note that the perma-vs-live-URL design lesson below survives even
+> if the specific citations are wrong — support both paths regardless.
 
 Both appellate citations of the Charlotin database used different paths, and you
 need to support both:
@@ -124,11 +136,19 @@ Order of operations once you have complete coverage of the seed universe:
 
 1. **Drug & Device Law** (Reed Smith; "Bexis") — highest leverage by far. He
    filed public comments on proposed Rule 16.1 and wrote the skeptical
-   *"better than nothing, but not by a lot"* piece. Your data answers his exact
+   *"better than nothing, but not by a lot"* piece. ⚠️ **The quoted phrase is
+   UNVERIFIED** (audit 2026-08-11) — a targeted search did not surface it. Do not
+   quote it back to him until you have the post in front of you. Your data answers his exact
    question. This is your *eDiscovery Today*.
 2. **The Advisory Committee on Civil Rules** — submit the dataset as a
    suggestion. For a procedure tracker this is the highest-value citation
-   target that exists.
+   target that exists. ⚠️ **Calibrate the expectation (audit 2026-08-11):** the
+   **April 14, 2026 agenda book does not discuss Rule 16.1 or MDL practice at
+   all.** The Committee is not currently working on this rule. That is an
+   argument *for* submitting — a suggestion is how a topic gets on the agenda,
+   and Lawyers for Civil Justice has already docketed Rule 16.1 suggestions
+   (24-cv-G) — but it is not the same thing as a committee waiting for your
+   number. Do not tell yourself, or anyone else, that they are.
 3. **Academics who will cite it:** Nora Freeman Engstrom (Stanford Rhode
    Center, authored *Managing MDLs*), Duke's Bolch Judicial Institute (which
    runs the MDL certificate program that trains MDL judges), and NYU's own
@@ -157,10 +177,18 @@ Rule 16.1. The question of whether courts order it anyway under the
 unmeasured.
 
 The `b4_tplf_*` columns exist so that if the answer turns out to be "yes,
-frequently," you already own the seed of a second and larger dataset — and one
-with a better citation path, because the **April 14, 2026 Advisory Committee
-agenda book** shows Judge Vance's TPLF subcommittee actively soliciting exactly
-this information.
+frequently," you already own the seed of a second and larger dataset.
+
+> ⚠️ **CORRECTED 2026-08-11 (audit).** This section previously said the
+> **April 14, 2026 Advisory Committee agenda book** "shows Judge Vance's TPLF
+> subcommittee actively soliciting exactly this information." **Two errors.**
+> (1) The TPLF Subcommittee is chaired by **Judge R. David Proctor**, not Judge
+> Vance (agenda book at 10). (2) The agenda book describes the subcommittee as
+> having "spent the last year educating itself on these issues" and posing
+> framing questions — *not* soliciting empirical data. What is accurate: the
+> subcommittee's work is ongoing, and the questions it has posed ("What would be
+> disclosed and to whom?") are questions a denominator speaks to. Claim that
+> much and no more.
 
 Code these columns from day one even when the answer is `NOT_ADDRESSED`. The
 denominator is the finding.
@@ -634,3 +662,28 @@ A Free Law Project membership lifts all three. Once the weekly alert review plus
 a monthly reconciliation is routine, the membership costs less than the time lost
 to 429s — and this project is now large enough that the daily cap, not the
 research, is the binding constraint.
+
+
+---
+
+## Unverified assertions ledger (opened by the audit, 2026-08-11)
+
+Claims that entered this project early, drive strategy or appear publicly, and
+have **not** been checked against a source. Each is either verified or struck
+before v1.0 publishes.
+
+| Claim | Where it appears | Status |
+|---|---|---|
+| *Fletcher v. Experian*, No. 25-20086 (5th Cir. Feb. 18, 2026) cited the database | PROTOCOL | **PARTIAL** — case and circuit corroborated; docket no., date, and the citation itself not confirmed |
+| *Parnell v. Fla. Dep't of Corrections*, No. 25-11166 (11th Cir. July 10, 2026) cited it via perma | PROTOCOL | **UNVERIFIED** — no search result |
+| Bexis wrote *"better than nothing, but not by a lot"* | PROTOCOL | **UNVERIFIED** |
+| Crowell: *"it will likely be several years before the impact of Rule 16.1 is clear"* | PROTOCOL, index.html | ✅ **VERIFIED 2026-08-11** against the alert, *FRCP 16.1 Now in Play for MDLs—Game Changer or Not?* (Dec. 1, 2025). Quoted verbatim. |
+| Sidley: *"courts have taken varied approaches"* | PROTOCOL, index.html | ✅ **VERIFIED 2026-08-11** against *New Year, New Rule: A Fresh Framework for Multidistrict Litigation* (Feb. 19, 2026). Full sentence: "Since December 1, 2025, courts have taken varied approaches." The piece adds that some courts required the report exactly as the Rule describes while others sought briefing on only some topics — qualitatively corroborating this dataset's typology while citing no court. |
+| Rule 16.1 is "the first MDL-specific Federal Rule" | **index.html (public)** | **UNVERIFIED** — widely repeated, likely true, never checked |
+| "Nobody has counted" / "no one has assembled the population" | README, index.html, PROTOCOL, the submission | **HEDGED 2026-08-11** — the landing page now reads "to my knowledge nobody has assembled the population," matching the submission. Still rests on preemption searches rather than a systematic review; re-run before any journal submission. |
+| Charlotin's path: launch May 2025 → eDiscovery Today June 9 → Forbes July 18 | PROTOCOL | **UNVERIFIED** |
+
+**Rule going forward:** an assertion about the outside world gets a source
+recorded next to it at the moment it is written down, exactly like a coding
+decision. This project applied that discipline rigorously to court orders and not
+at all to its own background claims. That asymmetry is what the audit found.

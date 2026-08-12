@@ -1,4 +1,34 @@
-# Rule 16.1 Tracker — Start Here
+# Rule 16.1 Tracker
+
+**A complete, continuously updated record of how federal transferee courts have
+applied Fed. R. Civ. P. 16.1 — the first MDL-specific Federal Rule — since it
+took effect on December 1, 2025.**
+
+Live site: **https://zachluhmann.github.io/rule-16-1-tracker/** · Data: `rule-16-1-tracker.csv` (16 MDLs, 61
+variables) and `party-invocations.csv` · Licence: **CC BY 4.0** · DOI: `[DOI]`
+
+Every initial management order in the JPML's post-effective-date universe, coded
+from the order text against every enumerated topic in Rule 16.1(b)(2) and (b)(3).
+**Six of the thirteen readable orders cite the Rule; seven never mention it** —
+and several of those seven do more of what the Rule contemplates than the ones
+that cite it.
+
+**Corrections are welcome and are logged publicly.** The coding protocol is in
+`PROTOCOL.md` so that any disagreement is with a quotation rather than with a
+judgment. Requests to add, remove or reframe an entry to support a litigation
+position will be declined, and the fact of the request noted.
+
+| | |
+|---|---|
+| `index.html` | The public landing page. Self-contained; run `build.py` after any data change. |
+| `rule-16-1-tracker.csv` | The order layer — 16 MDLs, 61 variables. |
+| `party-invocations.csv` | The invocation layer — Rule 16.1 reports and party filings that cite the Rule, keyed to the filing. |
+| `PROTOCOL.md` | Coding discipline, universe definition, the retrieval ladder, ten guardrails. |
+| `AUDIT.md` | What is currently wrong with this project. Read before relying on anything. |
+| `DEPLOY.md` · `PUBLISH.md` | How this goes live, and the checklist to v1.0. |
+| `collect.py` · `build.py` | Collection queries and the page build. |
+
+---
 
 A complete, continuously updated record of how federal transferee courts have
 applied **Fed. R. Civ. P. 16.1** since it took effect December 1, 2025.
@@ -32,6 +62,35 @@ Rule-16.1-Advisory-      The same, formatted as a letter, ready to send.
 > with the Secretary by **early September 2026**. `PUBLISH.md` is the checklist
 > to get there.
 
+## RESUMING — read this first
+
+This project outlives any one working session. Nothing here depends on
+remembering a conversation; the files are the memory. **Read in this order:**
+
+| # | File | What it gives you |
+|---|---|---|
+| 1 | `AUDIT.md` | What is currently wrong. Start here — it supersedes optimism elsewhere. |
+| 2 | `PUBLISH.md` | The dated checklist to v1.0 and the Advisory Committee window. Every open task lives here. |
+| 3 | `PROTOCOL.md` | The coding discipline, the retrieval ladder, ten guardrails, and the unverified-assertions ledger. |
+| 4 | `README.md` (this file) | Codebook + findings log. **Read the log from the bottom up** — later passes correct earlier ones, deliberately left visible. |
+| 5 | `Rule-16.1-...ledger.md` | Verification ledger for the submission. Stable finding IDs, F01–F05. |
+
+**Three gates, and two of them are not mine to open:**
+
+1. **A browser.** MDL 3180's *Initial Procedure Order* has a free public copy at a
+   known URL. Ten seconds. It could move the headline from 6/13 to 7/14 and
+   change thirteen figures in the submission.
+2. **A PACER login.** MDL 3187's four orders and MDL 3175's ECF 74 (the third
+   Rule 16.1 report). A few dollars, probably free under the quarterly waiver.
+3. **CourtListener quota.** 125/day, rolling. The pre-effective-date question and
+   the 57% pin-cite back-fill both need a fresh day.
+
+**Two decisions that are yours, not the data's:** which block-rate definition to
+publish (see `AUDIT.md` C1), and whether to strike or verify the two firm
+quotations currently on the public landing page.
+
+---
+
 ## CURRENT STATUS — 2026-08-11
 
 | | |
@@ -41,7 +100,7 @@ Rule-16.1-Advisory-      The same, formatted as a letter, ready to send.
 | No qualifying order yet *(a finding, not a gap)* | **1** — 3176 |
 | Order identified, free public copy located, not yet read | **1** — 3180 |
 | Blocked, orders confirmed to exist, no public copy found | **1** — 3187 |
-| Block rate | **6%** (was 57% before the retrieval ladder) |
+| Block rate | **13%** — 2 of 16 not yet readable (published definition) |
 
 **HEADLINE: 6 of 13 MDLs with a readable initial order cite Fed. R. Civ. P. 16.1.
 Seven never mention it.** The first three rows coded said 3/3 — because they came
@@ -178,7 +237,7 @@ The mechanism field is where the paper is.
 
 TPLF disclosure was **deliberately omitted** from Rule 16.1. Whether courts
 order it anyway under "any other matter" is unmeasured — and the **April 14,
-2026 Advisory Committee agenda book** shows Judge Vance's TPLF subcommittee
+2026 Advisory Committee agenda book** shows the TPLF Subcommittee (chaired by Judge R. David Proctor)
 actively soliciting exactly this data.
 
 **Code these from day one even when the answer is `NOT_ADDRESSED`.** If the
@@ -276,7 +335,7 @@ not results** — they are hypotheses to test against the full universe.
 
 3. **TPLF is 0/3.** No court has ordered litigation-funding disclosure under the
    (b)(4) catch-all. Early, but if this holds it is itself the answer to the
-   question Judge Vance's subcommittee is asking — and a clean, citable null.
+   question the TPLF Subcommittee is asking — and a clean, citable null.
 
 4. **Two of three judges independently added a government-investigation topic
    the rule does not contain.** Bates ¶5(p) (ongoing criminal investigations,
@@ -438,7 +497,7 @@ responsive to what the Advisory Committee will want to know.
   from plaintiffs. The defense bar lost this in rulemaking and has not won it
   back in practice.
 - **TPLF disclosure under (b)(4): 0/5.** A clean null so far, and the null is
-  the answer to what Judge Vance's subcommittee is asking.
+  the answer to what the TPLF Subcommittee is asking.
 - **Common benefit fees front-loaded, contra the Committee Note: 2/5** (Lin,
   Peterson).
 - **Government-investigation topic added though absent from the rule: 2/5**
@@ -921,7 +980,7 @@ are least uniform:
 **The contested and the null:**
 
 - **TPLF disclosure under (b)(4): 0/13.** Still a clean null, and the null is the
-  answer to what Judge Vance's subcommittee is asking.
+  answer to what the TPLF Subcommittee is asking.
 - **Census or plaintiff fact sheet: still nobody has ordered one from
   plaintiffs.** Marston is closest — a **court-initiated** census inquiry. Lin
   inverted it onto the defendant. The defense bar lost this in rulemaking and has

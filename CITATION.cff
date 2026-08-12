@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+title: "Rule 16.1 Tracker: Initial Management Orders in Multidistrict Litigation Since December 1, 2025"
+message: "If you use this dataset, please cite it as below."
+type: dataset
+authors:
+  - family-names: "Luhmann"
+    given-names: "Zach"
+    affiliation: "New York University School of Law"
+abstract: >-
+  A complete, continuously updated record of how federal transferee courts have
+  applied Fed. R. Civ. P. 16.1 — the first MDL-specific Federal Rule — since it
+  took effect on December 1, 2025. The universe is every MDL centralized by the
+  Judicial Panel on Multidistrict Litigation on or after that date, taken from
+  the Panel's own monthly report. Each initial management order is coded against
+  61 variables covering every enumerated topic in Rule 16.1(b)(2) and (b)(3),
+  the threshold applications of 16.1(a), (b)(1) and (c), and matters courts
+  added beyond the Rule. A companion table records party filings that invoke the
+  Rule, including in proceedings outside 28 U.S.C. 1407.
+keywords:
+  - multidistrict litigation
+  - Federal Rules of Civil Procedure
+  - Rule 16.1
+  - case management
+  - empirical legal studies
+repository-code: "https://github.com/zachluhmann/rule-16-1-tracker"
+url: "https://zachluhmann.github.io/rule-16-1-tracker/"
+license: CC-BY-4.0
+version: "1.0"
+date-released: 2026-08-11
