@@ -45,17 +45,18 @@ party-invocations.csv    The invocation layer — Rule 16.1 reports and party
                          the MDL, because one of them is not in an MDL.
 collect.py               CourtListener collection, the retrieval ladder,
                          the two search traps, and alert config.
-PUBLISH.md               v1.0 freeze checklist and the dated path to the
-                         Advisory Committee (meets Oct. 21, 2026).
-README.md                This file — setup, codebook, and findings log.
-
+index.html               The public landing page. Self-contained; the
+                         headline figures compute from the embedded data.
+AUDIT.md                 What is currently wrong with this project.
 PUBLISH.md               v1.0 freeze checklist, suggested-citation block,
-                         and the dated path to the Advisory Committee.
-advisory-committee-      Draft suggestion to the Committee on Rules of
-  submission.md          Practice and Procedure (source text).
-Rule-16.1-Advisory-      The same, formatted as a letter, ready to send.
-  Committee-Submission.docx
+                         and the dated path to the Advisory Committee
+                         (meets Oct. 21, 2026).
+README.md                This file — setup, codebook, and findings log.
 ```
+
+A draft suggestion to the Committee on Rules of Practice and Procedure exists
+but is **not** in this repository. It will be published here if and when it is
+sent.
 
 > ⏰ **The next Advisory Committee on Civil Rules meeting is October 21, 2026.**
 > Its agenda book historically posts ~3 weeks out, so a suggestion needs to be
@@ -73,7 +74,10 @@ remembering a conversation; the files are the memory. **Read in this order:**
 | 2 | `PUBLISH.md` | The dated checklist to v1.0 and the Advisory Committee window. Every open task lives here. |
 | 3 | `PROTOCOL.md` | The coding discipline, the retrieval ladder, ten guardrails, and the unverified-assertions ledger. |
 | 4 | `README.md` (this file) | Codebook + findings log. **Read the log from the bottom up** — later passes correct earlier ones, deliberately left visible. |
-| 5 | `Rule-16.1-...ledger.md` | Verification ledger for the submission. Stable finding IDs, F01–F05. |
+
+*(A fifth file — the verification ledger for the Advisory Committee submission,
+carrying stable finding IDs F01–F05 — is kept outside this repository with the
+draft letter itself. `PUBLISH.md` Step 0.7 records its current state.)*
 
 **Two gates, and neither is mine to open:**
 
