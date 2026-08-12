@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Rule 16.1 Tracker — Initial Management Orders in MDLs Since December 1, 2025</title>
-<meta name="description" content="A complete, continuously updated record of how federal transferee courts have applied Fed. R. Civ. P. 16.1 since its effective date.">
+<title>Rule 16.1 Tracker: Initial Management Orders in MDLs Since December 1, 2025</title>
+<meta name="description" content="A record of how every federal transferee court has applied Fed. R. Civ. P. 16.1 since its effective date, coded from the order text with pin cites.">
 <style>
 :root{
   color-scheme:light;
@@ -80,7 +80,7 @@ td.cap a,td.cap span{display:block;overflow:hidden;text-overflow:ellipsis;white-
 blockquote{margin:0 0 16px;padding:12px 18px;border-left:3px solid var(--series-1);
  background:var(--surface-1);border-radius:0 8px 8px 0;color:var(--text-primary);font-size:14.5px}
 code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
- background:var(--surface-1);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+ background:var(--surface-1);border:1px solid var(--border);border-radius:4px;padding:0 4px}
 ul{color:var(--text-secondary);max-width:74ch;padding-left:22px}
 li{margin-bottom:7px}
 .cite{background:var(--surface-1);border:1px solid var(--border);border-radius:12px;padding:20px 22px;font-size:14px}
@@ -95,16 +95,22 @@ li{margin-bottom:7px}
  border-radius:0 8px 8px 0;margin-bottom:16px;font-size:14.5px;color:var(--text-primary)}
 hr{border:0;border-top:1px solid var(--grid);margin:40px 0}
 .foot{font-size:12.5px;color:var(--muted);margin-top:8px}
+.rule{background:var(--surface-1);border:1px solid var(--border);border-radius:12px;padding:20px 24px}
+.rule p{color:var(--text-primary);max-width:none;margin:0 0 9px;font-size:14px;line-height:1.62}
+.rule p b{font-weight:600}
+.rule .i1{padding-left:26px}
+.rule .i2{padding-left:50px}
+.rule .h{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:20px 0 9px}
+.rule .h:first-child{margin-top:0}
 @media (max-width:640px){.bar-row,.axis{grid-template-columns:86px 1fr 40px}h1{font-size:24px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-
 <h1>Rule 16.1 Tracker</h1>
-<p class="lede">A complete, continuously updated record of how federal transferee courts have applied
-<strong>Fed. R. Civ. P. 16.1</strong> — the first MDL-specific Federal Rule — since it took effect
-December&nbsp;1,&nbsp;2025.</p>
+<p class="lede">A record of how federal transferee courts have applied
+<strong>Fed. R. Civ. P. 16.1</strong>, the first Federal Rule of Civil Procedure written
+specifically for multidistrict litigation, since it took effect on December&nbsp;1,&nbsp;2025.</p>
 <div class="meta">
   <span class="pill">v1.0-draft</span>
   <span>Last updated <strong id="upd">12 August 2026</strong></span>
@@ -114,85 +120,172 @@ December&nbsp;1,&nbsp;2025.</p>
 </div>
 
 <div class="tiles">
-  <div class="tile"><div class="v" id="t-univ">–</div><div class="k">MDLs in the universe</div>
+  <div class="tile"><div class="v" id="t-univ">&nbsp;</div><div class="k">MDLs in the universe</div>
     <div class="s">JPML report, 3 Aug 2026</div></div>
-  <div class="tile"><div class="v" id="t-coded">–</div><div class="k">Initial orders read &amp; coded</div>
+  <div class="tile"><div class="v" id="t-coded">&nbsp;</div><div class="k">Initial orders read and coded</div>
     <div class="s" id="t-coded-s">&nbsp;</div></div>
-  <div class="tile"><div class="v" style="color:var(--series-1)" id="t-cite">–</div>
+  <div class="tile"><div class="v" style="color:var(--series-1)" id="t-cite">&nbsp;</div>
     <div class="k">Cite Rule 16.1 by name</div><div class="s" id="t-cite-s">&nbsp;</div></div>
-  <div class="tile"><div class="v" id="t-blk">–</div><div class="k">Not yet readable</div>
+  <div class="tile"><div class="v" id="t-blk">&nbsp;</div><div class="k">Not yet readable</div>
     <div class="s" id="t-blk-s">&nbsp;</div></div>
 </div>
 
-<h2>Why this exists</h2>
-<p>On the day Rule 16.1 took effect, Crowell &amp; Moring told clients that
-<em>"it will likely be several years before the impact of Rule 16.1 is clear."</em>
-Eleven weeks later Sidley Austin reported that
-<em>"[s]ince December 1, 2025, courts have taken varied approaches"</em> — describing the variation
-accurately, and naming no court and counting none.</p>
-<p>Both are right that the variation is the story. Neither says how much. To my knowledge nobody has
-assembled the population and counted it, so this does — every MDL the Judicial Panel has centralized
-since the effective date, every enumerated topic in the Rule, coded from the order text with a pin
-cite.</p>
+<h2>Purpose</h2>
+<p>Commentary on Rule 16.1 has been consistent in describing variation among transferee
+courts and consistent in not measuring it. On the effective date, Crowell &amp; Moring told
+clients that <em>"it will likely be several years before the impact of Rule 16.1 is
+clear."</em> Eleven weeks later, Sidley Austin reported that <em>"[s]ince December 1, 2025,
+courts have taken varied approaches,"</em> without identifying which courts or how many.</p>
+<p>This project measures that variation. It covers every MDL the Judicial Panel on
+Multidistrict Litigation has centralized since the effective date, codes each transferee
+court's initial management order against every topic Rule 16.1 enumerates, and records a
+pin cite for each coding decision. To my knowledge, no one else has assembled the
+population and counted it.</p>
 <p class="foot" style="margin-top:-4px">Sources: Crowell &amp; Moring,
-<a href="https://www.crowell.com/en/insights/client-alerts/federal-rule-161-now-in-play-for-mdlsgame-changer-or-not" rel="noopener">FRCP 16.1 Now in Play for MDLs—Game Changer or Not?</a>
+<a href="https://www.crowell.com/en/insights/client-alerts/federal-rule-161-now-in-play-for-mdlsgame-changer-or-not" rel="noopener">FRCP 16.1 Now in Play for MDLs: Game Changer or Not?</a>
 (Dec. 1, 2025); Sidley Austin,
 <a href="https://www.sidley.com/en/insights/newsupdates/2026/02/new-year-new-rule-a-fresh-framework-for-multidistrict-litigation" rel="noopener">New Year, New Rule: A Fresh Framework for Multidistrict Litigation</a>
-(Feb. 19, 2026). Both quotations verified against the source, 11 Aug 2026.</p>
+(Feb. 19, 2026). Both quotations were verified against the source on 11 Aug 2026.</p>
 
-<div class="warn"><strong>The headline reversed once already.</strong> The first three orders coded
-here all cited the Rule — a 100% uptake rate. That was an artifact: those three surfaced from a
-full-text search for the phrase, and a full-text search can only find documents that use the phrase.
-Enumerating the JPML's universe and reading every docket moved it to <span id="pct-inline">50%</span>.
-<strong>Any measure of this Rule's uptake built from full-text search will substantially
-overstate it.</strong></div>
+<div class="warn"><strong>A note on method.</strong> The first three orders coded here all
+cited the Rule, an apparent uptake rate of 100%. That figure was an artifact. Those three
+orders were located by full-text search for the phrase, and a full-text search returns only
+documents that use the phrase. Enumerating the Panel's full universe and reading every
+docket produced a rate of <span id="pct-inline">50%</span>. <strong>Any measure of this
+Rule's uptake built from full-text search will overstate it.</strong></div>
 
-<h2>How to read this</h2>
-<p>Three coding rules govern, and they are conservative by design. They are the whole product.</p>
+<h2>What Rule 16.1 requires</h2>
+<p>The Rule is reproduced in full below, because the dataset's variables map directly onto
+its subdivisions. It enumerates eighteen report topics: seven leadership sub-items at
+(b)(2)(A)(i) through (vii), four further required subjects at (b)(2)(B) through (E), and
+seven initial-views subjects at (b)(3)(A) through (G). Subdivision (b)(4) is permissive
+rather than mandatory, which is where disclosure of third-party litigation funding would
+fall if a court or the parties raised it.</p>
+<p>Rule 16.1 is written almost entirely in the permissive. The transferee court
+<em>should</em> schedule a conference and <em>should</em> order a report; what the report
+<em>must</em> contain is the only obligation the Rule imposes, and it runs to the parties
+rather than to the court.</p>
+
+<div class="rule">
+<p class="h">Rule 16.1. Multidistrict Litigation Proceedings</p>
+
+<p><b>(a) Initial Management Conference.</b> After the Judicial Panel on Multidistrict
+Litigation transfers actions, the transferee court should schedule an initial management
+conference to develop an initial plan for orderly pretrial activity in the MDL
+proceedings.</p>
+
+<p><b>(b) Report for the Conference.</b></p>
+
+<p class="i1"><b>(1) Submitting a Report.</b> The transferee court should order the parties
+to meet and to submit a report to the court before the conference.</p>
+
+<p class="i1"><b>(2) Required Content: the Parties' Views on Leadership Counsel and Other
+Matters.</b> The report must address any matter the court designates&mdash;which may include
+any matter in Rule 16&mdash;and, unless the court orders otherwise, the parties' views on:</p>
+
+<p class="i2"><b>(A)</b> whether leadership counsel should be appointed and, if so:</p>
+<p class="i2" style="padding-left:74px"><b>(i)</b> the timing of the appointments;</p>
+<p class="i2" style="padding-left:74px"><b>(ii)</b> the structure of leadership counsel;</p>
+<p class="i2" style="padding-left:74px"><b>(iii)</b> the procedure for selecting leadership
+and whether the appointments should be reviewed periodically;</p>
+<p class="i2" style="padding-left:74px"><b>(iv)</b> their responsibilities and authority in
+conducting pretrial activities and any role in facilitating resolution of the MDL
+proceedings;</p>
+<p class="i2" style="padding-left:74px"><b>(v)</b> the proposed methods for regularly
+communicating with and reporting to the court and nonleadership counsel;</p>
+<p class="i2" style="padding-left:74px"><b>(vi)</b> any limits on activity by nonleadership
+counsel; and</p>
+<p class="i2" style="padding-left:74px"><b>(vii)</b> whether and when to establish a means
+for compensating leadership counsel;</p>
+
+<p class="i2"><b>(B)</b> any previously entered scheduling or other orders that should be
+vacated or modified;</p>
+<p class="i2"><b>(C)</b> a schedule for additional management conferences with the
+court;</p>
+<p class="i2"><b>(D)</b> how to manage the direct filing of new actions in the MDL
+proceedings; and</p>
+<p class="i2"><b>(E)</b> whether related actions have been&mdash;or are expected to&mdash;be
+filed in other courts, and whether to adopt methods for coordinating with them.</p>
+
+<p class="i1"><b>(3) Additional Required Content: the Parties' Initial Views on Various
+Matters.</b> Unless the court orders otherwise, the report also must address the parties'
+initial views on:</p>
+
+<p class="i2"><b>(A)</b> whether consolidated pleadings should be prepared;</p>
+<p class="i2"><b>(B)</b> how and when the parties will exchange information about the
+factual bases for their claims and defenses;</p>
+<p class="i2"><b>(C)</b> discovery, including any difficult issues that may arise;</p>
+<p class="i2"><b>(D)</b> any likely pretrial motions;</p>
+<p class="i2"><b>(E)</b> whether the court should consider any measures to facilitate
+resolving some or all actions before the court;</p>
+<p class="i2"><b>(F)</b> whether any matters should be referred to a magistrate judge or a
+master; and</p>
+<p class="i2"><b>(G)</b> the principal factual and legal issues likely to be presented.</p>
+
+<p class="i1"><b>(4) Permitted Content.</b> The report may include any other matter that the
+parties wish to bring to the court's attention.</p>
+
+<p><b>(c) Initial Management Order.</b> After the conference, the court should enter an
+initial management order addressing the matters in Rule 16.1(b) and, in the court's
+discretion, any other matters. This order controls the course of the proceedings unless the
+court modifies it.</p>
+</div>
+<p class="foot">Quoted verbatim, including the Rule's own punctuation. Text as published by
+the Legal Information Institute, Cornell Law School,
+<a href="https://www.law.cornell.edu/rules/frcp/rule_16.1" rel="noopener">law.cornell.edu/rules/frcp/rule_16.1</a>,
+retrieved 12 August 2026. Confirm against the official text before quoting the Rule in a
+filing.</p>
+
+<h2>Method</h2>
+<p>Three rules govern the coding. They are conservative by design.</p>
 <ul>
-  <li><strong>Code only what a document says</strong> — never what it appears to mean. Not a party's
-    characterization of an order, not a firm alert describing it, not a docket-entry summary.</li>
-  <li><strong>Silence is <code>NOT_ADDRESSED</code>, never <code>NO</code>.</strong> Only an
-    affirmative refusal is <code>NO</code>. That distinction is the most common coding error and the
-    one most likely to get a dataset attacked.</li>
-  <li><strong>Undercount when unsure.</strong> If it is not clear whether something qualifies, it
-    doesn't. An undercount is a floor a court can rely on. An overcount is a number a court will not
-    touch. <strong>Every figure here is a floor.</strong></li>
+  <li><strong>Code only what a document says</strong>, not what it appears to mean. Not a
+    party's characterization of an order, not a firm alert describing it, not a
+    docket-entry summary.</li>
+  <li><strong>Silence is coded <code>NOT_ADDRESSED</code>, never <code>NO</code>.</strong>
+    Only an affirmative refusal is coded <code>NO</code>. That distinction is the most
+    common coding error in work of this kind.</li>
+  <li><strong>Undercount when the answer is unclear.</strong> If it is not clear that
+    something qualifies, it is not coded as qualifying. <strong>Every figure here should be
+    read as a floor.</strong></li>
 </ul>
-<p>Ambiguity is coded <code>UNCLEAR</code> with the language quoted rather than resolved. Sources link
-to free, stable CourtListener documents or to the transferee court's own published copy — never to
-PACER.</p>
+<p>Ambiguous language is coded <code>UNCLEAR</code> and quoted in the pin cite rather than
+resolved. Sources link to free, stable CourtListener documents or to the transferee court's
+own published copy. No source here requires a PACER account.</p>
 
-<h2>Limitations, stated openly</h2>
-<p>A stated limitation is a credibility asset. A quiet gap is what gets a dataset dismissed.</p>
+<h2>Limitations</h2>
 <ul>
-  <li><strong>Coverage is 14 of 16.</strong> One order exists and has not been read: MDL 3187, where
-    four orders sit on the docket and none carries a text layer. One MDL — 3176 — has issued no
-    qualifying order at all, which is a finding about that proceeding, not a gap.
-    <strong>Those two categories are never merged.</strong> The block rate reported here is
-    <strong>1 of 16 (6%)</strong>, defined as MDLs whose existing order could not be read.</li>
-  <li><strong>The pin cites are two-tiered.</strong> Six rows (3162, 3163, 3166, 3171, 3174, 3175)
-    carry paragraph pointers without verbatim quoted language; the other eight carry full quotations
-    captured at read time. The thin six were coded earliest, before the discipline tightened. They
-    are being back-filled. Four of the seven citing orders sit in that thin tier, so the headline
-    rests partly on rows that do not yet meet the standard the later rows set.</li>
-  <li><strong>Initial orders only</strong>, with one exception. Later case-management orders may
-    invoke the Rule where the first did not — one already does, in MDL 3175.</li>
-  <li><strong>The report layer is two read, three known.</strong> Rule 16.1's only real mandates
-    run to the parties' <em>report</em>, and two of fourteen courts route that report to a chambers
-    email address rather than the docket — one instructing that it "should not be filed." Where the
-    report never reaches the docket, no docket-based method, including this one, can observe it.</li>
-  <li><strong>One coder, no second rater.</strong> There is no inter-coder reliability statistic.
-    Every coding decision carries a pin cite so that disagreement is with a quotation rather than
-    with a judgment.</li>
-  <li><strong>N is small and the Rule is eight months old.</strong> Nothing here supports a claim
-    about long-run practice.</li>
+  <li><strong>Coverage is 14 of 16.</strong> One order exists and has not been read: MDL
+    3187, where four orders sit on the docket and none carries a text layer. One MDL, 3176,
+    has issued no qualifying order at all, which is a finding about that proceeding rather
+    than a gap in the data. <strong>Those two categories are never merged.</strong> The
+    block rate reported here is <strong>1 of 16 (6%)</strong>, defined as MDLs whose
+    existing order could not be read.</li>
+  <li><strong>The pin cites are two-tiered.</strong> Six rows (3162, 3163, 3166, 3171, 3174,
+    3175) carry paragraph pointers without verbatim quoted language. The other eight carry
+    full quotations captured at the time of reading. The thin six were coded earliest,
+    before the standard tightened, and four of the seven citing orders sit in that tier.
+    They are being back-filled.</li>
+  <li><strong>Initial orders only</strong>, with one exception. A later case-management
+    order may invoke the Rule where the first did not. One already does, in MDL 3175.</li>
+  <li><strong>The report layer is incomplete.</strong> Rule 16.1's only mandatory
+    requirements run to the parties' <em>report</em>, and two of fourteen courts route that
+    report to a chambers email address rather than to the docket. One instructs that it
+    "should not be filed." Where a report never reaches the docket, no docket-based method,
+    including this one, can observe it.</li>
+  <li><strong>One coder, no second rater.</strong> There is no inter-coder reliability
+    statistic. Every coding decision carries a pin cite so that disagreement is with a
+    quotation rather than with a judgment.</li>
+  <li><strong>N is small and the Rule is eight months old.</strong> Nothing here supports a
+    claim about long-run practice.</li>
 </ul>
+<p>Corrections and challenges to any coding decision are welcome and are recorded in the
+changelog.</p>
 
-<h2>Time from transfer to initial management conference</h2>
-<p>Rule 16.1(a) provides that the transferee court "should schedule an initial management conference"
-and sets no time. This is the cleanest measure in the dataset — one variable, no coding judgment,
-trivially reproducible.</p>
+<h2>Time from transfer to the initial management conference</h2>
+<p>Rule 16.1(a) provides that the transferee court "should schedule an initial management
+conference" and sets no deadline. This is the least interpretive measure in the dataset:
+one variable, no coding judgment, and reproducible from two dates on the public docket.</p>
 <div class="chart">
   <h3 style="margin-top:0">Days from JPML transfer to the initial conference</h3>
   <div class="legend">
@@ -201,14 +294,12 @@ trivially reproducible.</p>
   </div>
   <div id="bars"></div>
   <div class="axis"><span></span><div class="axis-in"><span>0</span><span>50</span><span>100</span><span>150</span><span>200 days</span></div><span></span></div>
-  <p class="foot" id="chart-n">n = 12 of the 14 coded orders. MDL 3178 and MDL 3179 set no conference
-  date in the order, so no interval is recorded for them — they are excluded here rather than counted
-  as zero.</p>
+  <p class="foot" id="chart-n">&nbsp;</p>
 </div>
 
 <h2>The dataset</h2>
-<p>Click any column heading to sort. The full CSV carries 61 variables per MDL, including every
-enumerated topic in Rule 16.1(b)(2) and (b)(3).</p>
+<p>Click any column heading to sort. The full CSV carries 61 variables per MDL, including
+every enumerated topic in Rule 16.1(b)(2) and (b)(3).</p>
 <div class="tbl-scroll"><table id="t"><thead><tr>
   <th data-k="mdl_no">MDL <span class="ar">↕</span></th>
   <th data-k="caption">Caption <span class="ar">↕</span></th>
@@ -222,10 +313,10 @@ enumerated topic in Rule 16.1(b)(2) and (b)(3).</p>
   <th data-k="source_status">Status <span class="ar">↕</span></th>
 </tr></thead><tbody id="tb"></tbody></table></div>
 
-<h2>The invocation layer</h2>
-<p>Rule 16.1's mandates run to the parties' report. This table tracks the reports themselves and
-other filings that invoke the Rule — keyed to the <em>filing</em>, not the MDL, because one of them
-is not in an MDL at all.</p>
+<h2>Filings that invoke the Rule</h2>
+<p>Rule 16.1's mandatory requirements run to the parties' report. This table records the
+reports themselves and other filings that cite the Rule. It is keyed to the filing rather
+than to the MDL, because one of the filings is not in an MDL.</p>
 <div class="tbl-scroll" style="max-height:none"><table><thead><tr>
   <th>ID</th><th>MDL</th><th>Case</th><th>Document</th><th>Filed</th><th>pp</th>
   <th>Joint?</th><th>Kind</th><th>Cites Note</th></tr></thead>
@@ -235,37 +326,29 @@ is not in an MDL at all.</p>
 <div class="cite"><div class="b">Zach Luhmann, Rule 16.1 Tracker: Initial Management Orders in
 Multidistrict Litigation Since December 1, 2025 (v1.0, August 2026),
 https://zachluhmann.github.io/rule-16-1-tracker/ (last visited [date]).</div>
-<p style="margin:16px 0 0;font-size:13px">Licensed <strong>CC BY 4.0</strong>. Corrections and
-challenges to any coding decision are welcome and are logged publicly in the changelog.
-A permanent archival copy and a dataset DOI are pending and will be added here when they
-issue.</p></div>
-
-<h2>A standing rule</h2>
-<blockquote><strong>This dataset is not a litigation resource.</strong> If a party asks that an entry
-be added, removed, or reframed to help a position, the request will be declined and the fact of it
-noted here. The neutrality is what makes the thing worth citing.</blockquote>
-<p>No judge's motives, competence, or compliance is characterized anywhere in this data.
-<code>cites_rule = NO</code> is a fact. "Ignored the rule" is not, and does not appear.</p>
+<p style="margin:16px 0 0;font-size:13px">Licensed <strong>CC BY 4.0</strong>. A permanent
+archival copy and a dataset DOI are pending and will be added here when they issue.</p></div>
 
 <h2>Changelog</h2>
 <ul>
-  <li><strong>v1.0-draft — 12 Aug 2026.</strong> MDL 3180 (<em>Dupixent</em>, D.N.J., Quraishi)
-    obtained and read in full. <strong>It cites Rule 16.1 twice</strong>, and its Initial Procedure
-    Order No. 1 is the same form order Judge Bates entered in MDL 3162, with three added items
-    carried over verbatim. Headline moved from 6 of 13 to <strong>7 of 14</strong>. Block rate
-    reduced to 1 of 16. Site figures are now computed from the dataset at load rather than
-    hand-written, so the page cannot drift from the CSV again.</li>
-  <li><strong>v1.0-draft — 11 Aug 2026.</strong> Universe reconciled against the JPML's 3 August 2026
-    report: MDL 3170 added (missing entirely from the seed), MDL 3181 restored to scope, sequence
-    gaps resolved as denied petitions. Block rate reduced from 57% to 2 of 16. Invocation layer
-    opened.</li>
+  <li><strong>v1.0-draft, 12 Aug 2026.</strong> MDL 3180 (<em>Dupixent</em>, D.N.J.,
+    Quraishi) obtained and read in full. It cites Rule 16.1 twice, and its Initial Procedure
+    Order No. 1 is the same form order Judge Bates entered in MDL 3162, with three added
+    items carried over verbatim. The headline moved from 6 of 13 to <strong>7 of
+    14</strong>, and the block rate to 1 of 16. The figures on this page are now computed
+    from the dataset at load rather than written by hand, so the page cannot diverge from
+    the CSV. The text of Rule 16.1 was added above.</li>
+  <li><strong>v1.0-draft, 11 Aug 2026.</strong> Universe reconciled against the JPML's
+    3 August 2026 report: MDL 3170 added, having been missing entirely from the seed;
+    MDL 3181 restored to scope; sequence gaps resolved as denied petitions. Block rate
+    reduced from 57% to 2 of 16. Invocation layer opened.</li>
 </ul>
 
 <hr>
-<p class="foot">Sources: Judicial Panel on Multidistrict Litigation, <em>Pending MDL Dockets By MDL
-Number</em> (3 Aug 2026) · CourtListener / RECAP · transferee courts' own published order pages.
-Rule text verified against the official rule.</p>
-
+<p class="foot">Sources: Judicial Panel on Multidistrict Litigation, <em>Pending MDL Dockets
+By MDL Number</em> (3 Aug 2026); CourtListener and the RECAP archive; the transferee courts'
+own published order pages. Rule text as published by the Legal Information Institute,
+Cornell Law School.</p>
 </div>
 <div class="tip" id="tip"></div>
 <script>
@@ -290,14 +373,14 @@ const W=(n)=>['zero','one','two','three','four','five','six','seven','eight','ni
   S('t-coded',coded.length);
   S('t-coded-s',`${W(noOrder.length)} ${noOrder.length===1?'has':'have'} no qualifying order`);
   S('t-cite',`${yes.length} <span style="font-size:20px;color:var(--text-secondary)">/ ${coded.length}</span>`);
-  S('t-cite-s',`${pct}% — ${W(coded.length-yes.length)} never mention it`);
+  S('t-cite-s',`${pct}% of coded orders`);
   S('t-blk',blocked.length);
-  S('t-blk-s',`${blocked.length} of ${univ} — see limitations`);
+  S('t-blk-s',`${blocked.length} of ${univ}. See limitations.`);
   S('pct-inline',pct+'%');
   S('chart-n',`n = ${iv.length} of the ${coded.length} coded orders. `+
     coded.filter(r=>!r.days_transfer_to_conference).map(r=>'MDL '+r.mdl_no).join(' and ')+
-    ` set no conference date in the order, so no interval is recorded for them — they are excluded `+
-    `here rather than counted as zero.`);
+    ` set no conference date in the order. No interval is recorded for them, and they are `+
+    `excluded here rather than counted as zero.`);
 }
 
 /* ---- bar chart: one row per MDL with a recorded interval, colour by cites_rule ---- */
@@ -318,7 +401,7 @@ const tip=document.getElementById('tip');
 document.getElementById('bars').addEventListener('mousemove',e=>{
   const row=e.target.closest('.bar-row'); if(!row){tip.style.opacity=0;return;}
   const r=DATA.find(x=>x.mdl_no===row.dataset.m);
-  tip.innerHTML=`<strong>MDL ${r.mdl_no}</strong> — ${r.judge}<br>${r.caption}<br>
+  tip.innerHTML=`<strong>MDL ${r.mdl_no}</strong> · ${r.judge}<br>${r.caption}<br>
     <span style="color:var(--text-secondary)">${r.days_transfer_to_conference} days · conference
     ${r.a_conference_date} · ${cited(r)?'cites Rule 16.1':'never mentions the Rule'}</span>`;
   tip.style.opacity=1;
@@ -332,7 +415,7 @@ const tag=(v)=>{
   if(v==='YES')return '<span class="tag yes">YES</span>';
   if(v==='NOT_ADDRESSED')return '<span class="tag no">not addressed</span>';
   if(v==='UNCLEAR')return '<span class="tag blk">unread</span>';
-  return `<span class="tag no">${(v||'—').toLowerCase().replace(/_/g,' ')}</span>`;
+  return `<span class="tag no">${(v||'n/a').toLowerCase().replace(/_/g,' ')}</span>`;
 };
 const stat=(v)=>{
   const m={TEXT_AVAILABLE:['coded','yes'],TEXT_ORDER_ON_DOCKET:['coded (text order)','yes'],
@@ -350,7 +433,7 @@ function draw(rows){
     <td>${tag(r.cites_rule)}</td>
     <td class="n">${(r.rule_role||'').toLowerCase().replace(/_/g,' ')}</td>
     <td class="n">${(r.report_form||'').toLowerCase().replace(/_/g,' ')}</td>
-    <td class="n">${r.days_transfer_to_conference||'—'}</td>
+    <td class="n">${r.days_transfer_to_conference||'not set'}</td>
     <td>${stat(r.source_status)}</td></tr>`).join('');
 }
 draw(DATA);
