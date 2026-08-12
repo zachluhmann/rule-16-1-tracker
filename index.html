@@ -4,14 +4,53 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Rule 16.1 Tracker: Initial Management Orders in MDLs Since December 1, 2025</title>
-<meta name="description" content="A record of how every federal transferee court has applied Fed. R. Civ. P. 16.1 since its effective date, coded from the order text with pin cites.">
+<meta name="description" content="A record of how federal transferee courts have applied Fed. R. Civ. P. 16.1 since its effective date, coded from the order text with pin cites.">
+<link rel="canonical" href="https://zachluhmann.github.io/rule-16-1-tracker/">
+<meta name="author" content="Zach Luhmann">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://zachluhmann.github.io/rule-16-1-tracker/">
+<meta property="og:site_name" content="Rule 16.1 Tracker">
+<meta property="og:title" content="Rule 16.1 Tracker">
+<meta property="og:description" content="Every MDL centralized since Rule 16.1 took effect, with each transferee court's initial management order coded against the items the Rule lists. 7 of 14 readable orders cite the Rule by name.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Rule 16.1 Tracker">
+<meta name="twitter:description" content="Every MDL centralized since Rule 16.1 took effect, coded against the items the Rule lists.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a78d6'/%3E%3Ctext x='16' y='22' font-family='system-ui,sans-serif' font-size='15' font-weight='600' fill='%23fff' text-anchor='middle'%3E16%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Dataset",
+  "name": "Rule 16.1 Tracker: Initial Management Orders in Multidistrict Litigation Since December 1, 2025",
+  "alternateName": "Rule 16.1 Tracker",
+  "description": "Every multidistrict litigation proceeding centralized by the United States Judicial Panel on Multidistrict Litigation since Fed. R. Civ. P. 16.1 took effect on December 1, 2025, with each transferee court's initial management order coded against every item the Rule enumerates. 61 variables per MDL, each affirmative coding carrying a pin cite to the paragraph of the order. Includes a second table of Rule 16.1 reports and other party filings that invoke the Rule.",
+  "url": "https://zachluhmann.github.io/rule-16-1-tracker/",
+  "sameAs": "https://github.com/zachluhmann/rule-16-1-tracker",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "version": "1.0-draft",
+  "isAccessibleForFree": true,
+  "keywords": ["multidistrict litigation","MDL","Federal Rules of Civil Procedure","Rule 16.1","case management","leadership counsel","third-party litigation funding","empirical legal studies","civil procedure"],
+  "creator": {
+    "@type": "Person",
+    "name": "Zach Luhmann",
+    "affiliation": {"@type": "CollegeOrUniversity", "name": "New York University School of Law"}
+  },
+  "temporalCoverage": "2025-12-01/..",
+  "spatialCoverage": {"@type": "Place", "name": "United States federal district courts"},
+  "measurementTechnique": "Manual coding of the transferee court's initial management order in each MDL, from the order text, with a pin cite recorded for every affirmative coding.",
+  "distribution": [
+    {"@type": "DataDownload", "name": "Order layer (16 MDLs, 61 variables)", "encodingFormat": "text/csv", "contentUrl": "https://github.com/zachluhmann/rule-16-1-tracker/raw/main/rule-16-1-tracker.csv"},
+    {"@type": "DataDownload", "name": "Invocation layer (Rule 16.1 reports and party filings)", "encodingFormat": "text/csv", "contentUrl": "https://github.com/zachluhmann/rule-16-1-tracker/raw/main/party-invocations.csv"}
+  ],
+  "citation": "Zach Luhmann, Rule 16.1 Tracker: Initial Management Orders in Multidistrict Litigation Since December 1, 2025 (v1.0, August 2026), https://zachluhmann.github.io/rule-16-1-tracker/"
+}
+</script>
 <style>
 :root{
   color-scheme:light;
   --page:#f9f9f7; --surface-1:#fcfcfb;
-  --text-primary:#0b0b0b; --text-secondary:#52514e; --muted:#898781;
+  --text-primary:#0b0b0b; --text-secondary:#52514e; --muted:#71706b;
   --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,0.10);
-  --series-1:#2a78d6; --series-2:#eb6834;
+  --series-1:#2a78d6; --series-2:#eb6834; --link:#256bc0;
   --good:#0ca30c; --warning:#fab219; --critical:#d03b3b;
   --accent-wash:rgba(42,120,214,0.08);
 }
@@ -19,9 +58,9 @@
  :root:where(:not([data-theme="light"])){
   color-scheme:dark;
   --page:#0d0d0d; --surface-1:#1a1a19;
-  --text-primary:#ffffff; --text-secondary:#c3c2b7; --muted:#898781;
+  --text-primary:#ffffff; --text-secondary:#c3c2b7; --muted:#9a9892;
   --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,0.10);
-  --series-1:#3987e5; --series-2:#d95926;
+  --series-1:#3987e5; --series-2:#d95926; --link:#6fb0f5;
   --good:#0ca30c; --warning:#fab219; --critical:#d03b3b;
   --accent-wash:rgba(57,135,229,0.14);
  }
@@ -29,16 +68,17 @@
 :root[data-theme="dark"]{
   color-scheme:dark;
   --page:#0d0d0d; --surface-1:#1a1a19;
-  --text-primary:#ffffff; --text-secondary:#c3c2b7; --muted:#898781;
+  --text-primary:#ffffff; --text-secondary:#c3c2b7; --muted:#9a9892;
   --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,0.10);
-  --series-1:#3987e5; --series-2:#d95926;
+  --series-1:#3987e5; --series-2:#d95926; --link:#6fb0f5;
   --accent-wash:rgba(57,135,229,0.14);
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--page);color:var(--text-primary);
  font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
 .wrap{max-width:1080px;margin:0 auto;padding:40px 24px 96px}
-a{color:var(--series-1)}
+a{color:var(--link)}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:3px}
 h1{font-size:30px;line-height:1.22;margin:0 0 10px;letter-spacing:-0.015em}
 h2{font-size:20px;margin:36px 0 12px;letter-spacing:-0.01em}
 h3{font-size:15px;margin:26px 0 8px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-secondary)}
@@ -56,7 +96,9 @@ table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:
 th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--grid);vertical-align:top}
 th{font-size:11.5px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);
  font-weight:600;cursor:pointer;user-select:none;white-space:nowrap;position:sticky;top:0;background:var(--surface-1)}
-th:hover{color:var(--text-primary)}
+th:hover,th:focus-visible{color:var(--text-primary)}
+th[aria-sort]{color:var(--text-primary)}
+th[aria-sort] .ar{opacity:1;color:var(--link)}
 th .ar{opacity:.35;font-size:10px}
 tbody tr:hover{background:var(--accent-wash)}
 td.n{white-space:nowrap}
@@ -67,6 +109,7 @@ td.cap a,td.cap span{display:block;overflow:hidden;text-overflow:ellipsis;white-
 .tag.yes{color:var(--series-1);border-color:var(--series-1)}
 .tag.no{color:var(--text-secondary)}
 .tag.blk{color:var(--critical);border-color:var(--critical)}
+.tag.unc{color:var(--warning);border-color:var(--warning)}
 .chart{background:var(--surface-1);border:1px solid var(--border);border-radius:12px;padding:20px 22px 12px}
 .legend{display:flex;gap:16px;font-size:12.5px;color:var(--text-secondary);margin:2px 0 16px}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
@@ -102,6 +145,26 @@ li{margin-bottom:6px}
 .warn{border-left:3px solid var(--warning);padding:12px 18px;background:var(--surface-1);
  border-radius:0 8px 8px 0;margin-bottom:16px;font-size:14.5px;color:var(--text-primary)}
 hr{border:0;border-top:1px solid var(--grid);margin:40px 0}
+.dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(232px,1fr));gap:10px;margin:4px 0 10px}
+.dl a{display:block;background:var(--surface-1);border:1px solid var(--border);border-radius:10px;
+ padding:12px 14px;text-decoration:none;color:var(--text-primary);font-size:13.5px}
+.dl a:hover{border-color:var(--link)}
+.dl a b{display:block;font-weight:600;margin-bottom:2px}
+.dl a span{color:var(--muted);font-size:12px}
+@media print{
+  body{background:#fff;color:#000;font-size:11pt}
+  .wrap{max-width:none;padding:0}
+  .toggle,.tip{display:none}
+  details{border:0!important}
+  details>summary{display:none}
+  details[open]>summary{display:none}
+  .tbl-scroll{max-height:none;overflow:visible;border:0}
+  a{color:#000;text-decoration:underline}
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:8pt;color:#444;word-break:break-all}
+  .dl a[href^="http"]::after{content:""}
+  h2{page-break-after:avoid}
+  ol.find>li,.rule p,tr{page-break-inside:avoid}
+}
 .foot{font-size:12.5px;color:var(--muted);margin-top:8px}
 .aside{margin:16px 0 4px;padding:2px 0 2px 18px;border-left:2px solid var(--grid);max-width:76ch}
 .aside p{font-size:13.5px;margin:0 0 9px;color:var(--text-secondary)}
@@ -142,14 +205,14 @@ management order coded against the items the Rule lists.</p>
 </div>
 
 <div class="tiles">
-  <div class="tile"><div class="v" id="t-univ">&nbsp;</div><div class="k">MDLs in the universe</div>
+  <div class="tile"><div class="v" id="t-univ">16</div><div class="k">MDLs in the universe</div>
     <div class="s">JPML report, 3 Aug 2026</div></div>
-  <div class="tile"><div class="v" id="t-coded">&nbsp;</div><div class="k">Initial orders read and coded</div>
-    <div class="s" id="t-coded-s">&nbsp;</div></div>
-  <div class="tile"><div class="v" style="color:var(--series-1)" id="t-cite">&nbsp;</div>
-    <div class="k">Cite Rule 16.1 by name</div><div class="s" id="t-cite-s">&nbsp;</div></div>
-  <div class="tile"><div class="v" id="t-blk">&nbsp;</div><div class="k">Not yet readable</div>
-    <div class="s" id="t-blk-s">&nbsp;</div></div>
+  <div class="tile"><div class="v" id="t-coded">14</div><div class="k">Initial orders read and coded</div>
+    <div class="s" id="t-coded-s">one has no qualifying order</div></div>
+  <div class="tile"><div class="v" style="color:var(--series-1)" id="t-cite">7 <span style="font-size:20px;color:var(--text-secondary)">/ 14</span></div>
+    <div class="k">Cite Rule 16.1 by name</div><div class="s" id="t-cite-s">50% of coded orders</div></div>
+  <div class="tile"><div class="v" id="t-blk">1</div><div class="k">Not yet readable</div>
+    <div class="s" id="t-blk-s">1 of 16. See limitations.</div></div>
 </div>
 
 <p style="margin-top:20px">Rule 16.1 is the first Federal Rule of Civil Procedure
@@ -159,18 +222,19 @@ The Judicial Panel reported 158 MDL proceedings pending at the end of 2025, hold
 one of those proceedings was governed by the <em>Manual for Complex Litigation</em>, which is
 Federal Judicial Center guidance rather than law.</p>
 
-<p><strong>What it does.</strong> The transferee court <em>should</em> hold an initial
-management conference, <em>should</em> first order the parties to meet and file a report, and
-<em>should</em> enter an initial management order afterward. The Rule lists eighteen subjects
-that report must cover.</p>
+<p><strong>What it does.</strong> The transferee court <em>should</em> order the parties to
+meet and submit a report, <em>should</em> hold an initial management conference, and
+<em>should</em> enter an initial management order after it. The Rule lists 18 subjects that
+report must cover.</p>
 
 <p><strong>Why count it.</strong> None of that binds the judge. The Rule is written in
-"should," not "shall," and its only "must" runs to the parties' report. Six weeks in, K&amp;L
+"should," not "shall," and its mandatory language runs to the parties' report rather than to
+the court. Six weeks in, K&amp;L
 Gates observed that Rule 16.1 <em>"does not impose mandatory obligations on transferee
 courts"</em> and that its <em>"effectiveness will ultimately depend on whether the transferee
-court chooses to enforce its provisions."</em> That makes its effect an empirical question.
-This dataset answers it by reading every initial management order in every MDL created since
-the effective date.</p>
+court chooses to enforce its provisions."</em> That makes its effect an empirical
+question. This dataset measures it by reading every initial management order in every MDL
+created since the effective date.</p>
 
 <p class="foot" style="margin-top:-4px">Quotations from
 <a href="https://www.klgates.com/FRCP-161-Arrives-Will-MDL-Courts-Embrace-Its-Tools-1-6-2026" rel="noopener">K&amp;L Gates</a>
@@ -184,18 +248,19 @@ count: K&amp;L Gates, above.</p>
 
 <h2>Findings</h2>
 <ol class="find">
-  <li><strong>Seven of the fourteen readable orders cite Rule 16.1 by name; seven do
-    not.</strong> For a rule that binds the judge to nothing, that is the threshold question,
-    and eight months in the answer is half. The subject matter is not being skipped: all
-    fourteen call for a report and address leadership counsel. But citing orders go further,
-    covering roughly sixteen of the nineteen items tracked here against roughly ten for the
-    rest, and two non-citing orders designate the <em>Manual for Complex Litigation</em>
-    instead. The likelier reading is not that courts ignored Rule 16.1 but that it has not
-    displaced the Manual.</li>
+  <li><strong>7 of the 14 readable orders cite Rule 16.1 by name; 7 do not.</strong> For a
+    rule that binds the judge to nothing, that is the threshold question, and
+    <span id="age-months">8</span> months in the answer is half. The subject matter is not
+    being skipped: all 14 call for a report and address leadership counsel. But citing orders
+    go further, addressing a median of 19 of the 19 items tracked here against 12 for the
+    orders that do not cite it. Both groups spread widely, 8 to 19 and 4 to 13, so the medians
+    describe the centre rather than every order. 2 non-citing orders designate the
+    <em>Manual for Complex Litigation</em> instead. The likelier reading is not that courts
+    ignored Rule 16.1 but that it has not displaced the Manual.</li>
 
   <li><strong>Leadership counsel is the only item every order addresses, 14 of 14.</strong>
     Appointing leadership is long-standing MDL practice, not something Rule 16.1 introduced,
-    so unanimity here shows the Rule tracking settled practice rather than changing it. The
+    so unanimity here reads as the Rule tracking settled practice, not changing it. The
     least-addressed items are direct filing and measures to facilitate resolution, 6 of 14
     each.</li>
 
@@ -206,28 +271,30 @@ count: K&amp;L Gates, above.</p>
 
   <li><strong>The interval from transfer to the initial conference runs from 21 days to
     198.</strong> Rule 16.1(a) says the court "should schedule an initial management
-    conference" and sets no deadline. The ninefold spread across the twelve orders that set
-    a date is that discretion expressed in days.</li>
+    conference" and sets no deadline. The ninefold spread across the
+    <span id="n-intervals">12</span> orders that set a date is that discretion expressed in
+    days.</li>
 
   <li><strong>Where the Rule is applied, it appears to travel as a form order.</strong> Judge
     Quraishi's Initial Procedure Order No. 1 in the <em>Dupixent</em> MDL (D.N.J., June 2026)
-    is the same form order Judge Bates entered in D.D.C. five months earlier, including three
+    is the same form order Judge Bates entered in D.D.C. five months earlier, including 3
     added items appearing verbatim in both and in neither the Rule nor the Committee Note. If
     the pattern holds, what moves between districts is one judge's order, not the Rule
     text.</li>
 
-  <li><strong>Uptake measured by full-text search is biased upward.</strong> The first three
-    orders examined here all cited the Rule, an apparent 100%. They were found by searching
-    for the phrase, and such a search returns only documents that use it; enumerating the
-    Panel's full list produced <span id="pct-inline">50%</span>. Any study of a new rule's
-    adoption that begins from a phrase search will overstate it.</li>
+  <li><strong>Uptake measured by full-text search is biased upward.</strong> The first 3 orders
+    examined here all cited the Rule, an apparent 100%. They were found by searching for the
+    phrase, and such a search returns only documents that use it; enumerating the Panel's full
+    list produced <span id="pct-inline">50%</span>. A phrase search cannot understate a rule's
+    uptake, which is a limit on the method rather than a fact about this Rule.</li>
 
-  <li><strong>The Rule's one mandatory provision has already been departed from.</strong>
-    Rule 16.1(b)(1) contemplates that the parties meet and submit <em>a</em> report, singular.
-    In the Trans Union MDL one plaintiff group filed its own, unilaterally, five weeks after
-    the effective date.</li>
+  <li><strong>Parties have already departed from the Rule's single-report structure.</strong>
+    Rule 16.1(b)(1) contemplates that the parties meet and submit <em>one</em> report; the
+    Rule's mandatory language then governs what that report must contain. In the Trans Union
+    MDL, one plaintiff group filed its own Rule 16.1 report separately, 5 weeks after the
+    effective date.</li>
 </ol>
-<p class="foot">Nineteen columns cover the Rule's eighteen listed items: this dataset splits
+<p class="foot">19 columns cover the Rule's 18 listed items: this dataset splits
 (b)(2)(A)(iii) into selection of leadership and periodic review of it.</p>
 
 <h2>The dataset</h2>
@@ -246,6 +313,23 @@ carries 61 columns per MDL, one for each item in Rule 16.1(b)(2) and (b)(3).</p>
   <th data-k="source_status">Status <span class="ar">↕</span></th>
 </tr></thead><tbody id="tb"></tbody></table></div>
 
+<h2>Data</h2>
+<p>Everything on this page is generated from two CSVs. Both are free to download and reuse
+under CC BY 4.0. The order layer carries all 61 variables per MDL, including every item in
+Rule 16.1(b)(2) and (b)(3) and the pin cite behind each coding decision.</p>
+<div class="dl">
+  <a href="https://github.com/zachluhmann/rule-16-1-tracker/raw/main/rule-16-1-tracker.csv" download><b>rule-16-1-tracker.csv</b><span>The order layer. 16 MDLs, 61 variables.</span></a>
+  <a href="https://github.com/zachluhmann/rule-16-1-tracker/raw/main/party-invocations.csv" download><b>party-invocations.csv</b><span>The invocation layer, keyed to the filing.</span></a>
+  <a href="https://github.com/zachluhmann/rule-16-1-tracker/blob/main/PROTOCOL.md"><b>PROTOCOL.md</b><span>Codebook, universe definition, retrieval ladder.</span></a>
+  <a href="https://github.com/zachluhmann/rule-16-1-tracker/blob/main/AUDIT.md"><b>AUDIT.md</b><span>What is currently wrong with this project.</span></a>
+  <a href="https://github.com/zachluhmann/rule-16-1-tracker"><b>Repository</b><span>Source, changelog and full revision history.</span></a>
+  <a href="https://github.com/zachluhmann/rule-16-1-tracker/issues"><b>Submit a correction</b><span>Challenge any coding decision. Logged publicly.</span></a>
+</div>
+<p class="foot"><strong>Corrections are the point.</strong> If you think a coding decision is
+wrong, open an issue with the MDL number and the paragraph you would read differently. Every
+change is recorded in the changelog. <a href="https://github.com/zachluhmann/rule-16-1-tracker/blob/main/AUDIT.md">AUDIT.md</a> lists
+the problems already known, including the six rows whose pin cites are thinner than the rest.</p>
+
 <div class="chart" style="margin-top:24px">
   <h3 style="margin-top:0">Days from JPML transfer to the initial conference</h3>
   <div class="legend">
@@ -254,21 +338,21 @@ carries 61 columns per MDL, one for each item in Rule 16.1(b)(2) and (b)(3).</p>
   </div>
   <div id="bars"></div>
   <div class="axis"><span></span><div class="axis-in"><span>0</span><span>50</span><span>100</span><span>150</span><span>200 days</span></div><span></span></div>
-  <p class="foot" id="chart-n">&nbsp;</p>
+  <p class="foot" id="chart-n">n = 12 of the 14 coded orders. MDL 3178 and MDL 3179 set no conference date in the order. No interval is recorded for them, and they are excluded here rather than counted as zero.</p>
 </div>
 
 <h2>Rule 16.1 reports and related filings</h2>
-<p>The located reports, plus other filings that invoke the Rule. Keyed to the filing rather
-than the MDL, because one of these is not in an MDL. The joint report in MDL 3162 is coded
-unclear as to whether it cites the Rule by name.</p>
+<p>The located reports, plus other filings that invoke the Rule. The table is keyed to the
+filing rather than to the MDL, because one of these filings is not in an MDL. The joint report
+in MDL 3162 is coded unclear as to whether it cites the Rule by name.</p>
 <div class="tbl-scroll" style="max-height:340px"><table><thead><tr>
   <th>ID</th><th>MDL</th><th>Case</th><th>Document</th><th>Filed</th><th>pp</th>
-  <th>Joint?</th><th>Kind</th><th>Cites Note</th></tr></thead>
+  <th>Joint?</th><th>Kind</th><th>Cites 16.1</th><th>Cites Note</th></tr></thead>
   <tbody id="ib"></tbody></table></div>
 
 <h2>Rule 16.1</h2>
-<p>The eighteen required subjects break down as seven on leadership counsel, four on
-scheduling, direct filing and related actions, and seven on the parties' initial views.
+<p>The 18 required subjects break down as 7 on leadership counsel; 4 on scheduling, direct
+filing, and related actions; and 7 on the parties' initial views.
 Subdivision (b)(4) permits anything else but requires nothing, which is why litigation
 funding appears here as a null rather than as a violation.</p>
 
@@ -361,21 +445,24 @@ affirmative declination is coded as one.</p>
 <p class="i1">3. <b>Ambiguity is recorded as unclear,</b> with the language quoted rather than
 resolved.</p>
 <p>Sources link to free copies on CourtListener or on the court's own site; none requires a
-PACER account. Corrections to any coding decision are welcome and are recorded in the
-changelog.</p>
+PACER account. The full codebook is in
+<a href="https://github.com/zachluhmann/rule-16-1-tracker/blob/main/PROTOCOL.md">PROTOCOL.md</a>; the known problems are in
+<a href="https://github.com/zachluhmann/rule-16-1-tracker/blob/main/AUDIT.md">AUDIT.md</a>. Corrections are welcome
+<a href="https://github.com/zachluhmann/rule-16-1-tracker/issues">here</a> and are recorded in the changelog.</p>
 <p><b>Limitations.</b></p>
-<p class="i1"><b>The pin cites are two-tiered.</b> Six rows (3162, 3163, 3166, 3171, 3174,
-3175) give paragraph pointers without quoted language; the other eight quote it directly.
-Those six were coded earliest, and four of the seven citing orders sit among them. They are
-being back-filled.</p>
+<p class="i1"><b>The pin cites are two-tiered.</b> 6 rows (3162, 3163, 3166, 3171, 3174,
+3175) give paragraph pointers without quoted language; the other 8 quote it directly. Those 6
+were coded earliest, and 4 of the 7 citing orders sit among them, which means the citation
+count currently rests most heavily on the rows with the thinnest documentation. They are being
+back-filled.</p>
 <p class="i1"><b>Initial orders only</b>, with one exception: a later order may invoke the
 Rule where the first did not, as one already has in MDL 3175.</p>
-<p class="i1"><b>Reports routed to chambers are invisible.</b> Two of the fourteen courts
-direct counsel to email the report rather than file it, one stating it "should not be filed."
+<p class="i1"><b>Reports routed to chambers are invisible.</b> 2 of the 14 courts direct
+counsel to email the report rather than file it, one stating it "should not be filed."
 No docket-based method, including this one, can observe those.</p>
 <p class="i1"><b>One coder, no second rater,</b> and so no inter-rater statistic. Every entry
 carries a pin cite so that disagreement is with a quotation.</p>
-<p class="i1"><b>N is small and the Rule is eight months old.</b> Nothing here supports a
+<p class="i1"><b>N is small and the Rule is <span id="age-months2">8</span> months old.</b> Nothing here supports a
 claim about settled practice.</p>
 </div>
 </details>
@@ -384,8 +471,9 @@ claim about settled practice.</p>
 <div class="cite"><div class="b">Zach Luhmann, Rule 16.1 Tracker: Initial Management Orders in
 Multidistrict Litigation Since December 1, 2025 (v1.0, August 2026),
 https://zachluhmann.github.io/rule-16-1-tracker/ (last visited [date]).</div>
-<p style="margin:14px 0 0;font-size:13px">Licensed <strong>CC BY 4.0</strong>. An archived
-copy and a dataset DOI are pending and will be added here when they issue.</p></div>
+<p style="margin:14px 0 0;font-size:13px">Licensed <strong>CC BY 4.0</strong>. Cite the
+dataset itself from <a href="https://github.com/zachluhmann/rule-16-1-tracker/raw/main/rule-16-1-tracker.csv">rule-16-1-tracker.csv</a>. An
+archived copy and a dataset DOI are pending and will be added here when they issue.</p></div>
 
 <details class="rulebox" style="margin-top:24px">
 <summary>Changelog and sources</summary>
@@ -408,8 +496,7 @@ Legal Information Institute, Cornell Law School.</p>
 </div>
 <div class="tip" id="tip"></div>
 <script>
-const DATA=[{"mdl_no":"3162","caption":"In re Class Action Settlement Administration","court":"D.D.C.","judge":"Bates","jpml_transfer_date":"2025-12-12","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"AGENDA","report_form":"JOINT","rule_vocabulary":"16.1","report_channel":"DOCKET","days_transfer_to_conference":"105","a_conference_date":"2026-03-27","b1_report_ordered":"YES","b3b_mechanism":"census ASKED not ordered (para 5(o): \"whether an initial census or some similar process would be beneficial\"); para 5(g) also asks whether to dispense with Rule 26(a)(1) initial disclosures","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"NOT_ADDRESSED","courtlistener_url":"https://www.courtlistener.com/docket/72028506/8/class-action-settlement-administration-litigation-mdl-no-3162/","source_doc_type":"Initial Procedure Order No. 1 (Jan. 7, 2026); Case Management Order No. 1 (Apr. 30, 2026)","party_invoked_rule":"YES"},{"mdl_no":"3163","caption":"In re Glucagon-like Peptide-1 Receptor Agonists (GLP-1 RAs) Non-Arteritic Anterior Ischemic Optic Neuropathy Products Liability Litigation","court":"E.D. Pa.","judge":"Marston","jpml_transfer_date":"2025-12-15","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_PARTY_GROUP","rule_vocabulary":"NONE","report_channel":"CHAMBERS_EMAIL","days_transfer_to_conference":"29","a_conference_date":"2026-01-13","b1_report_ordered":"YES","b3b_mechanism":"STRONGEST IN SET. Agenda item 1: \"Initial census: The Court is interested in generating an initial census in this litigation in helping to manage the case from the outset. To that end, this topic will include considerati","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"YES","courtlistener_url":"https://www.courtlistener.com/docket/72052106/","source_doc_type":"Case Management Order No. 1 (Dec. 23, 2025), ECF 2 - obtained via duplicate RECAP record","party_invoked_rule":"NOT_CHECKED"},{"mdl_no":"3166","caption":"In re Roblox Child Sexual Exploitation Litigation","court":"N.D. Cal.","judge":"Seeborg","jpml_transfer_date":"2025-12-12","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_SIDE","rule_vocabulary":"NONE","report_channel":"DOCKET","days_transfer_to_conference":"49","a_conference_date":"2026-01-30","b1_report_ordered":"YES","b3b_mechanism":"No census or plaintiff fact sheet. Para 10 orders a MEMBER CASE STATUS REPORT from each party, 5pp max: pending motions and status, orders to stay/vacate, related state/federal cases, key facts, critical factual and lega","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"NOT_ADDRESSED","courtlistener_url":"https://www.courtlistener.com/docket/72030009/","source_doc_type":"Pretrial Order No. 1 (Dec. 17, 2025), ECF 2 - obtained via duplicate RECAP record","party_invoked_rule":"NOT_CHECKED"},{"mdl_no":"3167","caption":"In re Broiler Chicken Grower Antitrust Litigation (No. III)","court":"D. Utah","judge":"Shelby (PTO 1); Barlow (PTO 2 onward, reassigned 2026-02-10)","jpml_transfer_date":"2025-12-16","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"INCORPORATION","report_form":"JOINT","rule_vocabulary":"16.1","report_channel":"DOCKET","days_transfer_to_conference":"65","a_conference_date":"2026-02-19","b1_report_ordered":"YES","b3b_mechanism":"NONE. Neither PTO 1 nor PTO 2 orders a census, plaintiff fact sheet, or defendant fact sheet; the strings 'census' and 'fact sheet' do not appear in PTO 2. PTO 2 does set 'Initial Disclosures - 30 Days After Lifting Disc","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"NOT_ADDRESSED","courtlistener_url":"https://www.courtlistener.com/docket/72043662/","source_doc_type":"TWO DOCUMENTS, obtained from the COURT'S OWN PUBLIC WEBSITE, not RECAP. (1) Notice and Order of Case Management Hearing (MDL Pretrial Order No. 1), Dec. 31, 2025, Judge Robert J. Shelby, Case No. 2:25","party_invoked_rule":"NOT_CHECKED"},{"mdl_no":"3170","caption":"In re Trans Union, LLC, Customer Data Security Breach Litigation","court":"N.D. Ill.","judge":"Gettleman","jpml_transfer_date":"2025-12-16","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"TRANSCRIPTION","report_form":"JOINT","rule_vocabulary":"16.1","report_channel":"DOCKET","days_transfer_to_conference":"42","a_conference_date":"2026-01-27","b1_report_ordered":"YES","b3b_mechanism":"NO MECHANISM SPECIFIED. CMO #2 item 7 reproduces the rule's own words - 'How and when the parties will exchange information about the factual bases for their claims and defenses' - and leaves the mechanism entirely to th","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"NOT_ADDRESSED","courtlistener_url":"https://www.courtlistener.com/docket/71221176/","source_doc_type":"TWO ORDERS, both entered Dec. 18, 2025, both signed Robert W. Gettleman. (1) Case Management Order #1, ECF 22, doc 462459071, 4pp - administrative, does not cite the rule. (2) Case Management Order #2","party_invoked_rule":"YES"},{"mdl_no":"3171","caption":"In re Lyft Passenger Sexual Assault Litigation","court":"N.D. Cal.","judge":"Lin","jpml_transfer_date":"2026-02-05","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"RESIDUAL","report_form":"SEPARATE_BY_SIDE","rule_vocabulary":"16.1","report_channel":"DOCKET","days_transfer_to_conference":"48","a_conference_date":"2026-03-25","b1_report_ordered":"YES","b3b_mechanism":"NO census or plaintiff fact sheet. INVERTED: para 11 orders DEFENDANT to build the case inventory - a chart of every member and tag-along action listing law firm, incident state, plaintiff residence, alleged incident typ","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"YES","courtlistener_url":"https://www.courtlistener.com/docket/72240870/2/in-re-lyft-inc-passenger-sexual-assault-litigation/","source_doc_type":"Pretrial Order No. 1 (Feb. 12, 2026)","party_invoked_rule":"NOT_CHECKED"},{"mdl_no":"3172","caption":"In re Cartiva Synthetic Cartilage Implant Products Liability Litigation","court":"E.D. Ark.","judge":"Baker","jpml_transfer_date":"2026-02-09","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_SIDE","rule_vocabulary":"MCL4","report_channel":"CHAMBERS_EMAIL","days_transfer_to_conference":"198","a_conference_date":"2026-08-26","b1_report_ordered":"YES","b3b_mechanism":"NONE. No census, plaintiff fact sheet, or defendant fact sheet. What the court asks for instead is 'a summary of the procedural posture of these various cases' (Dkt. 15 at 2) - case-status information, not the factual ba","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"UNCLEAR","courtlistener_url":"https://www.courtlistener.com/docket/72249116/","source_doc_type":"TWO DOCUMENTS. (1) Order Upon Transfer (Feb. 18, 2026), ECF 5 - unblocked via duplicate RECAP record 469251458; seed pointed at textless 454336250. (2) Letter from chambers to counsel (June 22, 2026),","party_invoked_rule":"NOT_CHECKED"},{"mdl_no":"3174","caption":"In re Air Crash at Muan International Airport","court":"W.D. Wash.","judge":"Robart","jpml_transfer_date":"2026-02-05","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"TRANSCRIPTION","report_form":"JOINT","rule_vocabulary":"16.1","report_channel":"DOCKET","days_transfer_to_conference":"126","a_conference_date":"2026-06-11","b1_report_ordered":"YES","b3b_mechanism":"Rule text reproduced verbatim; no census, fact sheet, or mechanism specified","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"NOT_ADDRESSED","courtlistener_url":"https://www.courtlistener.com/docket/72239188/4/in-re-air-crash-at-muan-international-airport-south-korea-on-december-29/","source_doc_type":"Order re: Initial Case Management Conference (Apr. 16, 2026)","party_invoked_rule":"NOT_CHECKED"},{"mdl_no":"3175","caption":"In re Shell Eggs Antitrust Litigation","court":"W.D. Wis.","judge":"Peterson","jpml_transfer_date":"2026-02-13","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"INCORPORATION","report_form":"JOINT","rule_vocabulary":"16.1","report_channel":"DOCKET","days_transfer_to_conference":"84","a_conference_date":"2026-05-08","b1_report_ordered":"YES","b3b_mechanism":"By reference only - no census, fact sheet, or exchange mechanism specified","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"YES","courtlistener_url":"https://www.courtlistener.com/docket/72280418/6/in-re-shell-eggs-antitrust-litigation/","source_doc_type":"Order Setting Judicial Management Conference (Mar. 26, 2026); Order establishing leadership structure (June 8, 2026)","party_invoked_rule":"YES"},{"mdl_no":"3176","caption":"In re Rare Breed Triggers Patent Litigation","court":"E.D. Tex.","judge":"Mazzant","jpml_transfer_date":"2026-04-02","source_status":"NO_ORDER_YET","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"NOT_ADDRESSED","rule_vocabulary":"","report_channel":"","days_transfer_to_conference":"","a_conference_date":"","b1_report_ordered":"NO","b3b_mechanism":"","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"PENDING","courtlistener_url":"https://www.courtlistener.com/docket/73170267/","source_doc_type":"Master docket reviewed through ECF 21 (July 7, 2026). No initial management conference order, no 16.1 report order, no initial management order.","party_invoked_rule":"NOT_CHECKED"},{"mdl_no":"3178","caption":"In re ByHeart, Inc., Infant Formula Marketing, Sales Practices, and Products Liability Litigation","court":"S.D.N.Y.","judge":"Subramanian","jpml_transfer_date":"2026-04-02","source_status":"TEXT_ORDER_ON_DOCKET","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"JOINT","rule_vocabulary":"NONE","report_channel":"DOCKET","days_transfer_to_conference":"","a_conference_date":"","b1_report_ordered":"YES","b3b_mechanism":"none ordered","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"NOT_ADDRESSED","courtlistener_url":"https://www.courtlistener.com/docket/73156009/","source_doc_type":"Order granting letter motion for discovery, Apr. 13, 2026, ECF 3 (text-only order; the docket entry is the complete order)","party_invoked_rule":"NOT_CHECKED"},{"mdl_no":"3179","caption":"In re Fire Apparatus Antitrust Litigation","court":"E.D. Wis.","judge":"Griesbach","jpml_transfer_date":"2026-04-06","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"CONDITIONAL_ON_DISAGREEMENT","rule_vocabulary":"16+RULE1","report_channel":"DOCKET","days_transfer_to_conference":"","a_conference_date":"","b1_report_ordered":"YES","b3b_mechanism":"NONE. The order contains no factual-basis exchange mechanism of any kind.","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"NOT_ADDRESSED","courtlistener_url":"https://www.courtlistener.com/docket/73150899/","source_doc_type":"Order for Telephone Conference (Apr. 10, 2026), ECF 2, doc 475479617 - unblocked via duplicate RECAP record; seed pointed at textless 478654407. ONE PAGE, 1,995 characters.","party_invoked_rule":"NOT_CHECKED"},{"mdl_no":"3180","caption":"In re Dupixent (Dupilumab) Products Liability Litigation","court":"D.N.J.","judge":"Quraishi","jpml_transfer_date":"2026-06-04","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"AGENDA","report_form":"JOINT","rule_vocabulary":"16.1+MCL4","report_channel":"DOCKET","days_transfer_to_conference":"119","a_conference_date":"2026-10-01","b1_report_ordered":"YES","b3b_mechanism":"Item (g) reproduces 16.1(b)(3)(B) and expands it EXACTLY as Judge Bates does in MDL 3162: 'how and when the parties will exchange information about the factual bases for their claims and defenses, including whether the p","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"NOT_ADDRESSED","courtlistener_url":"https://www.courtlistener.com/docket/73443394/","source_doc_type":"INITIAL PROCEDURE ORDER NO. 1, June 11, 2026, ECF 3, 9 pages, Judge Zahid N. Quraishi (with Magistrate Judge J. Brendan Day), D.N.J., 3:26-md-03180-ZNQ-JBD. Read in full from the court's PDF 2026-08-1","party_invoked_rule":"NOT_CHECKED"},{"mdl_no":"3181","caption":"In re Boston Scientific Corporation Spinal Cord Stimulator Products Liability Litigation","court":"C.D. Cal.","judge":"Staton","jpml_transfer_date":"2026-06-05","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"JOINT_DEFENDANT_PREPARED","rule_vocabulary":"16+26(f)+MCL4","report_channel":"DOCKET","days_transfer_to_conference":"61","a_conference_date":"2026-08-05","b1_report_ordered":"YES","b3b_mechanism":"NONE. Both 'census' and 'fact sheet' are absent from the order. The closest analogue is para 5.b.i - a statement of counsel's understanding of the facts and key legal issues - which is expressly non-binding, non-waiving,","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"YES","courtlistener_url":"https://www.courtlistener.com/docket/73502651/","source_doc_type":"Pretrial Order No. 1: Setting Initial Scheduling Conference, June 23, 2026, ECF 2, Judge Josephine L. Staton, Case No. 2:26-ml-03181-JLS-E. PROVENANCE CAVEAT: NO document on this master docket is avai","party_invoked_rule":"NOT_CHECKED"},{"mdl_no":"3185","caption":"In re Cognizant Technology Solutions Corporation and TriZetto Provider Solutions, LLC, Data Security Breach Litigation","court":"E.D. Mo.","judge":"Ross","jpml_transfer_date":"2026-06-05","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_SIDE","rule_vocabulary":"16","report_channel":"DOCKET","days_transfer_to_conference":"21","a_conference_date":"2026-06-26","b1_report_ordered":"YES","b3b_mechanism":"NONE. No census, no plaintiff fact sheet, no defendant fact sheet, no exchange mechanism of any kind appears in the order. Notable against MDL 3163 (court-initiated census) and MDL 3171 (defendant-side census) - this is ","b4_tplf_disclosure":"NOT_ADDRESSED","beyond_common_benefit_fees":"NOT_ADDRESSED","courtlistener_url":"https://www.courtlistener.com/docket/73454806/","source_doc_type":"Order Setting Initial Conference (June 11, 2026), ECF 6 - obtained via duplicate RECAP record 482432333 (seed pointed at textless 467174925)","party_invoked_rule":"NOT_CHECKED"},{"mdl_no":"3187","caption":"In re Nitrogen, Phosphorus, and Potassium (NPK) Fertilizer Antitrust Litigation","court":"D. Kan.","judge":"Melgren","jpml_transfer_date":"2026-06-09","source_status":"NEEDS_PACER_PULL","cites_rule":"UNCLEAR","rule_role":"UNCLEAR","report_form":"UNCLEAR","rule_vocabulary":"","report_channel":"","days_transfer_to_conference":"","a_conference_date":"","b1_report_ordered":"PENDING","b3b_mechanism":"","b4_tplf_disclosure":"PENDING","beyond_common_benefit_fees":"PENDING","courtlistener_url":"https://www.courtlistener.com/docket/73492845/","source_doc_type":"Master docket 6:26-md-03187 (D. Kan.), CL docket 73492845. FULLY ENUMERATED 2026-08-11 - FOUR TRANSFEREE-COURT ORDERS EXIST AND NONE IS AVAILABLE IN RECAP. ECF 1 Order + Schedule A (JPML transfer); EC","party_invoked_rule":"NOT_CHECKED"}], INV=[{"invocation_id":"INV-001","mdl_no":"3162","case_name":"In re Class Action Settlement Administration Litigation","court":"D.D.C.","judge":"Bates","doc_title":"JOINT INITIAL MANAGEMENT REPORT","ecf":"73","date_filed":"2026-03-06","pages":"49","filer":"All plaintiffs and all defendants","joint_or_unilateral":"JOINT","doc_kind":"16.1(b)(1) REPORT","cites_rule_16_1":"UNCLEAR","cites_committee_note":"NOT_CHECKED","cites_mcl":"YES","on_public_docket":"YES"},{"invocation_id":"INV-002","mdl_no":"3170","case_name":"In re Trans Union, LLC, Customer Data Security Breach Litigation","court":"N.D. Ill.","judge":"Gettleman","doc_title":"FED. R. CIV. P. 16.1 REPORT","ecf":"33","date_filed":"2026-01-05","pages":"13","filer":"Snelgrove Plaintiffs (Cole & Van Note)","joint_or_unilateral":"UNILATERAL","doc_kind":"16.1(b)(1) REPORT","cites_rule_16_1":"YES","cites_committee_note":"YES","cites_mcl":"YES","on_public_docket":"YES"},{"invocation_id":"INV-003","mdl_no":"NON-MDL","case_name":"In re FedEx Tariff Litigation","court":"W.D. Tenn.","judge":"Parker","doc_title":"Response in Opposition to Motions to Appoint Interim Lead Counsel","ecf":"32","date_filed":"2026-06-29","pages":"11","filer":"Plaintiffs Cycle Limited LLC and Nicholas R. Metcalf (DiRuzzo)","joint_or_unilateral":"UNILATERAL","doc_kind":"LEADERSHIP BRIEF - NON-MDL","cites_rule_16_1":"YES","cites_committee_note":"YES","cites_mcl":"YES","on_public_docket":"YES"},{"invocation_id":"INV-004","mdl_no":"3175","case_name":"In re Shell Eggs Antitrust Litigation","court":"W.D. Wis.","judge":"Peterson","doc_title":"Defendants' Statement Regarding the Consolidation of Cases","ecf":"94 (and replicated across member cases)","date_filed":"2026-05-06","pages":"4","filer":"Defendants (Laytin, Kirkland)","joint_or_unilateral":"UNILATERAL","doc_kind":"PARTY STATEMENT","cites_rule_16_1":"YES","cites_committee_note":"NOT_ADDRESSED","cites_mcl":"NOT_ADDRESSED","on_public_docket":"YES"},{"invocation_id":"INV-005","mdl_no":"3175","case_name":"In re Shell Eggs Antitrust Litigation","court":"W.D. Wis.","judge":"Peterson","doc_title":"Order Establishing Leadership Structure","ecf":"154 (master docket)","date_filed":"2026-06-08","pages":"6","filer":"COURT","joint_or_unilateral":"N/A","doc_kind":"16.1(c)-ANALOGUE ORDER","cites_rule_16_1":"YES","cites_committee_note":"NO","cites_mcl":"NOT_ADDRESSED","on_public_docket":"YES"}];
-const MAXD=200;
+const DATA=[{"mdl_no":"3162","caption":"In re Class Action Settlement Administration","court":"D.D.C.","judge":"Bates","jpml_transfer_date":"2025-12-12","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"AGENDA","report_form":"JOINT","days_transfer_to_conference":"105","a_conference_date":"2026-03-27","courtlistener_url":"https://www.courtlistener.com/docket/72028506/8/class-action-settlement-administration-litigation-mdl-no-3162/"},{"mdl_no":"3163","caption":"In re Glucagon-like Peptide-1 Receptor Agonists (GLP-1 RAs) Non-Arteritic Anterior Ischemic Optic Neuropathy Products Liability Litigation","court":"E.D. Pa.","judge":"Marston","jpml_transfer_date":"2025-12-15","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_PARTY_GROUP","days_transfer_to_conference":"29","a_conference_date":"2026-01-13","courtlistener_url":"https://www.courtlistener.com/docket/72052106/"},{"mdl_no":"3166","caption":"In re Roblox Child Sexual Exploitation Litigation","court":"N.D. Cal.","judge":"Seeborg","jpml_transfer_date":"2025-12-12","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_SIDE","days_transfer_to_conference":"49","a_conference_date":"2026-01-30","courtlistener_url":"https://www.courtlistener.com/docket/72030009/"},{"mdl_no":"3167","caption":"In re Broiler Chicken Grower Antitrust Litigation (No. III)","court":"D. Utah","judge":"Shelby (PTO 1); Barlow (PTO 2 onward, reassigned 2026-02-10)","jpml_transfer_date":"2025-12-16","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"INCORPORATION","report_form":"JOINT","days_transfer_to_conference":"65","a_conference_date":"2026-02-19","courtlistener_url":"https://www.courtlistener.com/docket/72043662/"},{"mdl_no":"3170","caption":"In re Trans Union, LLC, Customer Data Security Breach Litigation","court":"N.D. Ill.","judge":"Gettleman","jpml_transfer_date":"2025-12-16","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"TRANSCRIPTION","report_form":"JOINT","days_transfer_to_conference":"42","a_conference_date":"2026-01-27","courtlistener_url":"https://www.courtlistener.com/docket/71221176/"},{"mdl_no":"3171","caption":"In re Lyft Passenger Sexual Assault Litigation","court":"N.D. Cal.","judge":"Lin","jpml_transfer_date":"2026-02-05","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"RESIDUAL","report_form":"SEPARATE_BY_SIDE","days_transfer_to_conference":"48","a_conference_date":"2026-03-25","courtlistener_url":"https://www.courtlistener.com/docket/72240870/2/in-re-lyft-inc-passenger-sexual-assault-litigation/"},{"mdl_no":"3172","caption":"In re Cartiva Synthetic Cartilage Implant Products Liability Litigation","court":"E.D. Ark.","judge":"Baker","jpml_transfer_date":"2026-02-09","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_SIDE","days_transfer_to_conference":"198","a_conference_date":"2026-08-26","courtlistener_url":"https://www.courtlistener.com/docket/72249116/"},{"mdl_no":"3174","caption":"In re Air Crash at Muan International Airport","court":"W.D. Wash.","judge":"Robart","jpml_transfer_date":"2026-02-05","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"TRANSCRIPTION","report_form":"JOINT","days_transfer_to_conference":"126","a_conference_date":"2026-06-11","courtlistener_url":"https://www.courtlistener.com/docket/72239188/4/in-re-air-crash-at-muan-international-airport-south-korea-on-december-29/"},{"mdl_no":"3175","caption":"In re Shell Eggs Antitrust Litigation","court":"W.D. Wis.","judge":"Peterson","jpml_transfer_date":"2026-02-13","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"INCORPORATION","report_form":"JOINT","days_transfer_to_conference":"84","a_conference_date":"2026-05-08","courtlistener_url":"https://www.courtlistener.com/docket/72280418/6/in-re-shell-eggs-antitrust-litigation/"},{"mdl_no":"3176","caption":"In re Rare Breed Triggers Patent Litigation","court":"E.D. Tex.","judge":"Mazzant","jpml_transfer_date":"2026-04-02","source_status":"NO_ORDER_YET","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"NOT_ADDRESSED","days_transfer_to_conference":"","a_conference_date":"","courtlistener_url":"https://www.courtlistener.com/docket/73170267/"},{"mdl_no":"3178","caption":"In re ByHeart, Inc., Infant Formula Marketing, Sales Practices, and Products Liability Litigation","court":"S.D.N.Y.","judge":"Subramanian","jpml_transfer_date":"2026-04-02","source_status":"TEXT_ORDER_ON_DOCKET","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"JOINT","days_transfer_to_conference":"","a_conference_date":"","courtlistener_url":"https://www.courtlistener.com/docket/73156009/"},{"mdl_no":"3179","caption":"In re Fire Apparatus Antitrust Litigation","court":"E.D. Wis.","judge":"Griesbach","jpml_transfer_date":"2026-04-06","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"CONDITIONAL_ON_DISAGREEMENT","days_transfer_to_conference":"","a_conference_date":"","courtlistener_url":"https://www.courtlistener.com/docket/73150899/"},{"mdl_no":"3180","caption":"In re Dupixent (Dupilumab) Products Liability Litigation","court":"D.N.J.","judge":"Quraishi","jpml_transfer_date":"2026-06-04","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"AGENDA","report_form":"JOINT","days_transfer_to_conference":"119","a_conference_date":"2026-10-01","courtlistener_url":"https://www.courtlistener.com/docket/73443394/"},{"mdl_no":"3181","caption":"In re Boston Scientific Corporation Spinal Cord Stimulator Products Liability Litigation","court":"C.D. Cal.","judge":"Staton","jpml_transfer_date":"2026-06-05","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"JOINT_DEFENDANT_PREPARED","days_transfer_to_conference":"61","a_conference_date":"2026-08-05","courtlistener_url":"https://www.courtlistener.com/docket/73502651/"},{"mdl_no":"3185","caption":"In re Cognizant Technology Solutions Corporation and TriZetto Provider Solutions, LLC, Data Security Breach Litigation","court":"E.D. Mo.","judge":"Ross","jpml_transfer_date":"2026-06-05","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_SIDE","days_transfer_to_conference":"21","a_conference_date":"2026-06-26","courtlistener_url":"https://www.courtlistener.com/docket/73454806/"},{"mdl_no":"3187","caption":"In re Nitrogen, Phosphorus, and Potassium (NPK) Fertilizer Antitrust Litigation","court":"D. Kan.","judge":"Melgren","jpml_transfer_date":"2026-06-09","source_status":"NEEDS_PACER_PULL","cites_rule":"UNCLEAR","rule_role":"UNCLEAR","report_form":"UNCLEAR","days_transfer_to_conference":"","a_conference_date":"","courtlistener_url":"https://www.courtlistener.com/docket/73492845/"}], INV=[{"invocation_id":"INV-001","mdl_no":"3162","case_name":"In re Class Action Settlement Administration Litigation","doc_title":"JOINT INITIAL MANAGEMENT REPORT","ecf":"73","date_filed":"2026-03-06","pages":"49","joint_or_unilateral":"JOINT","doc_kind":"16.1(b)(1) REPORT","cites_rule_16_1":"UNCLEAR","cites_committee_note":"NOT_CHECKED"},{"invocation_id":"INV-002","mdl_no":"3170","case_name":"In re Trans Union, LLC, Customer Data Security Breach Litigation","doc_title":"FED. R. CIV. P. 16.1 REPORT","ecf":"33","date_filed":"2026-01-05","pages":"13","joint_or_unilateral":"UNILATERAL","doc_kind":"16.1(b)(1) REPORT","cites_rule_16_1":"YES","cites_committee_note":"YES"},{"invocation_id":"INV-003","mdl_no":"NON-MDL","case_name":"In re FedEx Tariff Litigation","doc_title":"Response in Opposition to Motions to Appoint Interim Lead Counsel","ecf":"32","date_filed":"2026-06-29","pages":"11","joint_or_unilateral":"UNILATERAL","doc_kind":"LEADERSHIP BRIEF - NON-MDL","cites_rule_16_1":"YES","cites_committee_note":"YES"},{"invocation_id":"INV-004","mdl_no":"3175","case_name":"In re Shell Eggs Antitrust Litigation","doc_title":"Defendants' Statement Regarding the Consolidation of Cases","ecf":"94 (and replicated across member cases)","date_filed":"2026-05-06","pages":"4","joint_or_unilateral":"UNILATERAL","doc_kind":"PARTY STATEMENT","cites_rule_16_1":"YES","cites_committee_note":"NOT_ADDRESSED"},{"invocation_id":"INV-005","mdl_no":"3175","case_name":"In re Shell Eggs Antitrust Litigation","doc_title":"Order Establishing Leadership Structure","ecf":"154 (master docket)","date_filed":"2026-06-08","pages":"6","joint_or_unilateral":"N/A","doc_kind":"16.1(c)-ANALOGUE ORDER","cites_rule_16_1":"YES","cites_committee_note":"NO"}];
 const cited=r=>r.cites_rule==='YES';
 
 /* ---- headline figures, computed from DATA so the page cannot drift from the CSV ---- */
@@ -433,44 +520,90 @@ const W=(n)=>['zero','one','two','three','four','five','six','seven','eight','ni
   S('t-blk',blocked.length);
   S('t-blk-s',`${blocked.length} of ${univ}. See limitations.`);
   S('pct-inline',pct+'%');
+  S('n-intervals',iv.length);
+  /* Months since the Rule took effect. Computed live so the page does not claim to be
+     "eight months in" a year from now; build.py writes the same value for readers
+     without JS. */
+  {
+    const eff=new Date(2025,11,1), now=new Date();
+    let mo=(now.getFullYear()-eff.getFullYear())*12+(now.getMonth()-eff.getMonth());
+    if(now.getDate()<eff.getDate())mo--;
+    S('age-months',mo); S('age-months2',mo);
+  }
   S('chart-n',`n = ${iv.length} of the ${coded.length} coded orders. `+
     coded.filter(r=>!r.days_transfer_to_conference).map(r=>'MDL '+r.mdl_no).join(' and ')+
     ` set no conference date in the order. No interval is recorded for them, and they are `+
     `excluded here rather than counted as zero.`);
 }
 
-/* ---- bar chart: one row per MDL with a recorded interval, colour by cites_rule ---- */
-const CODED=['TEXT_AVAILABLE','TEXT_ORDER_ON_DOCKET'];
-const bars=DATA.filter(r=>r.days_transfer_to_conference&&CODED.includes(r.source_status))
+/* ---- bar chart: one row per MDL with a recorded interval, colour by cites_rule ----
+   The axis maximum is derived from the data and rounded up to the next 50 days, so a
+   longer interval than any seen so far extends the axis instead of overflowing the track. */
+const bars=DATA.filter(r=>r.days_transfer_to_conference&&CODED_ST.includes(r.source_status))
   .map(r=>({...r,d:+r.days_transfer_to_conference})).sort((a,b)=>a.d-b.d);
+const MAXD=Math.max(50,Math.ceil(Math.max(...bars.map(r=>r.d))/50)*50);
 document.getElementById('bars').innerHTML=bars.map(r=>{
-  const w=Math.max(1.5,r.d/MAXD*100);
+  const w=Math.max(1.5,Math.min(100,r.d/MAXD*100));
   const c=cited(r)?'var(--series-1)':'var(--series-2)';
-  return `<div class="bar-row" data-m="${r.mdl_no}">
+  const lbl=`MDL ${r.mdl_no}, Judge ${r.judge.split(' (')[0].split(';')[0]}, ${r.d} days from `+
+            `transfer to the initial conference; the order `+
+            (cited(r)?'cites Rule 16.1':'never mentions Rule 16.1');
+  return `<div class="bar-row" data-m="${r.mdl_no}" tabindex="0" role="listitem" aria-label="${lbl}">
     <span class="bar-lbl">${r.mdl_no} · ${r.judge.split(' (')[0]}</span>
     <span class="bar-track"><span class="bar" style="width:${w}%;background:${c}"></span></span>
     <span class="bar-val">${r.d}</span></div>`;
 }).join('');
+document.getElementById('bars').setAttribute('role','list');
+/* axis ticks follow MAXD rather than a hard-coded 200 */
+{
+  const ax=document.querySelector('.axis-in');
+  if(ax)ax.innerHTML=[0,.25,.5,.75,1].map((f,i)=>
+    `<span>${Math.round(MAXD*f)}${i===4?' days':''}</span>`).join('');
+}
 
-/* ---- hover layer ---- */
-const tip=document.getElementById('tip');
-document.getElementById('bars').addEventListener('mousemove',e=>{
-  const row=e.target.closest('.bar-row'); if(!row){tip.style.opacity=0;return;}
-  const r=DATA.find(x=>x.mdl_no===row.dataset.m);
-  tip.innerHTML=`<strong>MDL ${r.mdl_no}</strong> · ${r.judge}<br>${r.caption}<br>
-    <span style="color:var(--text-secondary)">${r.days_transfer_to_conference} days · conference
-    ${r.a_conference_date} · ${cited(r)?'cites Rule 16.1':'never mentions the Rule'}</span>`;
+/* ---- detail layer: pointer, touch and keyboard all reach the same content ----
+   Every bar is focusable and carries an aria-label, so the numbers are available to a
+   screen reader and to keyboard users even where the floating panel never appears. */
+const tip=document.getElementById('tip'), barsEl=document.getElementById('bars');
+const tipHTML=r=>`<strong>MDL ${r.mdl_no}</strong> · ${r.judge}<br>${r.caption}<br>
+  <span style="color:var(--text-secondary)">${r.days_transfer_to_conference} days · conference
+  ${r.a_conference_date} · ${cited(r)?'cites Rule 16.1':'never mentions the Rule'}</span>`;
+const hideTip=()=>{tip.style.opacity=0;};
+const showTip=(row,x,y)=>{
+  const r=DATA.find(v=>v.mdl_no===row.dataset.m); if(!r)return;
+  tip.innerHTML=tipHTML(r);
   tip.style.opacity=1;
-  tip.style.left=Math.min(e.clientX+14,innerWidth-296)+'px';
-  tip.style.top=(e.clientY+16)+'px';
+  tip.style.left=Math.max(8,Math.min(x+14,innerWidth-296))+'px';
+  tip.style.top=Math.min(y+16,innerHeight-110)+'px';
+};
+barsEl.addEventListener('mousemove',e=>{
+  const row=e.target.closest('.bar-row');
+  row?showTip(row,e.clientX,e.clientY):hideTip();
 });
-document.getElementById('bars').addEventListener('mouseleave',()=>tip.style.opacity=0);
+barsEl.addEventListener('mouseleave',hideTip);
+barsEl.addEventListener('focusin',e=>{
+  const row=e.target.closest('.bar-row'); if(!row)return;
+  const b=row.getBoundingClientRect(); showTip(row,b.left,b.bottom-8);
+});
+barsEl.addEventListener('focusout',hideTip);
+barsEl.addEventListener('click',e=>{
+  const row=e.target.closest('.bar-row'); if(!row)return;
+  const b=row.getBoundingClientRect(); showTip(row,b.left,b.bottom-8);
+});
+addEventListener('keydown',e=>{if(e.key==='Escape')hideTip();});
 
 /* ---- table ---- */
+/* UNCLEAR means the document is ambiguous and the language was quoted rather than
+   resolved. It is NOT the same as "not read" - conflating the two would misreport the
+   coding conventions this page states. Rows that could not be read carry that fact in
+   source_status instead. */
 const tag=(v)=>{
   if(v==='YES')return '<span class="tag yes">YES</span>';
+  if(v==='NO')return '<span class="tag no">no</span>';
   if(v==='NOT_ADDRESSED')return '<span class="tag no">not addressed</span>';
-  if(v==='UNCLEAR')return '<span class="tag blk">unread</span>';
+  if(v==='UNCLEAR')return '<span class="tag unc" title="Ambiguous on the face of the document; the language is quoted in the pin cite rather than resolved">unclear</span>';
+  if(v==='NOT_CHECKED')return '<span class="tag no" title="This variable has not been examined for this row">not checked</span>';
+  if(v==='PENDING')return '<span class="tag no" title="The document that would answer this has not issued yet">pending</span>';
   return `<span class="tag no">${(v||'n/a').toLowerCase().replace(/_/g,' ')}</span>`;
 };
 const stat=(v)=>{
@@ -493,28 +626,55 @@ function draw(rows){
     <td>${stat(r.source_status)}</td></tr>`).join('');
 }
 draw(DATA);
+
+/* Sorting. The comparator is decided once per column, not per pair: mixing numeric and
+   string comparison inside the callback is not a consistent ordering, and four rows have
+   a blank "Days". Blanks always sort last, in both directions, so a reader never has to
+   scroll past four empty cells to reach the data. */
 let sk='mdl_no',sd=1;
-document.querySelectorAll('#t th').forEach(th=>th.onclick=()=>{
-  const k=th.dataset.k; sd = (k===sk)? -sd : 1; sk=k;
-  draw([...DATA].sort((a,b)=>{
-    const x=a[k]||'',y=b[k]||'';
-    const nx=parseFloat(x),ny=parseFloat(y);
-    if(!isNaN(nx)&&!isNaN(ny))return (nx-ny)*sd;
-    return String(x).localeCompare(String(y))*sd;
-  }));
+const THS=[...document.querySelectorAll('#t th')];
+function sortBy(k,dir){
+  const vals=DATA.map(r=>r[k]).filter(v=>v!=='' && v!=null);
+  const numeric=vals.length>0 && vals.every(v=>v!=='' && !isNaN(Number(v)));
+  const cmp=(a,b)=>{
+    const x=a[k],y=b[k];
+    const bx=(x===''||x==null), by=(y===''||y==null);
+    if(bx||by)return bx&&by?0:(bx?1:-1);          /* blanks last, regardless of dir */
+    return (numeric? Number(x)-Number(y) : String(x).localeCompare(String(y)))*dir;
+  };
+  draw([...DATA].sort(cmp));
+  THS.forEach(th=>{
+    if(th.dataset.k===k){th.setAttribute('aria-sort',dir===1?'ascending':'descending');
+                         th.querySelector('.ar').textContent=dir===1?'↑':'↓';}
+    else{th.removeAttribute('aria-sort'); th.querySelector('.ar').textContent='↕';}
+  });
+}
+THS.forEach(th=>{
+  th.tabIndex=0; th.setAttribute('role','columnheader');
+  const go=()=>{const k=th.dataset.k; sd=(k===sk)?-sd:1; sk=k; sortBy(k,sd);};
+  th.addEventListener('click',go);
+  th.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}
+  });
 });
 document.getElementById('ib').innerHTML=INV.map(r=>`<tr>
   <td class="n">${r.invocation_id}</td><td class="n">${r.mdl_no}</td>
   <td>${r.case_name}</td><td>${r.doc_title}${r.ecf?` <span style="color:var(--muted)">ECF ${r.ecf}</span>`:''}</td>
   <td class="n">${r.date_filed}</td><td class="n">${r.pages}</td>
   <td class="n">${r.joint_or_unilateral.toLowerCase()}</td>
-  <td class="n">${r.doc_kind}</td><td>${tag(r.cites_committee_note)}</td></tr>`).join('');
+  <td class="n">${r.doc_kind}</td>
+  <td>${tag(r.cites_rule_16_1)}</td><td>${tag(r.cites_committee_note)}</td></tr>`).join('');
 
-/* ---- theme toggle ---- */
+/* ---- theme toggle, remembered across visits ---- */
+const THEME_KEY='r161-theme';
+try{const saved=localStorage.getItem(THEME_KEY);
+    if(saved)document.documentElement.setAttribute('data-theme',saved);}catch(e){}
 document.getElementById('tt').onclick=()=>{
   const cur=document.documentElement.getAttribute('data-theme');
   const dark=cur? cur==='dark' : matchMedia('(prefers-color-scheme:dark)').matches;
-  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  const next=dark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  try{localStorage.setItem(THEME_KEY,next);}catch(e){}
 };
 </script>
 </body></html>
