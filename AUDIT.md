@@ -1398,3 +1398,83 @@ first order reached for it later. These are courts that cited it and kept citing
 That distinction now has four instances behind it and is worth a finding once the remaining
 post-effective-date hits are separated into first orders, later orders and party filings. That
 separation is the open analytic gap and it is in the weekly task.
+
+---
+
+## 13 August 2026 — MDL 3187 unblocked, coded, and it moves every headline number
+
+The last blocked MDL is no longer blocked. **Coverage is now 15 of 16, and every order that
+exists has been read.** The sixteenth, MDL 3176, has issued no qualifying order at all.
+
+### How it was obtained, and why that matters for the record
+
+The full public-source ladder was re-run first and every rung failed: RECAP holds no document
+for any of the six orders; CourtListener's opinion database does not have it, confirmed
+indirectly through Legal Data Hunter, whose US federal coverage is CourtListener-derived;
+ksd.uscourts.gov returns 404 for the MDL page and for the court's MDL index; Justia and
+PACERMonitor carry case metadata and route the docket sheet back to PACER; govinfo's USCOURTS
+collection carries opinions, not management orders. CourtListener's `recap-fetch` endpoint,
+the one programmatic route to PACER, requires `pacer_username` and `pacer_password`.
+
+The order came from Bloomberg Law, in the user's own authenticated browser session, opened in
+the document viewer rather than downloaded. Text extracted from the viewer and stored at
+`sources/mdl3187-doc9-initial-procedure-order-no1.txt` with page breaks preserved. This is the
+second order in the dataset obtained outside RECAP, after MDL 3180.
+
+### The order
+
+**INITIAL PROCEDURE ORDER NO. 1**, ECF 9, 15 July 2026, ten pages, Melgren, J. The same title
+Judge Bates used in MDL 3162, which is worth noting given how much of this dataset is courts
+borrowing each other's forms.
+
+**All twenty subjects reached, all twenty express, seven resolved.** Seven is the joint highest
+in the dataset. ¶ 4 makes "[t]he items listed in Federal Rule of Civil Procedure 16.1" a
+tentative agenda **alongside** five sections of the Manual for Complex Litigation, Fourth, and
+¶ 6 then re-states every topic in the court's own words as required content of a mandatory
+joint report. This is the first order to put the Rule and the Manual side by side as co-equal
+agenda sources rather than choosing between them, which cuts against the reading that
+non-citing courts use the Manual *instead* of the Rule.
+
+Resolutions, each under a sealed pass-1 rule: `b2a_selection_procedure` (¶ 6(a)(viii) imposes
+an application procedure rather than asking about one), `b2b_vacate_modify` (¶ 14),
+`b2d_direct_filing` (¶¶ 1 and 20), `b3b_factual_basis_exchange` (R1, on the MDL 3162 facts
+exactly), `b3c_discovery` (R1), `b3d_pretrial_motions` (R2, via the ¶ 12 stay of "answer or
+otherwise respond"), and `b3g_principal_issues` (¶ 7).
+
+### Three findings this order adds
+
+**The report goes to chambers by email.** ¶ 6 directs it to two chambers addresses; ¶ 7 says
+the issue statements "will not be filed with the Clerk." Third instance of the invisible-report
+problem and the most complete: neither the report nor the issue summaries will leave a docket
+trace. The limitation on the page moves from 2 of 14 courts to 3 of 15.
+
+**Paragraph 15 does not exist.** The order runs 14 then 16. Verified by regex over the
+extracted text. Second numbering gap in the dataset after MDL 3180's missing ¶ 9, and unlike
+that one there is no obvious donor provision to point at.
+
+**¶ 6(m) is unique.** It directs the parties to state whether there are ongoing **criminal**
+investigations or proceedings related to the allegations, and lets defendants answer ex parte
+and under seal. Nothing else in the dataset asks this.
+
+### What moved on the page
+
+| figure | was | now |
+|---|---:|---:|
+| Readable orders | 14 | 15 |
+| Citing | 7 of 14 | 8 of 15 |
+| Coverage | 14 of 16 | 15 of 16 |
+| Blocked | 1 | 0 |
+| Citing-order resolution rate | 16% | 19% |
+| Universal subjects | 14 of 14 | 15 of 15 |
+| Least-addressed | 7 of 14 | 8 of 15 |
+| Direct filing | 11 of 14 | 12 of 15 |
+| Chambers-routed reports | 2 of 14 | 3 of 15 |
+| Third-party funding | 0 of 14 | 0 of 15 |
+
+Eleven of those were caught by `build.py`'s prose guards rather than by anyone remembering to
+look, which is the first time the guard set has had to carry a change this wide. The
+non-citing figures did not move, as expected: 3187 cites.
+
+**The headline finding is unchanged in direction and slightly stronger.** Citing orders raise
+more subjects and settle fewer of them; the gap narrows from 16-versus-28 to 19-versus-28
+because 3187 resolves seven. One order does not overturn the inversion.
