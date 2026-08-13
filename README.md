@@ -104,9 +104,17 @@ so the objection is now editorial rather than evidentiary.
 | No qualifying order yet *(a finding, not a gap)* | **1** — 3176 |
 | Blocked, orders confirmed to exist, no public copy found | **1** — 3187 |
 | Block rate | **6%** — 1 of 16 whose existing order could not be read *(published definition; `AUDIT.md` C1 resolved)* |
+| Subject-level coding, pass 1 | **280 of 280 cells**, 14 orders x 20 subjects x 4 booleans |
 
 **HEADLINE: 7 of 14 MDLs with a readable initial order cite Fed. R. Civ. P. 16.1.
-Seven never mention it.** The first three rows coded said 3/3 — because they came
+Seven never mention it.**
+
+**SECOND HEADLINE, from the subject layer:** citing orders raise more subjects and
+decide fewer of them, **16%** of subject-order cells resolved against **28%** for orders
+that never mention the Rule. And the strongest single result, that no non-citing order
+raises periodic review of leadership appointments, **holds on inclusive coverage
+(p = 0.0006) and fails on express coverage (p = 0.07)**. See "SIXTH PASS" at the end.
+Every coverage figure has to say which measure it uses. The first three rows coded said 3/3 — because they came
 from a full-text search, which can only find documents that use the phrase. See
 "SECOND PASS" below; that selection-bias result is the most citable thing here.
 
@@ -974,40 +982,57 @@ the JPML universe and reading every docket moved it to 50%.
 
 ## Cross-cutting counts, n = 14 orders
 
-**The rule's own topics** — how often the initial order addresses each:
+**The rule's own topics.** Three measures now, not one. `reached` counts every order
+that puts the subject in play, including by a clause incorporating Rule 16.1(b) wholesale.
+`express` counts only orders that name it in their own words. `resolved` counts orders that
+settle some part of it, such that the parties cannot change it through their report.
 
-| 16.1 topic | Column | n |
-|---|---|---|
-| Leadership counsel (umbrella) | `b2a_leadership` | **14/14** |
-| Discovery (b)(3)(C) | `b3c_discovery` | 12/14 |
-| Additional conferences (b)(2)(C) | `b2c_conference_schedule` | 12/14 |
-| Principal issues (b)(3)(G) | `b3g_principal_issues` | 12/14 |
-| Related actions (b)(2)(E) | `b2e_related_actions` | 11/14 |
-| Consolidated pleadings (b)(3)(A) | `b3a_consolidated_pleadings` | 11/14 |
-| Pretrial motions (b)(3)(D) | `b3d_pretrial_motions` | 11/14 |
-| Vacate/modify prior orders (b)(2)(B) | `b2b_vacate_modify` | 10/14 |
-| Magistrate or master (b)(3)(F) | `b3f_magistrate_master` | 9/14 |
-| Factual-basis exchange (b)(3)(B) | `b3b_factual_basis_exchange` | 8/14 |
-| **Direct filing (b)(2)(D)** | `b2d_direct_filing` | **6/14** |
-| **Facilitating resolution (b)(3)(E)** | `b3e_settlement_facilitation` | **6/14** |
+| 16.1 topic | Column | reached | express | resolved |
+|---|---|---|---|---|
+| **Leadership counsel (umbrella)** | `b2a_leadership` | **14/14** | 14/14 | 6/14 |
+| Principal issues (b)(3)(G) | `b3g_principal_issues` | 13/14 | 12/14 | 0/14 |
+| Pretrial motions (b)(3)(D) | `b3d_pretrial_motions` | 13/14 | 11/14 | 9/14 |
+| Discovery (b)(3)(C) | `b3c_discovery` | 12/14 | 10/14 | 8/14 |
+| Additional conferences (b)(2)(C) | `b2c_conference_schedule` | 11/14 | 8/14 | 0/14 |
+| Related actions (b)(2)(E) | `b2e_related_actions` | 11/14 | 10/14 | 4/14 |
+| Consolidated pleadings (b)(3)(A) | `b3a_consolidated_pleadings` | 11/14 | 9/14 | 0/14 |
+| Vacate/modify prior orders (b)(2)(B) | `b2b_vacate_modify` | 11/14 | 9/14 | 7/14 |
+| Direct filing (b)(2)(D) | `b2d_direct_filing` | 11/14 | 10/14 | 9/14 |
+| Magistrate or master (b)(3)(F) | `b3f_magistrate_master` | 9/14 | 7/14 | 0/14 |
+| Factual-basis exchange (b)(3)(B) | `b3b_factual_basis_exchange` | 9/14 | 7/14 | 2/14 |
+| **Facilitating resolution (b)(3)(E)** | `b3e_settlement_facilitation` | **7/14** | 5/14 | 1/14 |
 
-Leadership is universal — every single order addresses it, including the seven
-that never name the rule. The two least-addressed topics are direct filing and
-settlement facilitation, at 6 of 14 each.
+**Two** topics are universal, not one: whether leadership counsel should be appointed,
+and the procedure for selecting them, both 14 of 14 including the seven orders that never
+name the rule. The least-addressed are periodic review of leadership appointments and
+measures to facilitate resolution, 7 of 14 each.
+
+Direct filing used to sit in that bottom pair at 6 of 14. It is 11 of 14. The subject-level
+read found what the order-level pass missed: orders manage direct filing through clauses
+consolidating later-filed actions automatically, without ever naming it. Nine of the fourteen
+go further and settle it, which ties it with pretrial motions as the most-decided subject in
+the set.
+
+The `resolved` column is where the interesting asymmetry lives. Four topics are addressed
+constantly and decided never: principal issues, additional conferences, consolidated
+pleadings, and referral to a magistrate or master are 0 of 14 despite being reached 9 to 13
+times each. Courts ask about them and leave them open. What courts actually decide at this
+stage is housekeeping: direct filing, pretrial motion timing, discovery stays, and the fate
+of transferor-court orders.
 
 **The leadership sub-items** — this is where the rule is most detailed and courts
 are least uniform:
 
-| 16.1(b)(2)(A) sub-item | n |
-|---|---|
-| Structure (ii) | 13/14 |
-| Timing (i) | 12/14 |
-| Selection procedure (iii) | 12/14 |
-| Responsibilities (iv) | 10/14 |
-| **Compensation (vii)** | **9/14** |
-| Communication with nonleadership (v) | 7/14 |
-| Limits on nonleadership (vi) | 6/14 |
-| **Periodic review (iii)** | **5/14** |
+| 16.1(b)(2)(A) sub-item | reached | express | resolved |
+|---|---|---|---|
+| **Selection procedure (iii)** | **14/14** | 12/14 | 6/14 |
+| Structure (ii) | 13/14 | 12/14 | 0/14 |
+| Timing (i) | 11/14 | 9/14 | 5/14 |
+| Responsibilities (iv) | 11/14 | 9/14 | 3/14 |
+| Compensation (vii) | 10/14 | 8/14 | 1/14 |
+| Communication with nonleadership (v) | 9/14 | 6/14 | 1/14 |
+| **Limits on nonleadership (vi)** | **8/14** | 5/14 | 0/14 |
+| **Periodic review (iii)** | **7/14** | 4/14 | 0/14 |
 
 **The contested and the null:**
 
@@ -1441,7 +1466,9 @@ The obvious approach — drop the date filter and see what turns up in old MDLs 
 is exactly the approach that breaks. The right method inverts it, and it is now
 written into `PROTOCOL.md`:
 
-1. **Keep** `filed_after=2025-12-01`. An order *applying* Rule 16.1 must have been
+1. ~~**Keep** `filed_after=2025-12-01`.~~ **Corrected 13 Aug 2026: use
+   `entry_date_filed_after=2025-12-01`.** The reasoning below is right and the parameter was
+   wrong. An order *applying* Rule 16.1 must have been
    *filed* after the effective date no matter when the MDL was created.
 2. Collect every unique `docket_id` in the results.
 3. For each, ask one question: **was this MDL centralized before December 1,
@@ -1482,3 +1509,197 @@ where that is optional.
 | MDL 3179 bar-side invocation | Re-identify the May 8 filing | No, but finding 7 rests on it |
 | **Pre-effective-date question** | **~1 API call per docket, tomorrow** | **Yes — an entirely new section** |
 | Back-code `party_invoked_rule` (13 rows) | Bulk, low risk | No |
+
+---
+
+# SIXTH PASS — 2026-08-12 · THE SUBJECT LEVEL
+
+The dataset now has three layers, not two. The order layer says what each order is; the
+invocation layer says what parties filed; the **subject layer** says, for each of the Rule's
+subjects in each order, four separate things instead of one.
+
+## Why the single binary had to go
+
+Every subject column used to answer "does this order address subject X" with one yes or no.
+That binary was carrying two different questions at once:
+
+1. Did the court bring this subject within the initial management process?
+2. Did the court itself do anything with it?
+
+For most orders the answers coincide, so the defect was invisible. It became visible in
+MDLs 3167 and 3175, whose orders contain materially identical clauses requiring a report on
+"the matters included in Rule 16.1(b)." One was coded conservatively at 8 of 19, the other
+inclusively at 19 of 19. Same clause, opposite codings, and no principled way to choose,
+because the question being asked was ambiguous rather than the orders.
+
+## The four booleans
+
+| Field | Question |
+|---|---|
+| `reached` | Is the subject within what this order requires, by any route including a blanket clause? |
+| `express` | Is it named in the order's own text? |
+| `party_direction` | Does the order tell the parties to say or do something about it? |
+| `court_resolution` | Does the order itself fix the treatment of it at this stage? |
+
+Constrained by construction, and enforced by `validate_treatment.py`:
+
+```
+party_direction  ->  express  ->  reached
+court_resolution ->  express  ->  reached
+```
+
+The categories a reader sees are **not stored**. `INCORPORATED`, `IDENTIFIED`, `DIRECTED`
+and `RESOLVED` are views over the booleans. Anyone who disagrees with a boundary can rebuild
+it from the primitives without re-reading an order. **Store observations, derive
+interpretations.**
+
+## What is in the repo now
+
+| File | What it is |
+|---|---|
+| `subject-treatment.csv` | 280 rows, one per subject per order. Canonical. |
+| `subject-treatment-codebook.md` | Definitions, frozen before coding began. Reliability section amended after. |
+| `coding-decisions.md` | The eight application rules pass 1 actually used. Sealed from pass 2. |
+| `validate_treatment.py` | Enforces the constraints and the evidence requirements. |
+| `migrate_subject_columns.py` | One-shot: makes the order layer's 20 subject columns derived output. |
+
+Pass 1 is complete: **280 of 280 cells, all 14 readable orders.** Every one of the 177
+subjects coded `express` carries a pin cite, and every direction or resolution carries a
+verbatim quotation from the order. 31,902 characters of quoted order text, 70,174 characters
+of coding notes.
+
+`rule-16-1-tracker.csv`'s 20 subject columns are now derived output equal to `reached`.
+`build.py` refuses to build if the two files disagree. 27 of 280 cells changed in the
+migration; the full diff is in `AUDIT.md`.
+
+## What the fourth boolean bought
+
+**Coverage and depth run in opposite directions.**
+
+| | citing (n=7) | non-citing (n=7) |
+|---|---|---|
+| Inclusive coverage, median of 20 | 20 | 12 |
+| Express coverage, median of 20 | 19 | 12 |
+| **Share of cells resolved** | **16%** | **28%** |
+
+Orders that cite Rule 16.1 raise more subjects and settle fewer of them. The Rule's own
+posture explains it: 16.1(b) is about what the parties' report must contain, and an order
+that follows the Rule closely is an order that defers. Orders that never mention the Rule
+are freer to decide things at the outset, and do.
+
+Two extremes make the point. MDL 3174 (Robart) reproduces the Rule's list verbatim, directs
+on all twenty subjects and resolves none. MDL 3181 (Staton) never cites the Rule, convenes
+its conference under Rules 16 and 26(f), reaches fifteen subjects and resolves ten.
+
+## The finding that did not survive
+
+Periodic review of leadership appointments looked like a decisive discriminator: **7 of 7**
+citing orders reach it, **0 of 7** non-citing, Fisher exact **p = 0.0006**.
+
+On express coverage it is **4 of 7 against 0 of 7, p = 0.07**. Three of the seven citing
+orders reach it only through a blanket incorporation clause; no judge wrote a word about it.
+Once incorporation is stripped out, **no subject separates citing from non-citing orders at
+conventional significance** at this sample size.
+
+That is the result the rebuild existed to expose, and it cuts against the earlier claim. No
+coverage figure should be published without saying which measure it uses.
+
+## What is next
+
+1. **Pass 2**, the independent re-code. Read the amended reliability section first: it is
+   not intra-rater reliability and should not be reported as such.
+2. **MDL 3187**, still blocked. RECAP re-checked 12 Aug 2026, nothing available.
+3. **The pre-effective-date question**, still entirely unexplored. `PROTOCOL.md` Guardrail 10
+   defines the method and the `pre_effective_date` column is empty.
+
+---
+
+# SEVENTH PASS — 2026-08-12 · THE PRE-EFFECTIVE-DATE QUESTION
+
+`PROTOCOL.md` called this the largest unclaimed finding left: **has any court invoked
+Rule 16.1 in an MDL centralized before December 1, 2025?** Practitioner commentary is
+divided on whether the Rule reaches pending MDLs. Nobody had counted.
+
+## ~~The answer is zero~~ WITHDRAWN 13 August 2026 — the answer is not zero
+
+> **Read the correction before the section below.** The queries used
+> `filed_after=2025-12-01`, which restricts by the date the **case** was filed, not the date
+> the **document** was filed. A pre-Rule MDL is a case filed before the effective date, so
+> the filter deleted every case that could have refuted the null. The section that follows is
+> preserved as written, because the reasoning it records is where the error hid.
+>
+> **Corrected answer.** Under `entry_date_filed_after=2025-12-01`, the seven naming forms
+> return 101 documents rather than 68. *In re Change Healthcare, Inc., Customer Data Security
+> Breach Litigation*, MDL No. 3108 (D. Minn.), centralized June 2024, entered **Pretrial Order
+> No. 28 on 19 March 2026** setting a status-conference agenda "consistent with Federal Rule
+> of Civil Procedure 16.1 aimed at providing case-management guidance in MDLs." Two party
+> filings in MDL 3084 (Uber, N.D. Cal., centralized October 2023) invoke the Rule as well.
+> `INV-013` through `INV-015`. Full account in `AUDIT.md`, 13 August 2026.
+
+Both query forms, RECAP document text, `filed_after=2025-12-01` retained per Guardrail 10.
+25 hits on `"Fed. R. Civ. P. 16.1"`, 28 on `"Federal Rule of Civil Procedure 16.1"`.
+
+Every hit resolves to one of the seven post-effective-date MDLs already in the universe, to
+a member-case docket carrying the same order, or to a case that is not an MDL. **None is a
+pre-Rule MDL.**
+
+Three member-case clusters were verified individually rather than inferred from the
+sequential document IDs that suggested them: *Price v. Cal-Maine Foods* (W.D. Wis.) to
+MDL 3175, *Re v. The Boeing Co.* (W.D. Wash.) to MDL 3174, *Unified Gov't of Wyandotte
+County v. REV Group* (E.D. Wis.) to MDL 3179.
+
+**State the limits with the null.** Coverage of federal filings is incomplete and text
+layers are missing on some documents. MDL 3180's own order has no text layer and this search
+would not have found it. Only the two specified query forms were run. The claim is that every
+Rule 16.1 invocation *findable this way* since the effective date sits in a post-effective-date
+MDL or a non-MDL case, not that no other invocation exists.
+
+## Guardrail 10 was right, and every noise hit was checked
+
+19 of the 25 abbreviated-form hits are ordinary Rule 16 scheduling material. Each was
+verified by literal string search rather than assumed, in five batches. All returned zero
+occurrences of "16.1" except an E.D. Mich. filing that cites Rule 16 and E.D. Mich. Local
+Rule 16.1 correctly.
+
+## THE FINDING NOBODY WAS LOOKING FOR
+
+Four orders. One District of New Jersey magistrate judge. February to July 2026. All in
+**ordinary two-party civil cases with no JPML involvement.** Now `INV-006` to `INV-009`.
+
+| | Case | Docket | Filed |
+|---|---|---|---|
+| INV-006 | DeBartolo v. Borough of Palisades Park | 2:26-cv-01394 | 2026-02-17 |
+| INV-007 | Obuygyei v. Bonsu | 2:26-cv-01564 | 2026-04-27 |
+| INV-008 | Meisner v. First Advantage Background Services | 2:26-cv-03194 | 2026-06-24 |
+| INV-009 | Rinaldi v. N.J. Dep't of Children and Families | 2:26-cv-05694 | 2026-07-30 |
+
+Each sets an initial scheduling conference. INV-007 is captioned **"LETTER ORDER PURSUANT TO
+RULE 16.1."** Each cites, verbatim:
+
+> "See Fed. R. Civ. P. 16.1 and L. Civ. R. 16.1(a)."
+
+Rule 16.1(a) operates "[a]fter the Judicial Panel on Multidistrict Litigation transfers
+actions." None of these four involves a transfer, a consolidation, or a class: a civil rights
+removal, a Section 1983 action, a background-check case, a two-party dispute.
+
+**This is the number collision, third form.** `collect.py` first recorded it as a search
+trap. MDL 3180 showed it as a substantive phenomenon, with Judge Quraishi expressly
+displacing D.N.J. Local Civil Rule 16.1 for the federal one. Here the same district's
+scheduling-conference local rule sits correctly in the sentence and a federal companion cite
+of the same number sits beside it, in cases the federal rule does not reach.
+
+Recorded as observed. No inference about intent, and the orders are described by what they
+say.
+
+**Not generalised.** Four orders, one judge, one district, found through a search Guardrail
+10 warns is imprecise. Whether other judges in the district do the same, and whether other
+districts with same-numbered local rules show the pattern, is unexamined and is the obvious
+next query.
+
+## Why this one is worth publishing
+
+It is a concrete, checkable instance of rule numbering producing citation error in a district
+with a same-numbered local rule, which is the kind of practice datum a rules committee can
+act on. It is also a caution for anyone measuring Rule 16.1 uptake by search: four of the
+twenty-five abbreviated-form hits are genuine citations to the Rule in cases the Rule does
+not govern.

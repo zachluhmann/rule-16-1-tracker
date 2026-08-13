@@ -1,0 +1,56 @@
+PUBLISHING THE RULE 16.1 TRACKER
+
+
+STEP 1 — open a terminal in this folder, run:
+
+        python3 setup.py
+
+    It asks four things:
+      - your full name        (goes in the citation and the licence)
+      - your GitHub username
+      - repo name             (just press Enter for rule-16-1-tracker)
+      - perma link / DOI      (press Enter to skip, you don't have these yet)
+
+
+STEP 2 — run:
+
+        python3 build.py
+
+
+STEP 3 — go to github.com, click New repository, name it
+    rule-16-1-tracker, make it Public, click Create.
+
+    On the next page click "uploading an existing file".
+    Drag in EVERY file from this folder. Include .nojekyll — it looks
+    empty because it is, and GitHub needs it.
+
+    Click Commit changes.
+
+
+STEP 4 — in that repo: Settings -> Pages
+    Under "Source" choose: Deploy from a branch
+    Branch: main    Folder: / (root)    -> Save
+
+    Wait 2 minutes. Your site is live at
+        https://YOURNAME.github.io/rule-16-1-tracker/
+
+
+STEP 5 — run setup.py once more, paste that real URL when it asks.
+    Then upload the changed files again (index.html, README.md,
+    LICENSE, CITATION.cff).
+
+    Done. The tracker is public.
+
+
+---------------------------------------------------------------
+AFTER IT IS LIVE, in this order, no rush:
+
+  perma.cc  - sign in with NYU, archive your site URL and the court
+              orders. Free. This is what keeps citations working.
+
+  Harvard Dataverse - deposit the two CSVs plus PROTOCOL.md to get a
+              DOI, so the data is citable even if the site goes away.
+
+  Then start telling people.
+
+AUDIT.md lists what is currently imperfect. Worth reading once.

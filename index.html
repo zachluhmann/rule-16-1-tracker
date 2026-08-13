@@ -198,7 +198,7 @@ Every MDL centralized by the Judicial Panel since that date, with each court's i
 management order coded against the items the Rule lists.</p>
 <div class="meta">
   <span class="pill">v1.0-draft</span>
-  <span>Last updated <strong id="upd">12 August 2026</strong></span>
+  <span>Last updated <strong id="upd">13 August 2026</strong></span>
   <span>CC BY 4.0</span>
   <span>16 MDLs · 61 variables</span>
   <button class="toggle" id="tt">Dark / light</button>
@@ -252,17 +252,122 @@ count: K&amp;L Gates, above.</p>
     rule that binds the judge to nothing, that is the threshold question, and
     <span id="age-months">8</span> months in the answer is half. The subject matter is not
     being skipped: all 14 call for a report and address leadership counsel. But citing orders
-    go further, addressing a median of 19 of the 19 items tracked here against 12 for the
-    orders that do not cite it. Both groups spread widely, 8 to 19 and 4 to 13, so the medians
-    describe the centre rather than every order. 2 non-citing orders designate the
+    go further, addressing a median of <span id="f1-cm">19</span> of the 19 items tracked here
+    against <span id="f1-nm">11</span> for the orders that do not cite it. Both groups
+    spread, <span id="f1-clo">18</span> to <span id="f1-chi">19</span> and
+    <span id="f1-nlo">4</span> to <span id="f1-nhi">14</span>, so the medians describe the
+    centre rather than every order. 2 non-citing orders designate the
     <em>Manual for Complex Litigation</em> instead. The likelier reading is not that courts
     ignored Rule 16.1 but that it has not displaced the Manual.</li>
 
-  <li><strong>Leadership counsel is the only item every order addresses, 14 of 14.</strong>
-    Appointing leadership is long-standing MDL practice, not something Rule 16.1 introduced,
-    so unanimity here reads as the Rule tracking settled practice, not changing it. The
-    least-addressed items are direct filing and measures to facilitate resolution, 6 of 14
-    each.</li>
+  <li><strong>Citing orders put more subjects in play and decide fewer of them.</strong>
+    The figure above counts every item an order raises, including items swept in by a clause
+    incorporating Rule 16.1(b) wholesale. Count only what an order names in its own words and
+    the medians are <span id="f1b-cem">18</span> and <span id="f1b-nem">11</span>, and the
+    citing spread widens to <span id="f1b-celo">1</span> at the low end, because two courts
+    reach the Rule's subjects entirely by reference and name almost none of them. Count only
+    what a court actually settles, such that the parties cannot change it in their report, and
+    the ranking inverts: citing orders decide <span id="f1b-crr">16</span>% of the subjects
+    they raise, against <span id="f1b-nrr">28</span>% for orders that never mention the Rule.
+    Breadth and depth run in opposite directions, and any coverage figure has to say which one
+    it means.</li>
+
+  <li><strong>Two items are addressed by every order: whether leadership counsel should be
+    appointed and the procedure for selecting them.</strong> Both stand at
+    <span id="f2-universal">14</span> of <span id="f2-den">14</span> orders read
+    subject by subject, Appointing leadership is
+    long-standing MDL practice, not something Rule 16.1 introduced, so unanimity here reads
+    as the Rule tracking settled practice, not changing it. The least-addressed items are
+    periodic review of leadership appointments and measures to facilitate resolution,
+    <span id="f2-least">7</span> of <span id="f2-den2">14</span> each.</li>
+
+  <li><strong>Direct filing is managed far more often than it is named.</strong> An earlier
+    pass over the order-level summary counted it among the least-addressed items. Reading the
+    full texts moves it to <span id="f2b-df">11</span> of <span id="f2b-den">14</span>:
+    orders that never put direct filing on an agenda still settle it, through clauses
+    consolidating later-filed actions automatically. One court goes further and invites
+    direct filing outright, prescribing a cover-sheet notation and the filing fee.</li>
+
+  <li><strong>A court has applied Rule 16.1 to an MDL centralized before the Rule existed.</strong>
+    Practitioner commentary is divided on whether the Rule reaches MDLs centralized before
+    December 1, 2025. It does, at least in one court's hands. <em>In re Change Healthcare, Inc.,
+    Customer Data Security Breach Litigation</em>, MDL No. 3108 (D. Minn.), was centralized in
+    June 2024. Pretrial Order No. 28, entered March 19, 2026, puts eight items on a status
+    conference agenda "[p]ursuant to the Court's Pretrial Order No. 2 &hellip; and consistent with
+    Federal Rule of Civil Procedure 16.1 aimed at providing case-management guidance in MDLs."
+    Read the verbs. "Pursuant to" is spent on the court's own earlier order; the Rule gets
+    "consistent with." The court aligns itself with Rule 16.1 rather than holding that the Rule
+    governs, which is a narrower move than either side of the commentary anticipated. Parties have
+    gone further: in <em>In re Uber Technologies, Inc., Passenger Sexual Assault Litigation</em>,
+    MDL No. 3084 (N.D. Cal.), centralized in October 2023, both sides briefed a discovery dispute
+    out of the Rule 16.1 advisory committee notes in April 2026, and a January 2026 brief argued
+    that a proposed pleading restriction was "incompatible with" the Rule. Until August 13, 2026
+    this site published the opposite finding. The search that produced it could not have found
+    these orders; see the next item.</li>
+
+  <li><strong>The search that established the old null excluded, by construction, every case
+    that could have refuted it.</strong> The sweep filtered on <code>filed_after</code>, which in
+    this index restricts by the date the <em>case</em> was filed, not the date the
+    <em>document</em> was filed. A pre-Rule MDL is a case filed before the effective date, so the
+    query removed the entire population it was meant to search, returned nothing, and the nothing
+    was read as an answer. Rerun with the document-level filter, the same
+    <span id="f3a-forms">seven</span> forms return
+    <span id="f3a-hits">101</span> documents rather than
+    <span id="f3a-old">68</span>, an increase of <span id="f3a-added">33</span>. One form went
+    from zero hits to eight. All <span id="f3a-added2">33</span> additions have now been read.
+    Thirteen contain no literal "16.1" anywhere and are ordinary Rule 16 filings the index
+    returned because it does not treat 16.1 as a token distinct from 16. Seven refer only to a
+    local rule numbered 16.1. The remaining thirteen are real invocations of the federal Rule,
+    and they include the orders that overturned the null. The filter was not misused; it was the
+    wrong filter with a plausible name, and every published count that rested on it was wrong in
+    the same direction. A null needs a demonstration that the search could have returned a
+    counterexample, and this one never had it.</li>
+
+  <li><strong>Some of what a search returns is the clerk's text, not the filing's.</strong> The
+    index covers the docket entry description alongside the document's own text, which this
+    project had assumed it did not. <span id="f3a-notext">Nine</span> of the
+    <span id="f3a-hits3">101</span> results have no readable text at all, six of them filings in
+    a single bankruptcy adversary proceeding; every occurrence of the Rule's name in those sits in
+    the clerk's entry. The effect cuts both ways. It is good for coverage, because an order that
+    exists only as docket text is findable after all. It is bad for interpretation, because a hit
+    may be a clerk's summary rather than anything a party or a judge wrote, and those are
+    different kinds of evidence. The dataset now records which one each hit is.</li>
+
+  <li><strong>Counting uptake by search undercounts it, and the forms almost never overlap.</strong>
+    <span id="f3a-prod">Five</span> of the <span id="f3a-forms2">seven</span> forms returned
+    something no other form did. Across <span id="f3a-hits2">101</span> documents exactly one
+    names the Rule more than one way: the Rule 16.1 report filed in MDL 3170, whose thirteen pages
+    use both the abbreviation and the phrase "Rule 16.1 Report." It matched a third form only
+    because the clerk docketed it as "STATUS Report F.R.C.P. 16.1," a spelling that appears
+    nowhere in the filing. Every other filing
+    commits to a single form, so a search on any one of them sees a near-strict subset of the
+    whole. Two of the seven forms are not distinct queries at all, since the index normalizes
+    internal spacing but not periods inside an acronym. A study of this Rule that searched one way
+    would have found part of the record and had no way to know what it missed.</li>
+
+  <li><strong>The Rule is being cited in cases it does not govern.</strong>
+    <span id="f3b-n">Six</span> orders across
+    <span id="f3b-courts">two districts</span>, filed between
+    <span id="f3b-first">February 2026</span> and <span id="f3b-last">July 2026</span>, cite the
+    Rule in ordinary civil cases that involve no transfer, no consolidation, and no class. They
+    divide into two kinds. Four are District of New Jersey scheduling orders from one magistrate
+    judge, citing "Fed. R. Civ. P. 16.1 and L. Civ. R. 16.1(a)" as authority for an initial
+    conference; one is captioned "Letter Order Pursuant to Rule 16.1." That district has its own
+    Local Civil Rule 16.1 on scheduling conferences, cited correctly in the same sentence. The
+    other two are District of Nevada discovery orders reciting counsel's stipulation that the
+    parties made "initial and supplemental disclosures pursuant to FRCP 16.1," a proposition
+    governed by Rule 26(a)(1), about which Rule 16.1 says nothing. Rule 16.1(a) operates after the
+    Panel transfers actions. One pattern comes from a court and the other from counsel, and the
+    numbering that makes this Rule hard to search is implicated in both. A third pattern has
+    since appeared on the party side, in <span id="f3b-fc">two districts</span> more. A motion in
+    a 2021 civil case in the District of North Dakota asks for a status conference citing "Local
+    Civil Rule 16.1; Fed. R. Civ. P. 16.1(a)," then three pages later cites the same local rule
+    alongside "Fed. R. Civ. P. 16(a)(1), (2)," which is right. One brief, both versions, which is
+    the numbering collision happening inside a single document. In a Florida bankruptcy adversary
+    proceeding, a scheduling report, a motion, a response and a hearing notice are all captioned
+    under "F.R.C.P. 16.1," one of them citing "F.R.C.P. 16.1(2)(D)," a subdivision the federal
+    Rule does not have. Six court orders remains a floor rather than a count: it is what a search
+    on seven spellings of one rule name could find.</li>
 
   <li><strong>No order has addressed disclosure of third-party litigation funding, 0 of
     14.</strong> The Rule does not require the subject to be raised; (b)(4) lets the parties
@@ -278,15 +383,21 @@ count: K&amp;L Gates, above.</p>
   <li><strong>Where the Rule is applied, it appears to travel as a form order.</strong> Judge
     Quraishi's Initial Procedure Order No. 1 in the <em>Dupixent</em> MDL (D.N.J., June 2026)
     is the same form order Judge Bates entered in D.D.C. five months earlier, including 3
-    added items appearing verbatim in both and in neither the Rule nor the Committee Note. If
-    the pattern holds, what moves between districts is one judge's order, not the Rule
-    text.</li>
+    added items appearing verbatim in both and in neither the Rule nor the Committee Note.
+    The clearest evidence is a gap rather than a similarity: the D.N.J. order runs from
+    paragraph 8 to paragraph 10, with no paragraph 9. In the D.D.C. order, paragraph 9 waives
+    a local rule on class certification that has no D.N.J. counterpart. It was cut from the
+    form and the rest was never renumbered. If the pattern holds, what moves between districts
+    is one judge's order, not the Rule text.</li>
 
-  <li><strong>Uptake measured by full-text search is biased upward.</strong> The first 3 orders
-    examined here all cited the Rule, an apparent 100%. They were found by searching for the
-    phrase, and such a search returns only documents that use it; enumerating the Panel's full
-    list produced <span id="pct-inline">50%</span>. A phrase search cannot understate a rule's
-    uptake, which is a limit on the method rather than a fact about this Rule.</li>
+  <li><strong>Search biases the uptake rate upward and the invocation count downward, for
+    different reasons.</strong> The first 3 orders examined here all cited the Rule, an apparent
+    100%. They were found by searching for the phrase, and such a search returns only documents
+    that use it; enumerating the Panel's full list produced <span id="pct-inline">50%</span>.
+    Selecting cases by the phrase inflates the <em>rate</em>. But as the finding above records,
+    searching a single form of the Rule's name deflates the <em>count</em>, because the naming
+    forms are mutually exclusive. Both are limits on the method rather than facts about this
+    Rule, and they pull in opposite directions, so neither corrects the other.</li>
 
   <li><strong>Parties have already departed from the Rule's single-report structure.</strong>
     Rule 16.1(b)(1) contemplates that the parties meet and submit <em>one</em> report; the
@@ -455,8 +566,23 @@ PACER account. The full codebook is in
 were coded earliest, and 4 of the 7 citing orders sit among them, which means the citation
 count currently rests most heavily on the rows with the thinnest documentation. They are being
 back-filled.</p>
-<p class="i1"><b>Initial orders only</b>, with one exception: a later order may invoke the
-Rule where the first did not, as one already has in MDL 3175.</p>
+<p class="i1"><b>Initial orders only</b>, with a growing set of exceptions: a later order may
+invoke the Rule where the first did not, as has happened in MDL 3175 and in MDL 3163, whose
+Case Management Order No. 12 of July 2, 2026 cites Rule 16.1(b)(3)(B)'s committee note in
+support of early exchange on cross-cutting issues while its initial order never mentions the
+Rule. Those later orders are recorded in the invocation table, not in the order-level
+coding, so the citation rate on this page is a rate for <em>first</em> orders.</p>
+<p class="i1"><b>The search sweep is a floor, and was recently a badly understated one.</b>
+Full-text search reaches only what RECAP holds and only what has a text layer; the four
+docketed orders in MDL 3187, both copies of the plaintiffs' report in MDL 3175, and the
+initial order in MDL 3180 have none, so no query of any kind can return them. The MDL 3180
+order is in this dataset only because a copy was obtained outside RECAP. Until August 13,
+2026 the sweep also ran under a filter that
+restricted by case filing date rather than document filing date, which hid 33 documents and
+produced a published null that was false. The corrected sweep returns 101 documents, all of
+which have now been read individually. A further limit surfaced in that reading: the index
+covers the clerk's docket text as well as the filing's own, so some results are entries rather
+than documents, and the search log records which.</p>
 <p class="i1"><b>Reports routed to chambers are invisible.</b> 2 of the 14 courts direct
 counsel to email the report rather than file it, one stating it "should not be filed."
 No docket-based method, including this one, can observe those.</p>
@@ -477,6 +603,25 @@ archived copy and a dataset DOI are pending and will be added here when they iss
 
 <details class="rulebox" style="margin-top:24px">
 <summary>Changelog and sources</summary>
+<p><strong>v1.0-draft, 12 August 2026 (third revision).</strong> MDL 3180 obtained and coded,
+completing the subject-level pass at 280 of 280 cells across all 14 readable orders. Every
+Rule 16.1 subject in every order is now four separate observations rather than one yes-or-no,
+each with a pin cite and, where a court directed or decided something, a verbatim quotation.
+Coverage figures above are restated on that basis and now say which measure they use. Two
+earlier findings were wrong and are corrected: leadership counsel was not the only universally
+addressed item, and direct filing was not among the least-addressed. A new finding records that
+the two coverage measures point in the same direction while resolution points the other way.
+The form-order finding is strengthened by the missing paragraph 9 in the D.N.J. order.</p>
+<p><strong>v1.0-draft, 12 August 2026 (later the same day).</strong> Subject-level coding
+pass: every Rule 16.1 subject in each order is now recorded as four separate observations
+rather than one yes-or-no, each with a pin cite and, where the court directed or decided
+something, a verbatim quotation. All 14 readable orders are coded, 280 subject-order cells. Two findings on this page were wrong and are corrected above.
+Leadership counsel is not the only universally addressed item; the procedure for selecting
+leadership is addressed by every order too. And direct filing is not among the least-addressed
+items: reading the full texts moved it from 6 of 14 to 11 of 14, because orders manage direct
+filing through consolidation clauses without ever naming it. The coverage comparison between
+citing and non-citing orders is unchanged on this page and will be restated, labelled by
+measure, once the fourteenth order is coded.</p>
 <div class="rule">
 <p><b>v1.0-draft, 12 August 2026.</b> MDL 3180 (<em>Dupixent</em>, D.N.J., Quraishi) obtained
 and read in full. It cites Rule 16.1 twice, and its Initial Procedure Order No. 1 is the
@@ -496,7 +641,7 @@ Legal Information Institute, Cornell Law School.</p>
 </div>
 <div class="tip" id="tip"></div>
 <script>
-const DATA=[{"mdl_no":"3162","caption":"In re Class Action Settlement Administration","court":"D.D.C.","judge":"Bates","jpml_transfer_date":"2025-12-12","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"AGENDA","report_form":"JOINT","days_transfer_to_conference":"105","a_conference_date":"2026-03-27","courtlistener_url":"https://www.courtlistener.com/docket/72028506/8/class-action-settlement-administration-litigation-mdl-no-3162/"},{"mdl_no":"3163","caption":"In re Glucagon-like Peptide-1 Receptor Agonists (GLP-1 RAs) Non-Arteritic Anterior Ischemic Optic Neuropathy Products Liability Litigation","court":"E.D. Pa.","judge":"Marston","jpml_transfer_date":"2025-12-15","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_PARTY_GROUP","days_transfer_to_conference":"29","a_conference_date":"2026-01-13","courtlistener_url":"https://www.courtlistener.com/docket/72052106/"},{"mdl_no":"3166","caption":"In re Roblox Child Sexual Exploitation Litigation","court":"N.D. Cal.","judge":"Seeborg","jpml_transfer_date":"2025-12-12","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_SIDE","days_transfer_to_conference":"49","a_conference_date":"2026-01-30","courtlistener_url":"https://www.courtlistener.com/docket/72030009/"},{"mdl_no":"3167","caption":"In re Broiler Chicken Grower Antitrust Litigation (No. III)","court":"D. Utah","judge":"Shelby (PTO 1); Barlow (PTO 2 onward, reassigned 2026-02-10)","jpml_transfer_date":"2025-12-16","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"INCORPORATION","report_form":"JOINT","days_transfer_to_conference":"65","a_conference_date":"2026-02-19","courtlistener_url":"https://www.courtlistener.com/docket/72043662/"},{"mdl_no":"3170","caption":"In re Trans Union, LLC, Customer Data Security Breach Litigation","court":"N.D. Ill.","judge":"Gettleman","jpml_transfer_date":"2025-12-16","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"TRANSCRIPTION","report_form":"JOINT","days_transfer_to_conference":"42","a_conference_date":"2026-01-27","courtlistener_url":"https://www.courtlistener.com/docket/71221176/"},{"mdl_no":"3171","caption":"In re Lyft Passenger Sexual Assault Litigation","court":"N.D. Cal.","judge":"Lin","jpml_transfer_date":"2026-02-05","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"RESIDUAL","report_form":"SEPARATE_BY_SIDE","days_transfer_to_conference":"48","a_conference_date":"2026-03-25","courtlistener_url":"https://www.courtlistener.com/docket/72240870/2/in-re-lyft-inc-passenger-sexual-assault-litigation/"},{"mdl_no":"3172","caption":"In re Cartiva Synthetic Cartilage Implant Products Liability Litigation","court":"E.D. Ark.","judge":"Baker","jpml_transfer_date":"2026-02-09","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_SIDE","days_transfer_to_conference":"198","a_conference_date":"2026-08-26","courtlistener_url":"https://www.courtlistener.com/docket/72249116/"},{"mdl_no":"3174","caption":"In re Air Crash at Muan International Airport","court":"W.D. Wash.","judge":"Robart","jpml_transfer_date":"2026-02-05","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"TRANSCRIPTION","report_form":"JOINT","days_transfer_to_conference":"126","a_conference_date":"2026-06-11","courtlistener_url":"https://www.courtlistener.com/docket/72239188/4/in-re-air-crash-at-muan-international-airport-south-korea-on-december-29/"},{"mdl_no":"3175","caption":"In re Shell Eggs Antitrust Litigation","court":"W.D. Wis.","judge":"Peterson","jpml_transfer_date":"2026-02-13","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"INCORPORATION","report_form":"JOINT","days_transfer_to_conference":"84","a_conference_date":"2026-05-08","courtlistener_url":"https://www.courtlistener.com/docket/72280418/6/in-re-shell-eggs-antitrust-litigation/"},{"mdl_no":"3176","caption":"In re Rare Breed Triggers Patent Litigation","court":"E.D. Tex.","judge":"Mazzant","jpml_transfer_date":"2026-04-02","source_status":"NO_ORDER_YET","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"NOT_ADDRESSED","days_transfer_to_conference":"","a_conference_date":"","courtlistener_url":"https://www.courtlistener.com/docket/73170267/"},{"mdl_no":"3178","caption":"In re ByHeart, Inc., Infant Formula Marketing, Sales Practices, and Products Liability Litigation","court":"S.D.N.Y.","judge":"Subramanian","jpml_transfer_date":"2026-04-02","source_status":"TEXT_ORDER_ON_DOCKET","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"JOINT","days_transfer_to_conference":"","a_conference_date":"","courtlistener_url":"https://www.courtlistener.com/docket/73156009/"},{"mdl_no":"3179","caption":"In re Fire Apparatus Antitrust Litigation","court":"E.D. Wis.","judge":"Griesbach","jpml_transfer_date":"2026-04-06","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"CONDITIONAL_ON_DISAGREEMENT","days_transfer_to_conference":"","a_conference_date":"","courtlistener_url":"https://www.courtlistener.com/docket/73150899/"},{"mdl_no":"3180","caption":"In re Dupixent (Dupilumab) Products Liability Litigation","court":"D.N.J.","judge":"Quraishi","jpml_transfer_date":"2026-06-04","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"AGENDA","report_form":"JOINT","days_transfer_to_conference":"119","a_conference_date":"2026-10-01","courtlistener_url":"https://www.courtlistener.com/docket/73443394/"},{"mdl_no":"3181","caption":"In re Boston Scientific Corporation Spinal Cord Stimulator Products Liability Litigation","court":"C.D. Cal.","judge":"Staton","jpml_transfer_date":"2026-06-05","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"JOINT_DEFENDANT_PREPARED","days_transfer_to_conference":"61","a_conference_date":"2026-08-05","courtlistener_url":"https://www.courtlistener.com/docket/73502651/"},{"mdl_no":"3185","caption":"In re Cognizant Technology Solutions Corporation and TriZetto Provider Solutions, LLC, Data Security Breach Litigation","court":"E.D. Mo.","judge":"Ross","jpml_transfer_date":"2026-06-05","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_SIDE","days_transfer_to_conference":"21","a_conference_date":"2026-06-26","courtlistener_url":"https://www.courtlistener.com/docket/73454806/"},{"mdl_no":"3187","caption":"In re Nitrogen, Phosphorus, and Potassium (NPK) Fertilizer Antitrust Litigation","court":"D. Kan.","judge":"Melgren","jpml_transfer_date":"2026-06-09","source_status":"NEEDS_PACER_PULL","cites_rule":"UNCLEAR","rule_role":"UNCLEAR","report_form":"UNCLEAR","days_transfer_to_conference":"","a_conference_date":"","courtlistener_url":"https://www.courtlistener.com/docket/73492845/"}], INV=[{"invocation_id":"INV-001","mdl_no":"3162","case_name":"In re Class Action Settlement Administration Litigation","doc_title":"JOINT INITIAL MANAGEMENT REPORT","ecf":"73","date_filed":"2026-03-06","pages":"49","joint_or_unilateral":"JOINT","doc_kind":"16.1(b)(1) REPORT","cites_rule_16_1":"UNCLEAR","cites_committee_note":"NOT_CHECKED"},{"invocation_id":"INV-002","mdl_no":"3170","case_name":"In re Trans Union, LLC, Customer Data Security Breach Litigation","doc_title":"FED. R. CIV. P. 16.1 REPORT","ecf":"33","date_filed":"2026-01-05","pages":"13","joint_or_unilateral":"UNILATERAL","doc_kind":"16.1(b)(1) REPORT","cites_rule_16_1":"YES","cites_committee_note":"YES"},{"invocation_id":"INV-003","mdl_no":"NON-MDL","case_name":"In re FedEx Tariff Litigation","doc_title":"Response in Opposition to Motions to Appoint Interim Lead Counsel","ecf":"32","date_filed":"2026-06-29","pages":"11","joint_or_unilateral":"UNILATERAL","doc_kind":"LEADERSHIP BRIEF - NON-MDL","cites_rule_16_1":"YES","cites_committee_note":"YES"},{"invocation_id":"INV-004","mdl_no":"3175","case_name":"In re Shell Eggs Antitrust Litigation","doc_title":"Defendants' Statement Regarding the Consolidation of Cases","ecf":"94 (and replicated across member cases)","date_filed":"2026-05-06","pages":"4","joint_or_unilateral":"UNILATERAL","doc_kind":"PARTY STATEMENT","cites_rule_16_1":"YES","cites_committee_note":"NOT_ADDRESSED"},{"invocation_id":"INV-005","mdl_no":"3175","case_name":"In re Shell Eggs Antitrust Litigation","doc_title":"Order Establishing Leadership Structure","ecf":"154 (master docket)","date_filed":"2026-06-08","pages":"6","joint_or_unilateral":"N/A","doc_kind":"16.1(c)-ANALOGUE ORDER","cites_rule_16_1":"YES","cites_committee_note":"NO"}];
+const DATA=[{"mdl_no":"3162","caption":"In re Class Action Settlement Administration","court":"D.D.C.","judge":"Bates","jpml_transfer_date":"2025-12-12","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"AGENDA","report_form":"JOINT","days_transfer_to_conference":"105","a_conference_date":"2026-03-27","courtlistener_url":"https://www.courtlistener.com/docket/72028506/8/class-action-settlement-administration-litigation-mdl-no-3162/"},{"mdl_no":"3163","caption":"In re Glucagon-like Peptide-1 Receptor Agonists (GLP-1 RAs) Non-Arteritic Anterior Ischemic Optic Neuropathy Products Liability Litigation","court":"E.D. Pa.","judge":"Marston","jpml_transfer_date":"2025-12-15","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_PARTY_GROUP","days_transfer_to_conference":"29","a_conference_date":"2026-01-13","courtlistener_url":"https://www.courtlistener.com/docket/72052106/"},{"mdl_no":"3166","caption":"In re Roblox Child Sexual Exploitation Litigation","court":"N.D. Cal.","judge":"Seeborg","jpml_transfer_date":"2025-12-12","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_SIDE","days_transfer_to_conference":"49","a_conference_date":"2026-01-30","courtlistener_url":"https://www.courtlistener.com/docket/72030009/"},{"mdl_no":"3167","caption":"In re Broiler Chicken Grower Antitrust Litigation (No. III)","court":"D. Utah","judge":"Shelby (PTO 1); Barlow (PTO 2 onward, reassigned 2026-02-10)","jpml_transfer_date":"2025-12-16","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"INCORPORATION","report_form":"JOINT","days_transfer_to_conference":"65","a_conference_date":"2026-02-19","courtlistener_url":"https://www.courtlistener.com/docket/72043662/"},{"mdl_no":"3170","caption":"In re Trans Union, LLC, Customer Data Security Breach Litigation","court":"N.D. Ill.","judge":"Gettleman","jpml_transfer_date":"2025-12-16","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"TRANSCRIPTION","report_form":"JOINT","days_transfer_to_conference":"42","a_conference_date":"2026-01-27","courtlistener_url":"https://www.courtlistener.com/docket/71221176/"},{"mdl_no":"3171","caption":"In re Lyft Passenger Sexual Assault Litigation","court":"N.D. Cal.","judge":"Lin","jpml_transfer_date":"2026-02-05","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"RESIDUAL","report_form":"SEPARATE_BY_SIDE","days_transfer_to_conference":"48","a_conference_date":"2026-03-25","courtlistener_url":"https://www.courtlistener.com/docket/72240870/2/in-re-lyft-inc-passenger-sexual-assault-litigation/"},{"mdl_no":"3172","caption":"In re Cartiva Synthetic Cartilage Implant Products Liability Litigation","court":"E.D. Ark.","judge":"Baker","jpml_transfer_date":"2026-02-09","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_SIDE","days_transfer_to_conference":"198","a_conference_date":"2026-08-26","courtlistener_url":"https://www.courtlistener.com/docket/72249116/"},{"mdl_no":"3174","caption":"In re Air Crash at Muan International Airport","court":"W.D. Wash.","judge":"Robart","jpml_transfer_date":"2026-02-05","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"TRANSCRIPTION","report_form":"JOINT","days_transfer_to_conference":"126","a_conference_date":"2026-06-11","courtlistener_url":"https://www.courtlistener.com/docket/72239188/4/in-re-air-crash-at-muan-international-airport-south-korea-on-december-29/"},{"mdl_no":"3175","caption":"In re Shell Eggs Antitrust Litigation","court":"W.D. Wis.","judge":"Peterson","jpml_transfer_date":"2026-02-13","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"INCORPORATION","report_form":"JOINT","days_transfer_to_conference":"84","a_conference_date":"2026-05-08","courtlistener_url":"https://www.courtlistener.com/docket/72280418/6/in-re-shell-eggs-antitrust-litigation/"},{"mdl_no":"3176","caption":"In re Rare Breed Triggers Patent Litigation","court":"E.D. Tex.","judge":"Mazzant","jpml_transfer_date":"2026-04-02","source_status":"NO_ORDER_YET","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"NOT_ADDRESSED","days_transfer_to_conference":"","a_conference_date":"","courtlistener_url":"https://www.courtlistener.com/docket/73170267/"},{"mdl_no":"3178","caption":"In re ByHeart, Inc., Infant Formula Marketing, Sales Practices, and Products Liability Litigation","court":"S.D.N.Y.","judge":"Subramanian","jpml_transfer_date":"2026-04-02","source_status":"TEXT_ORDER_ON_DOCKET","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"JOINT","days_transfer_to_conference":"","a_conference_date":"","courtlistener_url":"https://www.courtlistener.com/docket/73156009/"},{"mdl_no":"3179","caption":"In re Fire Apparatus Antitrust Litigation","court":"E.D. Wis.","judge":"Griesbach","jpml_transfer_date":"2026-04-06","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"CONDITIONAL_ON_DISAGREEMENT","days_transfer_to_conference":"","a_conference_date":"","courtlistener_url":"https://www.courtlistener.com/docket/73150899/"},{"mdl_no":"3180","caption":"In re Dupixent (Dupilumab) Products Liability Litigation","court":"D.N.J.","judge":"Quraishi","jpml_transfer_date":"2026-06-04","source_status":"TEXT_AVAILABLE","cites_rule":"YES","rule_role":"AGENDA","report_form":"JOINT","days_transfer_to_conference":"119","a_conference_date":"2026-10-01","courtlistener_url":"https://www.courtlistener.com/docket/73443394/"},{"mdl_no":"3181","caption":"In re Boston Scientific Corporation Spinal Cord Stimulator Products Liability Litigation","court":"C.D. Cal.","judge":"Staton","jpml_transfer_date":"2026-06-05","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"JOINT_DEFENDANT_PREPARED","days_transfer_to_conference":"61","a_conference_date":"2026-08-05","courtlistener_url":"https://www.courtlistener.com/docket/73502651/"},{"mdl_no":"3185","caption":"In re Cognizant Technology Solutions Corporation and TriZetto Provider Solutions, LLC, Data Security Breach Litigation","court":"E.D. Mo.","judge":"Ross","jpml_transfer_date":"2026-06-05","source_status":"TEXT_AVAILABLE","cites_rule":"NOT_ADDRESSED","rule_role":"NOT_INVOKED","report_form":"SEPARATE_BY_SIDE","days_transfer_to_conference":"21","a_conference_date":"2026-06-26","courtlistener_url":"https://www.courtlistener.com/docket/73454806/"},{"mdl_no":"3187","caption":"In re Nitrogen, Phosphorus, and Potassium (NPK) Fertilizer Antitrust Litigation","court":"D. Kan.","judge":"Melgren","jpml_transfer_date":"2026-06-09","source_status":"NEEDS_PACER_PULL","cites_rule":"UNCLEAR","rule_role":"UNCLEAR","report_form":"UNCLEAR","days_transfer_to_conference":"","a_conference_date":"","courtlistener_url":"https://www.courtlistener.com/docket/73492845/"}], INV=[{"invocation_id":"INV-001","mdl_no":"3162","case_name":"In re Class Action Settlement Administration Litigation","doc_title":"JOINT INITIAL MANAGEMENT REPORT","ecf":"73","date_filed":"2026-03-06","pages":"49","joint_or_unilateral":"JOINT","doc_kind":"16.1(b)(1) REPORT","cites_rule_16_1":"UNCLEAR","cites_committee_note":"NOT_CHECKED"},{"invocation_id":"INV-002","mdl_no":"3170","case_name":"In re Trans Union, LLC, Customer Data Security Breach Litigation","doc_title":"FED. R. CIV. P. 16.1 REPORT","ecf":"33","date_filed":"2026-01-05","pages":"13","joint_or_unilateral":"UNILATERAL","doc_kind":"16.1(b)(1) REPORT","cites_rule_16_1":"YES","cites_committee_note":"YES"},{"invocation_id":"INV-003","mdl_no":"NON-MDL","case_name":"In re FedEx Tariff Litigation","doc_title":"Response in Opposition to Motions to Appoint Interim Lead Counsel","ecf":"32","date_filed":"2026-06-29","pages":"11","joint_or_unilateral":"UNILATERAL","doc_kind":"LEADERSHIP BRIEF - NON-MDL","cites_rule_16_1":"YES","cites_committee_note":"YES"},{"invocation_id":"INV-004","mdl_no":"3175","case_name":"In re Shell Eggs Antitrust Litigation","doc_title":"Defendants' Statement Regarding the Consolidation of Cases","ecf":"94 (and replicated across member cases)","date_filed":"2026-05-06","pages":"4","joint_or_unilateral":"UNILATERAL","doc_kind":"PARTY STATEMENT","cites_rule_16_1":"YES","cites_committee_note":"NOT_ADDRESSED"},{"invocation_id":"INV-005","mdl_no":"3175","case_name":"In re Shell Eggs Antitrust Litigation","doc_title":"Order Establishing Leadership Structure","ecf":"154 (master docket)","date_filed":"2026-06-08","pages":"6","joint_or_unilateral":"N/A","doc_kind":"16.1(c)-ANALOGUE ORDER","cites_rule_16_1":"YES","cites_committee_note":"NO"},{"invocation_id":"INV-006","mdl_no":"NON-MDL","case_name":"DeBartolo v. Borough of Palisades Park","doc_title":"Letter Order Pursuant to Rule 16.1","ecf":"2","date_filed":"2026-02-17","pages":"5","joint_or_unilateral":"N/A","doc_kind":"SCHEDULING ORDER - NON-MDL, RULE CITED OUTSIDE ITS SCOPE","cites_rule_16_1":"YES","cites_committee_note":"NO"},{"invocation_id":"INV-007","mdl_no":"NON-MDL","case_name":"Obuygyei v. Bonsu","doc_title":"Letter Order Pursuant to Rule 16.1","ecf":"6","date_filed":"2026-04-27","pages":"5","joint_or_unilateral":"N/A","doc_kind":"SCHEDULING ORDER - NON-MDL, RULE CITED OUTSIDE ITS SCOPE","cites_rule_16_1":"YES","cites_committee_note":"NO"},{"invocation_id":"INV-008","mdl_no":"NON-MDL","case_name":"Meisner v. First Advantage Background Services Corp.","doc_title":"Letter Order Pursuant to Rule 16.1","ecf":"7","date_filed":"2026-06-24","pages":"5","joint_or_unilateral":"N/A","doc_kind":"SCHEDULING ORDER - NON-MDL, RULE CITED OUTSIDE ITS SCOPE","cites_rule_16_1":"YES","cites_committee_note":"NO"},{"invocation_id":"INV-009","mdl_no":"NON-MDL","case_name":"Rinaldi v. New Jersey Department of Children and Families","doc_title":"Letter Order Pursuant to Rule 16.1","ecf":"13","date_filed":"2026-07-30","pages":"5","joint_or_unilateral":"N/A","doc_kind":"SCHEDULING ORDER - NON-MDL, RULE CITED OUTSIDE ITS SCOPE","cites_rule_16_1":"YES","cites_committee_note":"NO"},{"invocation_id":"INV-010","mdl_no":"3175","case_name":"In re Shell Eggs Antitrust Litigation","doc_title":"Joint Report for Initial Judicial Management Conference Pursuant to FRCP 16.1","ecf":"74 (master docket 3:26-md-03175-jdp; also entry 195 on member docket 3:25-cv-01016)","date_filed":"2026-04-27","pages":"BLOCKED","joint_or_unilateral":"JOINT AMONG PLAINTIFFS - whether defendants joined is NOT_CHECKED","doc_kind":"16.1(b)(1) REPORT","cites_rule_16_1":"YES","cites_committee_note":"NOT_CHECKED"},{"invocation_id":"INV-011","mdl_no":"NON-MDL","case_name":"Evans v. United Natural Foods, Inc.","doc_title":"Order Granting Stipulation to Extend Discovery Deadlines","ecf":"12","date_filed":"2026-02-09","pages":"NOT_CHECKED","joint_or_unilateral":"N/A (order on a joint stipulation)","doc_kind":"DISCOVERY ORDER - NON-MDL, RULE CITED OUTSIDE ITS SCOPE","cites_rule_16_1":"YES","cites_committee_note":"NO"},{"invocation_id":"INV-012","mdl_no":"NON-MDL","case_name":"Evans v. United Natural Foods, Inc.","doc_title":"Order Granting Stipulation for Extension of Time","ecf":"15","date_filed":"2026-03-03","pages":"NOT_CHECKED","joint_or_unilateral":"N/A (order on a joint stipulation)","doc_kind":"DISCOVERY ORDER - NON-MDL, RULE CITED OUTSIDE ITS SCOPE","cites_rule_16_1":"YES","cites_committee_note":"NO"},{"invocation_id":"INV-013","mdl_no":"PRE-RULE MDL","case_name":"In re Change Healthcare, Inc., Customer Data Security Breach Litigation","doc_title":"PRETRIAL ORDER NO. 28 (RE: Agenda for March 24, 2026 Status Conference)","ecf":"540","date_filed":"2026-03-19","pages":"1","joint_or_unilateral":"COURT ORDER","doc_kind":"AGENDA ORDER - PRE-RULE MDL, RULE INVOKED AS GUIDANCE","cites_rule_16_1":"YES","cites_committee_note":"NO"},{"invocation_id":"INV-014","mdl_no":"PRE-RULE MDL","case_name":"In re Uber Technologies, Inc., Passenger Sexual Assault Litigation","doc_title":"Joint discovery letter brief re defendant fact sheets","ecf":"5979","date_filed":"2026-04-23","pages":"44","joint_or_unilateral":"JOINT","doc_kind":"DISCOVERY LETTER BRIEF - PRE-RULE MDL, BOTH SIDES ARGUE FROM THE NOTE","cites_rule_16_1":"YES","cites_committee_note":"YES"},{"invocation_id":"INV-015","mdl_no":"PRE-RULE MDL","case_name":"Dean v. Uber Technologies, Inc., a bellwether member case of In re Uber Technologies, Inc., Passenger Sexual Assault Litigation","doc_title":"TRIAL BRIEF Re: Duty and Superseding Cause Issues","ecf":"NOT_CHECKED","date_filed":"2026-01-05","pages":"NOT_CHECKED","joint_or_unilateral":"UNILATERAL","doc_kind":"TRIAL BRIEF - PRE-RULE MDL, RULE CITED AS STRUCTURAL POLICY","cites_rule_16_1":"YES","cites_committee_note":"NO"},{"invocation_id":"INV-016","mdl_no":"3163","case_name":"In re Glucagon-Like Peptide-1 Receptor Agonists (GLP-1 RAs) Non-Arteritic Anterior Ischemic Optic Neuropathy Products Liability Litigation","doc_title":"CASE MANAGEMENT ORDER NO. 12 - CROSS CUTTING ISSUES","ecf":"120","date_filed":"2026-07-02","pages":"8","joint_or_unilateral":"COURT ORDER","doc_kind":"DISCOVERY ORDER - LATER ORDER CITES RULE WHERE FIRST ORDER DID NOT","cites_rule_16_1":"YES","cites_committee_note":"YES"},{"invocation_id":"INV-017","mdl_no":"NON-MDL","case_name":"Tesoro High Plains Pipeline Company, LLC v. United States of America","doc_title":"Motion for status conference","ecf":"NOT_CHECKED","date_filed":"2026-05-20","pages":"NOT_CHECKED","joint_or_unilateral":"UNILATERAL","doc_kind":"MOTION - NON-MDL, RULE CITED OUTSIDE ITS SCOPE","cites_rule_16_1":"YES","cites_committee_note":"NO"},{"invocation_id":"INV-018","mdl_no":"NON-MDL","case_name":"Reyes-Flores v. Allen","doc_title":"Discovery status filing","ecf":"NOT_CHECKED","date_filed":"2026-02-10","pages":"NOT_CHECKED","joint_or_unilateral":"NOT_CHECKED","doc_kind":"DISCOVERY FILING - NON-MDL, RULE CITED OUTSIDE ITS SCOPE","cites_rule_16_1":"YES","cites_committee_note":"NO"},{"invocation_id":"INV-019","mdl_no":"NON-MDL","case_name":"Garcia v. Garcia, Jr. (adversary proceeding)","doc_title":"Six docket entries citing F.R.C.P. 16.1 across one adversary proceeding","ecf":"31 and related entries","date_filed":"2026-02-04","pages":"NOT_CHECKED","joint_or_unilateral":"BOTH SIDES, SEPARATELY","doc_kind":"ADVERSARY PROCEEDING FILINGS - NON-MDL, RULE CITED OUTSIDE ITS SCOPE","cites_rule_16_1":"YES","cites_committee_note":"NO"}];
 const cited=r=>r.cites_rule==='YES';
 
 /* ---- headline figures, computed from DATA so the page cannot drift from the CSV ---- */

@@ -47,6 +47,21 @@ in which a court has expressly invoked Rule 16.1. Firms are split on whether
 16.1 reaches pending MDLs and nobody has counted — the `PRE_EFFECTIVE_DATE`
 flag turns that dispute into a number.
 
+> **Where these live, decided 2026-08-13.** They go in `party-invocations.csv`
+> with `mdl_no = PRE-RULE MDL`, not in `rule-16-1-tracker.csv`. The tracker's
+> unit is the *initial management order*, and a pre-Rule MDL's initial order was
+> entered before the Rule existed, so every subject column would be a category
+> error. What is observable in these MDLs is a later invocation, which is exactly
+> what the invocation table records. `INV-013` (MDL 3108, a court order),
+> `INV-014` and `INV-015` (MDL 3084, party filings) are the first three.
+>
+> Consequence worth stating plainly: **the citation rate on the site is a rate
+> for first orders in post-effective-date MDLs and nothing else.** It is not a
+> measure of the Rule's influence. `INV-016` is the clearest illustration —
+> MDL 3163's initial order never mentions Rule 16.1 and is coded
+> `NOT_ADDRESSED`, and seven months later the same court cites the Rule's
+> committee note to justify early exchange on cross-cutting issues.
+
 **Authoritative universe list:** the JPML's own monthly
 *Pending MDL Dockets By MDL Number* PDF at
 https://www.jpml.uscourts.gov/pending-mdls-0 — not any secondary source, and
@@ -590,7 +605,66 @@ No. 1 in MDL 3181 says C.D. Cal. will publish key orders to an MDL webpage
 
 ---
 
-## Guardrail 10 — THE PHRASE QUERY IS NOT AS PRECISE AS IT LOOKS (added 2026-08-11)
+## Guardrail 12 — THE INDEX SEARCHES THE CLERK'S TEXT TOO (added 2026-08-13)
+
+**A hit is not necessarily a document. RECAP's search index covers the docket entry
+description, written by the clerk, alongside the filing's own text.** Both `type=rd` and
+`type=r` do this.
+
+Two consequences, in opposite directions.
+
+**Good for coverage.** An order whose text exists only as a docket entry, with no PDF and no
+text layer, is findable. Verified directly: a `type=rd` search for "non-argumentative summary
+of the member cases," a phrase that appears only in MDL 3178's text-only order, returns that
+order (RECAP 475686411). An earlier conclusion in this project that `type=rd` was blind to
+that class of document was wrong.
+
+**Bad for interpretation.** A hit may be the clerk's summary rather than anything a party or
+a judge wrote. Six of the eight results for `"F.R.C.P. 16.1"` are filings in one bankruptcy
+adversary proceeding, *none of which has any readable text*; every occurrence of the Rule's
+name is in the clerk's entry (INV-019). And MDL 3170's report matched that naming form only
+because the clerk docketed it as "STATUS Report F.R.C.P. 16.1" — a spelling that appears
+nowhere in the thirteen-page filing.
+
+**Requirement.** When a hit is triaged, record whether the Rule's name was found in the
+document text or in the docket entry. If `read_document` returns "No text is available," the
+match was the entry, and the record says so. Never quote a docket entry as though it were the
+filing.
+
+---
+
+## Guardrail 11 — A NULL NEEDS A POSITIVE CONTROL (added 2026-08-13)
+
+**Standing requirement. No null result may be published from this project without a
+recorded positive control: a run of the same method, with the same parameters, that
+returns a known instance of the thing the null says is absent.**
+
+This exists because of the failure logged in `AUDIT.md` for 13 August 2026. The
+pre-effective-date null was published from a query whose date filter had already removed
+every case that could have refuted it. The finding was not merely unsupported; it was
+unfalsifiable by the method that produced it, and nothing in the build, the prose guards,
+the numeral audit or the validator could have detected that, because all of them check
+internal consistency and the error was in the relationship between the query and the world.
+
+The control for the pre-effective-date question is now trivial to state: the same seven
+naming forms, run under `entry_date_filed_after=2025-12-01`, must return MDL 3108's
+Pretrial Order No. 28 (RECAP 472850310). If a future run of the sweep does not return it,
+the sweep is broken, not the record.
+
+Design the control before running the query, and write down what it must return. A control
+chosen after seeing the results is a rationalisation.
+
+---
+
+## Guardrail 10 — THE PHRASE QUERY IS NOT AS PRECISE AS IT LOOKS (added 2026-08-11, amended 2026-08-13)
+
+> **AMENDMENT 2026-08-13.** This guardrail warned about the *phrase*. The larger danger
+> turned out to be the *filter*. `filed_after` restricts by case filing date;
+> `entry_date_filed_after` restricts by document filing date. The names do not say so and
+> the difference silently determined a published finding. Any query in this project states
+> which one it uses, and `rule-16-1-searches.csv` has a `date_filter` column so the answer
+> is in the data.
+
 
 `collect.py` warns against querying bare `"Rule 16.1"` because of local rules.
 There is a second, worse problem, and it was invisible until the date restriction
@@ -622,13 +696,47 @@ limitation everywhere else.
 `PROTOCOL.md` defines it and the `pre_effective_date` column exists to hold the
 answer: **has any court invoked Rule 16.1 in an MDL created before December 1,
 2025?** Firms are split on whether the Rule reaches pending MDLs; nobody has
-counted. It is the largest unclaimed finding left in the project.
+counted.
 
-The method is not "remove `filed_after`." Any order *applying* Rule 16.1 must
+> **~~ANSWERED 2026-08-12. The answer is zero.~~ WITHDRAWN 2026-08-13. The answer
+> is not zero, and the method that produced the zero was incapable of producing
+> anything else.**
+>
+> The queries were run with `filed_after=2025-12-01`, which in this index
+> restricts by the **case** filing date, not the document filing date. A pre-Rule
+> MDL is a case filed before the effective date, so the filter deleted the entire
+> population the question was about. The 53 hits were the survivors of a filter
+> that had already answered the question.
+>
+> **ANSWERED 2026-08-13, correctly.** Rerun with `entry_date_filed_after`, the
+> seven naming forms return 101 documents rather than 68. Among the 33 added:
+> *In re Change Healthcare, Inc., Customer Data Security Breach Litigation*, MDL
+> No. 3108 (D. Minn.), centralized June 2024, **Pretrial Order No. 28 of 19 March
+> 2026**, which sets a status-conference agenda "consistent with Federal Rule of
+> Civil Procedure 16.1 aimed at providing case-management guidance in MDLs."
+> Recorded as `INV-013`. Two party filings in MDL 3084 (Uber, N.D. Cal.,
+> centralized October 2023) are `INV-014` and `INV-015`.
+>
+> Record the answer with its verb intact. PTO 28 says "consistent with" and
+> reserves "pursuant to" for the court's own earlier order. A court aligning with
+> the Rule as guidance is not a holding that the Rule governs a pending MDL, and
+> the `pre_effective_date` column should not be used to imply one.
+>
+> The original run also turned up a finding nobody was looking for, and that part
+> stands. Four orders from one District of New Jersey magistrate judge cite
+> **Fed. R. Civ. P. 16.1** as authority for scheduling conferences in **ordinary
+> two-party civil cases**, alongside D.N.J. Local Civil Rule 16.1(a). They are
+> `INV-006` through `INV-009`.
+
+The method is not "remove the date filter." Any order *applying* Rule 16.1 must
 have been *filed* after the effective date regardless of when the MDL was
-created. So:
+created. That reasoning was right the first time. The parameter chosen to
+implement it was the wrong one, and the gap between the two went unexamined for
+two days. So:
 
-1. Keep `filed_after=2025-12-01`. Run the precise and abbrev queries.
+1. Use **`entry_date_filed_after=2025-12-01`**, which filters on the document's
+   own filing date. Do **not** use `filed_after`; it filters the case. Run the
+   precise and abbrev queries.
 2. Collect every unique `docket_id` in the results.
 3. For each, resolve the docket and ask one question: **was this MDL centralized
    before December 1, 2025?** Cross-check against the JPML monthly report.
@@ -685,6 +793,8 @@ before v1.0 publishes.
 | "more than 340,000 individual actions" consolidated in MDLs | **index.html (public)** | ⚠️ **SECONDARY ONLY** — K&L Gates (Jan. 6, 2026): "As of December 2025, there were over 340,000 cases consolidated across 157 active federal MDLs." Attributed on the page as an industry count, not stated as fact. The JPML's own statistics page does not give a system-wide pending total. **Do not compute a share of the federal civil docket from this**: the AO reports 398,121 civil cases pending as of 31 Mar. 2025, a different series and a different date. |
 | "Nobody has counted" / "no one has assembled the population" | README, index.html, PROTOCOL, the submission | **HEDGED 2026-08-11** — the landing page now reads "to my knowledge nobody has assembled the population," matching the submission. Still rests on preemption searches rather than a systematic review; re-run before any journal submission. |
 | Charlotin's path: launch May 2025 → eDiscovery Today June 9 → Forbes July 18 | PROTOCOL | **UNVERIFIED** |
+| D. Mass. and S.D. Fla. each have a LOCAL Rule 16.1 that floods a bare `"Rule 16.1"` query | `collect.py`, PROTOCOL, the weekly watch task | ✅ **VERIFIED 2026-08-13.** D. Mass. L.R. 16.1, "Early Assessment of Cases," requires a scheduling conference within 60 days of a defendant's appearance. S.D. Fla. L.R. 16.1, "Pretrial Procedure in Civil Actions," heads a 16-series that also contains 16.2 mediation, 16.3 calendar conflicts, 16.4 notice of settlement. The search warning holds. **CORRECTED 2026-08-13:** the control test that reported "neither produced an instance" was run under the broken `filed_after` filter. Under `entry_date_filed_after`, a bare `"Rule 16.1"` query returns 2,164 dockets dominated by these two districts. The collision hypothesis is well supported, not refuted. Logged as the `bare_rule` REFERENCE row in `rule-16-1-searches.csv`. |
+| D. Nev. has no local rule numbered 16.1 | new, from the same check | ✅ **VERIFIED 2026-08-13.** D. Nev. numbers local rules with hyphens: LR 16-1 is "Scheduling and Case Management," and disclosures are governed by LR 26-1, "Discovery Plans and Mandatory Disclosures." This matters because the two D. Nev. miscitations (INV-011, INV-012) cite "FRCP 16.1" for initial disclosures, so no local-rule collision explains them. |
 
 **Rule going forward:** an assertion about the outside world gets a source
 recorded next to it at the moment it is written down, exactly like a coding
