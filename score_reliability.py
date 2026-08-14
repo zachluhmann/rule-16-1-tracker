@@ -20,9 +20,21 @@ Kappa is reported alongside raw agreement on purpose. Where prevalence is extrem
 near-total agreement, because the chance-agreement term is large. Read the two together
 or neither.
 
-A 50-cell sample gives a wide confidence interval. Treat the result as a signal about
+A sample this size gives a wide confidence interval. Treat the result as a signal about
 where the definitions are soft, not as a precise coefficient. The disagreement set is
 the more useful output.
+
+The sample is 49 cells, not 50. Item 20, MDL 3167 / `b3e_settlement_facilitation`, was
+removed on 13 August 2026 because it is worked through as test case 5 in the codebook
+itself, so any coder handed the codebook is handed that cell's answer. Item numbers were
+deliberately not renumbered: the gap at 20 is the visible trace of the removal.
+
+IF THE SECOND CODER IS A LANGUAGE MODEL, the header of the disagreement file and any
+reported figure must say so. Agreement between two models is weaker evidence than
+agreement between two people, because their errors are correlated in ways two humans'
+are not. Disagreement, by contrast, is strong evidence either way: two systems trained
+differently that read the same sentence differently have found a genuinely soft
+definition.
 """
 import csv, sys, os
 from collections import Counter

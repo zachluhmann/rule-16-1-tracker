@@ -1478,3 +1478,86 @@ non-citing figures did not move, as expected: 3187 cites.
 **The headline finding is unchanged in direction and slightly stronger.** Citing orders raise
 more subjects and settle fewer of them; the gap narrows from 16-versus-28 to 19-versus-28
 because 3187 resolves seven. One order does not overturn the inversion.
+
+---
+
+## 13 August 2026 — a contradiction survived the day's own corrections
+
+Reading the published page end to end after the upload, one sentence still said the naming
+forms are "mutually exclusive." That claim was corrected hours earlier in the finding it
+belongs to, which now reads "almost never overlap" and names the one document that uses two
+forms. The stale copy sat in a later finding, about search biasing the uptake rate upward and
+the invocation count downward, which cites the earlier finding by reference.
+
+Nothing caught it. The prose guards check that figures match the CSVs and every figure in both
+sentences was right. `audit_numbers.py` checks that numerals are asserted, and there is no
+numeral in the phrase. This is the third time this project has published two sentences that
+each reconcile against the data and contradict each other, and the second time in one day.
+
+The pattern is now clear enough to state as a rule: **when a finding is rewritten, every other
+finding that refers to it has to be re-read.** A finding that says "as the finding above
+records" is a dependency, and this project has no mechanism that knows about dependencies.
+Until it does, the check is a full read of the findings section after any rewrite, which is how
+this one was found.
+
+Also strengthened while there: MDL 3187 makes a citing court that uses the Manual alongside the
+Rule, which is direct support for the sentence about the Rule not having displaced the Manual.
+That sentence previously rested only on the two non-citing orders that designate the Manual
+instead.
+
+---
+
+## 14 August 2026 — a sampled cell was worked through in the codebook
+
+Asked whether the second coding pass could be run through a different vendor's language model,
+which prompted an audit of what a second coder would actually be handed. It found a
+contamination bug in the instrument.
+
+**Item 20 of the reliability sample was MDL 3167 / `b3e_settlement_facilitation`. That cell is
+test case 5 in the codebook**, "Shelby, MDL 3167 — incorporation plus a fork," where it is
+worked through to its coding as an illustration of the definitions. Any coder handed the
+codebook was handed that cell's answer.
+
+Removed. The sample is 49 cells. **Item numbers were deliberately not renumbered**, so the gap
+at 20 is a visible trace rather than a silent edit. The other four worked examples in the
+codebook were checked against the sample and none of them is drawn.
+
+The blindness test was written to look for pass-1 values leaking into the sample file, and it
+passed, because the leak was not in the sample file. It was the overlap between two files that
+were each individually clean. A sampler that draws from the same population the codebook
+illustrates from will hit an illustration eventually, and nothing was watching for it.
+
+### What a second coder may and may not be given
+
+Sanitised the codebook for second-coder use by removing the reliability protocol section
+entirely, 5,799 characters. That section states an ex ante prediction of the result and carries
+the ex post contestability map, which tells a reader that 41 of 280 cells are contestable, that
+`court_resolution` accounts for 49% of them, and that `b3d_pretrial_motions` is the softest
+subject. A coder who read that would know where to hesitate. `coding-decisions.md`, the R1
+through R8 application rules, was already sealed and stays sealed.
+
+Also withheld by instruction: `subject-treatment.csv`, whose quotes are the first coder's
+judgment about which language matters, and the tracker website and AUDIT, which carry the
+answers outright.
+
+### On a model as second coder
+
+Recorded so the decision is legible later. A second model from a different developer is a real
+independent instrument in a way a second pass by the same model is not, and it is a large
+improvement on the current state, which is one coder and no reliability estimate at all.
+
+But it does not measure inter-rater reliability in the sense that term carries in content
+analysis, which is a claim about human coders, and it must never be reported as though it did.
+The specific hazard is correlated error: two models trained on overlapping legal corpora can
+misread the same sentence the same way, and agreement produced that way is indistinguishable
+from agreement produced by a clear definition.
+
+The asymmetry is the useful part and it is now in the scorer's docstring. **Disagreement is
+strong evidence in either direction. Agreement is weak evidence.** Two systems trained
+differently that read the same sentence differently have found a genuinely soft definition.
+Two systems that agree may have found a clear definition or a shared prior, and this design
+cannot tell which.
+
+The recommendation attached to the deliverable is therefore a hybrid: run all 49 through the
+model, and code a dozen by hand as a human anchor. Without the anchor there is no way to know
+whether the model's pass tracks a human reading at all.
