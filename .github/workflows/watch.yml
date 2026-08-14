@@ -1,0 +1,102 @@
+name: Rule 16.1 watch
+
+# Runs on GitHub's servers. It does not depend on a laptop being open, on a chat session
+# existing, or on anyone remembering. Mondays at 13:00 UTC, which is 9am Eastern in summer
+# and 8am in winter; the hour does not matter and drifting one hour is not worth a second
+# cron entry. Also runnable by hand from the Actions tab, which is how the one-time triage
+# backfill is run.
+on:
+  schedule:
+    - cron: "0 13 * * 1"
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: "Score the triage classifier against the hand triage (run once, ~2.5 hours)"
+        type: boolean
+        default: false
+
+# GitHub disables scheduled workflows in a repository with no pushes for 60 days and sends
+# the owner an email when it does. This workflow commits a log row on every run, including
+# runs that find nothing, so the repository is never quiet enough for that to trigger. The
+# log exists for its own sake as well: an unlogged check is indistinguishable from a check
+# that never happened.
+
+permissions:
+  contents: write      # commit the watch log, the ledger, and any count it is entitled to change
+  issues: write        # open an issue when something needs a person
+
+concurrency:
+  group: rule-16-1-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350        # the backfill classifies ~101 documents at 5 requests/minute
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # No pip install. watch.py, triage.py, build.py and validate_treatment.py use the
+      # standard library only, which is deliberate: a maintenance script with dependencies is
+      # a maintenance script that stops running when a dependency moves.
+      - name: Run the watch
+        id: watch
+        continue-on-error: true
+        env:
+          COURTLISTENER_TOKEN: ${{ secrets.COURTLISTENER_TOKEN }}
+          # Optional. Without either key the model tier is skipped entirely and anything no
+          # published rule can decide is counted `hits_unverified` and raised in an issue,
+          # which is the safe direction to fail in.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python3 watch.py ${{ inputs.backfill && '--backfill' || '' }}
+
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # An explicit list, never `git add -A`. These are the only files the watch is
+          # entitled to change; anything else appearing in a diff would be a bug, and
+          # committing it silently would publish an unreviewed change to a dataset meant to
+          # be cited. Written as an `if`, not `[ -f x ] && git add x`, because GitHub runs
+          # `run:` blocks under `bash -e` and a failed test would abort the step on exactly
+          # the run where it matters most: a control failure before any file was written.
+          for f in maintenance/watch-log.csv \
+                   maintenance/watch-state.json \
+                   maintenance/triage-ledger.csv \
+                   maintenance/triage-validation.json \
+                   rule-16-1-searches.csv \
+                   index.html; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+          else
+            git commit -m "watch: ${{ steps.watch.outputs.title || 'run' }}"
+            git push
+          fi
+
+      - name: Open an issue
+        if: always() && steps.watch.outputs.attention == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create watch --color 0e8a16 --description "Automated Rule 16.1 watch" || true
+          gh issue create \
+            --title "${{ steps.watch.outputs.title }}" \
+            --label watch \
+            --body-file maintenance/.watch-issue.md
+
+      # The watch exits non-zero only when the positive control fails, which is the one
+      # condition under which no measurement it produced should be believed. Surfacing that
+      # as a red run gets GitHub's own failure email on top of the issue.
+      - name: Fail the run if the control failed
+        if: steps.watch.outcome == 'failure'
+        run: |
+          echo "watch.py exited non-zero; see the issue it opened"
+          exit 1
