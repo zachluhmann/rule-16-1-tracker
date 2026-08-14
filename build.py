@@ -276,7 +276,18 @@ def search_stats():
     #   REFERENCE  measurements that are not naming forms and belong to no published count
     # Nothing on the page may be computed from anything but CURRENT.
     rows = [r for r in all_rows if r["status"] == "CURRENT"]
-    superseded = [r for r in all_rows if r["status"] == "SUPERSEDED"]
+    # The comparison the "how many the wrong filter hid" finding is about is between the two
+    # DATE FILTERS, not between two statuses. It was written as `status == SUPERSEDED` while
+    # the only superseded rows in the file were the broken-filter ones, which was true then
+    # and stopped being true the first time an automated run superseded a corrected row: the
+    # superseded pile grew, `added` fell to zero, and the build refused on a finding that had
+    # not changed. Keyed on the filter, it is stable no matter how many generations of rows
+    # accumulate.
+    superseded = [r for r in all_rows if r["date_filter"] == "filed_after"]
+    corrected = [r for r in all_rows if r["date_filter"] == "entry_date_filed_after"
+                 and r["status"] in ("CURRENT", "SUPERSEDED")]
+    first_run = min((r["run_date"] for r in corrected), default="")
+    first_corrected = [r for r in corrected if r["run_date"] == first_run]
     n = lambda k: sum(int(r[k]) for r in rows)
     # `hits` double-counts: two forms returned the same documents. `new_documents` is
     # the count of documents no earlier form had returned, so it sums to the true union.
@@ -293,7 +304,20 @@ def search_stats():
             # in the clerk's docket entry rather than in the filing. Not part of the sum.
             "no_text": n("hits_no_text_layer"),
             "old_docs": sum(int(r["new_documents"]) for r in superseded),
-            "added": n("new_documents") - sum(int(r["new_documents"]) for r in superseded)}
+            # How many documents the wrong filter hid is a fact about 13 August 2026, not a
+            # live count. It is the first corrected generation minus the broken one, and it
+            # must not move when the corpus grows: a document filed next month was not
+            # "hidden" by a filter that was replaced before it existed. Computed from the
+            # earliest corrected run_date rather than from whatever is CURRENT today.
+            "added": sum(int(r["new_documents"]) for r in first_corrected)
+                     - sum(int(r["new_documents"]) for r in superseded),
+            # Hits in rows any part of which was assigned by machine. Reported so the page can
+            # say so rather than leaving a reader to find it in the CSV.
+            "human_rows": sum(1 for r in rows if r.get("triage_source", "HUMAN") == "HUMAN"),
+            "machine_rows": sum(1 for r in rows
+                                if r.get("triage_source", "HUMAN") != "HUMAN"),
+            "machine_hits": sum(int(r["hits"]) for r in rows
+                                if r.get("triage_source", "HUMAN") != "HUMAN")}
 
 
 def assert_search_arithmetic():
@@ -314,10 +338,21 @@ def assert_search_arithmetic():
     # class of failure as the date filter: a query that quietly stops seeing part of its
     # corpus. So the vocabulary is closed and the build refuses on anything outside it.
     KNOWN = {"CURRENT", "SUPERSEDED", "REFERENCE", "CONTROL"}
+    # Who decided which category each hit belongs to. Closed for the same reason as `status`:
+    # a figure that is partly machine-assigned and does not say so is worse than one that was
+    # never automated at all, and a typo here would silently turn a disclosure off.
+    #   HUMAN   a person read every document behind this row
+    #   MACHINE every hit assigned by rule, or by a model whose quote was checked against the
+    #           document. See triage.py and maintenance/triage-ledger.csv.
+    #   MIXED   a HUMAN row that a later automated run added documents to
+    SOURCES = {"HUMAN", "MACHINE", "MIXED"}
     for r in csv.DictReader(open("rule-16-1-searches.csv")):
         if r["status"] not in KNOWN:
             sys.exit(f"search row {r['query_form']}: unknown status {r['status']!r}; "
                      f"must be one of {sorted(KNOWN)}")
+        if r.get("triage_source", "HUMAN") not in SOURCES:
+            sys.exit(f"search row {r['query_form']}: unknown triage_source "
+                     f"{r.get('triage_source')!r}; must be one of {sorted(SOURCES)}")
         if r["status"] != "CURRENT":
             continue
         got, hits = sum(int(r[c]) for c in cats), int(r["hits"])
@@ -416,10 +451,16 @@ def prose_claims(page):
         ("finding 2: which subjects every order reaches",
          "every order: " + " and ".join(SUBJECT_PROSE[x] for x in ss["universal"])
          + f". Both stand at {ss['n']} of {ss['n']} orders read subject by subject", None),
+        # Singular and plural both occur. The v1.1 amendments left exactly one subject at
+        # the floor where there had been two, and the guard's hard-coded "items ... each"
+        # then demanded ungrammatical prose. Generate the number agreement instead.
         ("finding 2: least-addressed subjects and count",
-         "The least-addressed items are "
-         + " and ".join(SUBJECT_PROSE[x] for x in ss["least_ids"])
-         + f", {ss['least']} of {ss['n']} each", None),
+         ("The least-addressed items are "
+          + " and ".join(SUBJECT_PROSE[x] for x in ss["least_ids"])
+          + f", {ss['least']} of {ss['n']} each"
+          if len(ss["least_ids"]) > 1 else
+          f"The least-addressed item is {SUBJECT_PROSE[ss['least_ids'][0]]}, at "
+          f"{ss['least']} of {ss['n']}"), None),
         ("finding 2b: direct filing",
          f"moves it to {ss['direct_filing']} of {ss['n']}", None),
         ("finding 3a: query forms",
@@ -440,8 +481,12 @@ def prose_claims(page):
          f"Across {sq['docs']} documents exactly one names the Rule", None),
         ("limitations: how many the wrong filter hid",
          f"hid {sq['added']} documents and produced a published null", None),
+        # The clause about who read them used to live in this literal. It moved into the
+        # generated span #f3a-triage on 14 Aug 2026, because it stops being true the first
+        # time an automated run adds a document and a sentence that can go false on its own
+        # should not be one a human has to remember to change.
         ("limitations: corrected sweep total",
-         f"corrected sweep returns {sq['docs']} documents, all of which", None),
+         f"corrected sweep returns {sq['docs']} documents.", None),
         # The triage totals are per HIT, not per document: a document returned by three forms
         # is triaged three times, which is why these sum to `hits` minus the duplicate form's
         # 41 and not to 101. The page therefore states them only about the 33 additions, where
@@ -529,6 +574,30 @@ def set_inner(page, el_id, html):
     return page
 
 
+def _triage_sentence(sq):
+    """One sentence about who decided which category each hit went in.
+
+    Triage and coding are different questions and the page should not blur them. Triage asks
+    which case a document sits in, which the document's own ECF header answers. Coding asks
+    whether a provision fires a subject, which two trained coders split on twenty-two times
+    out of three hundred. Only the first is ever done by machine here, and only where a
+    published rule decides it or a model can quote the document; anything else is counted
+    unverified rather than guessed.
+    """
+    if not sq["machine_rows"]:
+        return "All of them were read individually."
+    n = sq["machine_rows"]
+    return (f"The documents of the original sweep were read individually. Since then "
+            f"{word(n).lower()} of the {word(sq['forms']).lower()} naming forms "
+            f"{'has' if n == 1 else 'have'} had "
+            f"documents added by automatic triage, which assigns a category only where a "
+            f"published rule decides it or a model can quote the document verbatim, and "
+            f"records the rule and the matched string for every document in "
+            f"<a href=\"maintenance/triage-ledger.csv\">the triage ledger</a>. Anything "
+            f"neither can settle is counted unverified rather than assigned. No coding "
+            f"decision on this page was made by a machine.")
+
+
 def prerender(page, s):
     SUB_STATS = subject_stats()
     INV_STATS = invocation_stats()
@@ -561,11 +630,16 @@ def prerender(page, s):
         put("f3a-added2", str(SQ_STATS["added"])),
         put("f3a-hits2", str(SQ_STATS["docs"])),
         put("f3a-hits3", str(SQ_STATS["docs"])),
+        put("f3a-hits4", str(SQ_STATS["docs"])),
         put("f3a-notext", word(SQ_STATS["no_text"])),
         # Sentence-initial since the rewrite of 13 Aug 2026, so no .lower() here.
         put("f3a-prod", word(SQ_STATS["productive"])),
         put("f3a-forms2", WORDS[SQ_STATS["forms"]].lower()),
         put("f3a-unver", word(SQ_STATS["unverified"])),
+        # Who assigned the triage. A page whose counts are partly machine-assigned and does
+        # not say so is worse than one that was never automated, so this sentence is
+        # generated from the data rather than written once and forgotten.
+        put("f3a-triage", _triage_sentence(SQ_STATS)),
         put("f3b-n", WORDS[INV_STATS["outside"]]),
         put("f3b-courts", WORDS[len(INV_STATS["outside_courts"])].lower() + " districts"),
         put("f3b-fc", _plural_districts(len(INV_STATS["all_courts"])
@@ -613,7 +687,13 @@ def main():
              or prerender(page, s) != page)
     assert_subject_columns()
     assert_search_arithmetic()
-    drifted = check_prose(page)
+    # Checked against the page as it will be PUBLISHED, not as it was last saved. A figure
+    # that lives in a span is filled by prerender from the CSV, so it cannot go stale and
+    # there is nothing for this check to catch; a figure written into the prose as a bare
+    # literal is untouched by prerender and still gets caught. Running the check on the
+    # unrendered page made every span-held count a build failure, which meant a person had to
+    # retype a number the build already knew. That is the opposite of what this guard is for.
+    drifted = check_prose(prerender(page, s))
 
     print(f"universe {s['universe']} · coded {s['coded']} · cite {s['cite']} · "
           f"no-cite {s['nocite']} ({s['pct']}%) · intervals {s['intervals']} "

@@ -2086,3 +2086,76 @@ edit until the prose matched, which is the guard working.
 One guard needed fixing rather than satisfying: it hard-coded "The least-addressed items are
 … each" and the amendments left exactly one subject at the floor, so it demanded ungrammatical
 prose. Now generates its own number agreement.
+
+---
+
+## 14 August 2026 — automating triage, and the line it stops at
+
+The maintenance loop moved off scheduled chat sessions and onto GitHub Actions, which removes
+the last dependency on a laptop being open. That part is mechanical. The part worth auditing
+is that the workflow now assigns search hits to triage categories without a person, and that
+is a change in who the dataset's numbers come from.
+
+### The first design was wrong in a way the arithmetic would not have caught
+
+The first version of `watch.py` reran the sweep and wrote fresh `CURRENT` rows with every hit
+marked `hits_unverified`. It would have replaced 101 hand-triaged documents with 101 undecided
+ones. Every triage figure on the page would have gone to zero, and
+`assert_search_arithmetic()` would have passed, because `unverified` is one of the five
+columns that sums to `hits`. That is the same failure shape as the `filed_after` filter: a
+number that stays internally consistent while ceasing to mean anything. It also would have
+tripped the duplicate-form check and failed every week, which is the only reason it would have
+been noticed at all.
+
+### Why triage was treated differently from coding
+
+Coding asks whether a provision fires `court_resolution`. The reliability pass measured how
+far two careful readers diverge on that question and found 22 cells of 300, concentrated where
+the language is thinnest. Triage asks which case a document sits in, and every federal filing
+answers that on its first line, in the ECF header stamp. The two are not the same kind of
+judgment and pretending otherwise in either direction would be a mistake: refusing to automate
+triage wastes a person on transcription, and automating coding would produce a number carrying
+no reliability measurement at all and no way to give it one.
+
+So triage runs by published rule where a rule decides it, by a model only where none does and
+only if the model returns a passage found verbatim in the document, and by nobody otherwise.
+The third outcome parks the hit in `hits_unverified` and opens an issue. `subject-treatment.csv`
+is untouched by any of it.
+
+### Two bugs the tests found, both of which would have produced wrong published counts
+
+**A pattern that read a local rule as a federal one.** `FEDERAL_FORMS` included
+`Rule\s+16\.1\s*\([a-d]\)`, which matches "Local Rule 16.1(b)". RECAP 466008549 is a brief
+about the Southern District of Florida's own rule 16.1, containing the string twenty-three
+times and never meaning the federal Rule; the classifier called it an ordinary civil case
+citing Rule 16.1. Removing the pattern costs recall — a filing citing only "Rule 16.1(a)" now
+goes to `unverified` — and that is the correct direction to lose in.
+
+**A stat that was right only because history had been short.** `search_stats()` computed "how
+many documents the wrong filter hid" as CURRENT `new_documents` minus SUPERSEDED
+`new_documents`. That worked while the only superseded rows were the broken-filter ones. The
+first automated run supersedes a *corrected* row, the superseded pile grows, and the figure
+collapses. Worse, the quantity is a fact about 13 August 2026 and should not move at all: a
+document filed next month was not hidden by a filter replaced before it existed. Now computed
+from the earliest corrected generation against the `filed_after` rows, and stable.
+
+A third, smaller: the rollback path used `git checkout` to undo an update a gate rejected. In
+any working tree that is not a clean checkout that reverts nothing and the run commits a
+change the gate refused. Now restored from bytes read before the update.
+
+### What is claimed and what is not
+
+`--backfill` classifies the existing corpus and compares against the hand triage. **The
+comparison is one-sided.** The hand triage survives only as per-form totals, not per document,
+so it can prove a disagreement — the classifier putting more documents in a category than the
+human's total allows — and can only bound agreement. The figure it reports is how many
+documents the classifier was willing to decide, not how many it got right. Automatic triage
+stays off until that check passes, and the check can never license the stronger claim.
+
+### Still open
+
+Two published findings quantify over the whole corpus in a way no count can recheck. Finding
+3a says that across all returned documents exactly one names the Rule two different ways; the
+local-rule collision finding rests on which districts generate 16.1 references. `build.py`
+verifies the numbers in those sentences and cannot verify the word "exactly." Every week that
+adds a document, the issue says so. Nothing automates the reading.

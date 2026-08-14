@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+
+# Written by watch.py when a run needs a person, read by the workflow to open an issue,
+# and then irrelevant. The issue is the record; this file is the pipe.
+maintenance/.watch-issue.md

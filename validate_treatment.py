@@ -63,8 +63,12 @@ def errors(rows):
             out.append((where, "express=TRUE requires a pin_cite"))
         if (T("party_direction") or T("court_resolution")) and not r["quote"].strip():
             out.append((where, "direction or resolution requires a verbatim quote"))
-        if r["pass"].strip() not in ("1", "2"):
-            out.append((where, f"pass is {r['pass']!r}; must be 1 or 2"))
+        # "1" and "2" are the two coding passes. The third value records a cell that was
+        # coded in pass 1 under codebook v1.0 and amended under v1.1 after adjudication,
+        # which is provenance a reader needs and not a fourth pass.
+        if r["pass"].strip() not in ("1", "2", "1 (v1.0), amended v1.1"):
+            out.append((where, f"pass is {r['pass']!r}; must be 1, 2, "
+                               f"or '1 (v1.0), amended v1.1'"))
     return out
 
 
