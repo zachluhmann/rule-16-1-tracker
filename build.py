@@ -29,7 +29,7 @@ RUN THIS AFTER EVERY EDIT TO EITHER CSV, THEN COMMIT BOTH.
     python3 build.py            # rewrite embedded data + figures, report drift
     python3 build.py --check    # exit 1 if the page is stale; nothing written
 """
-import csv, json, re, sys, datetime, statistics
+import csv, json, os, re, sys, datetime, statistics
 
 TRACKER = "rule-16-1-tracker.csv"
 INVOCATIONS = "party-invocations.csv"
@@ -363,6 +363,109 @@ def assert_search_arithmetic():
         elif got != hits:
             sys.exit(f"search row {r['query_form']}: triage columns sum to {got}, "
                      f"hits is {hits}. Every hit belongs to exactly one category.")
+
+
+README = "README.md"
+
+
+def subject_counts():
+    """Per subject: how many coded orders reach it, name it expressly, and resolve it."""
+    tr = {r["mdl_no"]: r for r in full_rows()}
+    coded = {m for m, r in tr.items() if r["source_status"] in CODED}
+    t = lambda v: str(v).strip().upper() in ("TRUE", "T", "YES", "Y", "1")
+    out = {s: [0, 0, 0] for s in SUBJECTS}
+    for r in csv.DictReader(open("subject-treatment.csv")):
+        if r["mdl_no"] not in coded:
+            continue
+        a = out[r["subject_id"]]
+        a[0] += t(r["reached"]); a[1] += t(r["express"]); a[2] += t(r["court_resolution"])
+    return out, len(coded)
+
+
+def readme_live(text):
+    """The parts of the README that present themselves as the current state.
+
+    Everything under a dated `# Nth PASS` heading is a working log and keeps its own
+    figures on purpose. Asserting against the log would force it to be rewritten every time
+    the data moved, which would destroy the only record of how the project actually got
+    where it is. So the guard reads the material above the first pass, plus the section the
+    README itself calls the state of the dataset, and nothing else.
+    """
+    head = text.split("# FIRST PASS COMPLETE")[0]
+    m = re.search(r"# WHERE THIS STANDS.*?(?=\n# [A-Z])", text, re.S)
+    return head + (m.group(0) if m else "")
+
+
+SUB_LABELS = {
+    "Selection procedure (iii)": "b2a_selection_procedure", "Structure (ii)": "b2a_structure",
+    "Timing (i)": "b2a_timing", "Responsibilities (iv)": "b2a_responsibilities",
+    "Compensation (vii)": "b2a_compensation",
+    "Communication with nonleadership (v)": "b2a_communication",
+    "Limits on nonleadership (vi)": "b2a_nonleadership_limits",
+    "Periodic review (iii)": "b2a_periodic_review",
+}
+
+
+def check_readme(s):
+    """Every count in the README's current-state sections, against the CSVs.
+
+    This check did not exist until 14 August 2026, and its absence is why the README spent a
+    week telling readers that 7 of 14 orders cite the Rule while index.html, guarded by the
+    same build, said 8 of 15. The page was correct because something checked it. The README
+    was the repository's front door and nothing checked it at all. A citable dataset whose
+    front page contradicts its own CSVs is worse than one that is merely out of date, because
+    a reader cannot tell which number to believe.
+
+    Note the shape of the test. `check_prose` asks whether the RIGHT string is present, which
+    passes as long as one correct copy survives somewhere; the first version of this function
+    copied that and did not notice a corrupted headline while a second correct copy of it sat
+    forty lines away. This one asks whether any WRONG string is present, which is the question
+    that actually matters when a figure appears more than once.
+    """
+    if not os.path.exists(README):
+        return []
+    text = readme_live(open(README).read())
+    flat, bad = _flat(text), []
+    counts, n = subject_counts()
+    cells = sum(1 for _ in csv.DictReader(open("subject-treatment.csv")))
+
+    def triple(label, sid, g):
+        re_, ex, res = counts[sid]
+        if [g[0], g[2], g[4]] != [re_, ex, res] or {g[1], g[3], g[5]} != {n}:
+            bad.append((f"README row {label}",
+                        f"{re_}/{n} {ex}/{n} {res}/{n}, page says "
+                        f"{g[0]}/{g[1]} {g[2]}/{g[3]} {g[4]}/{g[5]}"))
+
+    TRIP = r"\*?\*?(\d+)/(\d+)\*?\*? \| \*?\*?(\d+)/(\d+)\*?\*? \| \*?\*?(\d+)/(\d+)"
+    for sid in counts:                                   # rows carrying the column name
+        for m in re.finditer(rf"`{sid}` \| " + TRIP, text):
+            triple(sid, sid, [int(x) for x in m.groups()])
+    for label, sid in SUB_LABELS.items():                # the leadership sub-item table
+        for m in re.finditer(rf"\| \*?\*?{re.escape(label)}\*?\*? \| " + TRIP, text):
+            triple(label, sid, [int(x) for x in m.groups()])
+
+    # Every occurrence, not merely one correct occurrence.
+    for m in re.finditer(r"(\d+) of (\d+) MDLs with a readable initial order cite", text):
+        if [int(m.group(1)), int(m.group(2))] != [s["cite"], s["coded"]]:
+            bad.append(("README headline", f"{s['cite']} of {s['coded']}, page says {m.group(0)}"))
+    for m in re.finditer(r"\*\*(\d+) of (\d+) cells\*\*", text):
+        if [int(m.group(1)), int(m.group(2))] != [cells, cells]:
+            bad.append(("README cell count", f"{cells} of {cells}, page says {m.group(0)}"))
+    # Same shape again: these rows appear in two coverage tables, so asking whether the right
+    # number is present somewhere passes while one of them is wrong.
+    for label, pat, want in (
+            ("universe", r"\| Universe[^|\n]*\| \*\*(\d+)\*\* \|", s["universe"]),
+            ("coded", r"\| Readable initial order in hand and coded \| \*\*(\d+)\*\* \|", s["coded"]),
+            ("no order yet", r"\| No qualifying order yet[^|\n]*\| \*\*(\d+)\*\*", s["no_order"]),
+            ("blocked", r"\| Blocked, orders? confirmed to exist[^|\n]*\| \*\*(\d+)\*\*", s["unread"]),
+    ):
+        found = list(re.finditer(pat, text))
+        if not found:
+            bad.append((f"README {label} row", f"expected a row stating {want}; found none"))
+        for m in found:
+            if int(m.group(1)) != want:
+                bad.append((f"README {label} row", f"{want}, page says {m.group(1)}"))
+    return bad
 
 
 def assert_links():
@@ -719,7 +822,7 @@ def main():
     # literal is untouched by prerender and still gets caught. Running the check on the
     # unrendered page made every span-held count a build failure, which meant a person had to
     # retype a number the build already knew. That is the opposite of what this guard is for.
-    drifted = check_prose(prerender(page, s))
+    drifted = check_prose(prerender(page, s)) + check_readme(s)
 
     print(f"universe {s['universe']} · coded {s['coded']} · cite {s['cite']} · "
           f"no-cite {s['nocite']} ({s['pct']}%) · intervals {s['intervals']} "

@@ -2251,3 +2251,66 @@ rate limits and the clock, not from the log, which is not a position to be in tw
 Whether the classifier agrees with the hand triage. The run that would have answered that was
 cancelled before it finished. Nothing in this entry is evidence about the classifier's
 accuracy, only about the harness that was supposed to measure it.
+
+---
+
+## 14 August 2026 — the README was a version behind, and the guard was pointed at one file
+
+`index.html` has been correct all week because `build.py` refuses to publish when a figure in
+its prose stops matching the CSVs. `README.md` is the repository's front door, the first thing
+anyone assessing this dataset reads, and nothing had ever checked it. It was a full version
+behind.
+
+| | README said | data said |
+|---|---|---|
+| Headline | 7 of 14 cite the Rule | **8 of 15** |
+| Subject coding | 280 cells, 14 orders | **300 cells, 15 orders** |
+| Least-addressed subject | two, tied at 7/14 | **one, at 8/15** |
+| Universal subjects | both 14 of 14 | both **15 of 15** |
+| Block rate | 6%, one blocked order | **0%**, none |
+| Resolution rate, citing / non-citing | 16% / 28% | **19% / 27%** |
+
+Every one of the nine subject rows it quoted was wrong. Facilitating resolution had moved from
+7/14 to 10/15 under codebook v1.1, so the sentence calling it tied for least-addressed was
+wrong twice. The "four things to do next" listed a PACER pull that was completed on 13 August
+and a pin-cite backfill that is now at 100%.
+
+**One result got stronger and nobody had noticed.** No non-citing order reaches periodic
+review of leadership appointments. With MDL 3187 added it is 8 of 8 against 0 of 7, Fisher
+exact p = 0.0002, and it now holds on express coverage too, 5 of 8 against 0 of 7, p = 0.03.
+The README still recorded it as holding on inclusive coverage and failing on express, which
+was the honest reading of the older data and is no longer the reading of this data.
+
+### What changed
+
+Every figure in the sections that present themselves as current state was recomputed and
+rewritten. The dated passes were left exactly as they are: they are a log, and a log that gets
+retconned stops being evidence of how the project moved. The README now says so at the top,
+and names "WHERE THIS STANDS" as the only current section.
+
+`build.py` gained `check_readme()`. It asserts every subject-table row, both coverage tables,
+the headline and the cell count against the CSVs, and it deliberately reads only the
+current-state sections.
+
+**The guard's first version was wrong in the way this project keeps being wrong.** It copied
+`check_prose`'s shape, which asks whether the RIGHT string is present. That passes as long as
+one correct copy survives. The headline appears twice; corrupting one copy left the other, and
+the test reported clean. Rewritten to ask whether any WRONG value is present. Nine deliberate
+corruptions were injected and all nine are caught, including one that changes only a
+denominator and one that corrupts a single occurrence of a figure appearing twice; a stale
+figure planted inside a dated pass correctly does not fail the build.
+
+### The pattern, stated once
+
+Five failures today, all the same shape. The date filter that could not return a counterexample.
+The first watch design that would have zeroed every triage figure while the arithmetic balanced.
+Twelve dead links under a build that verified clean. A backfill that would have certified itself
+on half a ledger. And a prose guard that could not see the file it was written to protect. In
+every case the check existed, ran, and reported success, because it was not aimed at the thing
+that broke.
+
+### Flagged rather than rewritten
+
+The claim that the readable orders represent as many distinguishable approaches was made of
+fourteen orders and has not been re-examined since MDL 3187 was added. It is marked in place as
+unreviewed. It is a judgment about the orders, not a count, and it is not mine to make.
