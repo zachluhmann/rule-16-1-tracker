@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       backfill:
-        description: "Score the triage classifier against the hand triage (run once, ~2.5 hours)"
+        description: "Score the triage classifier against the hand triage (run once, ~2 hours; paced by CourtListener's 50/hour cap)"
         type: boolean
         default: false
 
@@ -32,7 +32,7 @@ concurrency:
 jobs:
   watch:
     runs-on: ubuntu-latest
-    timeout-minutes: 350        # the backfill classifies ~101 documents at 5 requests/minute
+    timeout-minutes: 350        # ~110 requests against a 50/hour cap is a little over two hours
     steps:
       - uses: actions/checkout@v4
 
@@ -47,6 +47,7 @@ jobs:
         id: watch
         continue-on-error: true
         env:
+          PYTHONUNBUFFERED: "1"      # or nothing reaches the log until the process exits
           COURTLISTENER_TOKEN: ${{ secrets.COURTLISTENER_TOKEN }}
           # Optional. Without either key the model tier is skipped entirely and anything no
           # published rule can decide is counted `hits_unverified` and raised in an issue,
@@ -78,6 +79,13 @@ jobs:
             echo "nothing to commit"
           else
             git commit -m "watch: ${{ steps.watch.outputs.title || 'run' }}"
+            # Rebase before pushing. This job checks out a commit and then works for up to
+            # two and a half hours, so a human commit landing in the meantime would make the
+            # push a non-fast-forward, fail the step, and throw away everything the run
+            # computed. Not hypothetical: it nearly happened on the first backfill. Left to
+            # fail loudly on a real conflict rather than papered over with `|| true`, because
+            # two writers disagreeing about a data file is not something to resolve silently.
+            git pull --rebase origin "${GITHUB_REF_NAME:-main}"
             git push
           fi
 
