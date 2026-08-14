@@ -75,6 +75,9 @@ CATS = {"post_effective_mdl": "hits_in_post_effective_mdl",
 # classifier OVER-counts a category passes trivially when most documents are missing from it.
 # A silent underfill that validates itself is the exact failure this project keeps finding.
 LIMITS = ((5, 60), (50, 3600), (125, 86400))
+# Stop reading with time to spare against the job's 350-minute timeout, so the run ends by
+# writing what it has rather than by being killed holding it.
+BUDGET_SECONDS = int(os.environ.get("BACKFILL_BUDGET_SECONDS", 300 * 60))
 _hist  = []
 THROTTLE = None          # set to a float in tests to bypass the limiter
 
@@ -262,11 +265,22 @@ def backfill(today, reg):
         return None, "positive control absent; refusing to score anything"
 
     union = sorted(set().union(*now_forms.values()))
-    print(f"backfill: {len(union)} documents", flush=True)
     ledger, by_sha1, failed = read_ledger(), {}, {}
+    todo = [d for d in union if d not in ledger]
+    print(f"backfill: {len(union)} documents, {len(todo)} still to read", flush=True)
+    # A backfill can take longer than the quota allows in one day, and the account's daily
+    # allowance is shared with whatever else ran. So it works to a wall-clock budget, writes
+    # the ledger as it goes, and stops cleanly with an honest partial result rather than being
+    # killed by the job timeout with everything still in memory. A partial run fails the
+    # validation, which is correct: re-running resumes from the ledger.
+    deadline = time.time() + BUDGET_SECONDS
     for i, doc_id in enumerate(union, 1):
         if doc_id in ledger:
             continue
+        if time.time() > deadline:
+            print(f"  budget spent with {len([d for d in union if d not in ledger])} "
+                  f"documents unread; stopping cleanly. Re-run to resume.", flush=True)
+            break
         forms = [f for f in now_forms if doc_id in now_forms[f]]
         try:
             ledger[doc_id] = classify_one(doc_id, forms, meta, reg, by_sha1, today)
@@ -278,6 +292,8 @@ def backfill(today, reg):
         if i % 10 == 0 or ledger[doc_id]["category"] == "unverified":
             print(f"  {i}/{len(union)} {doc_id} -> {ledger[doc_id]['category']} "
                   f"({ledger[doc_id]['rule']})", flush=True)
+        if i % 10 == 0:
+            write_ledger(ledger)     # nothing read should be lost to a timeout
     write_ledger(ledger)
 
     rows, _ = read_searches()
