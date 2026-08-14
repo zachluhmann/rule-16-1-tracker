@@ -1561,3 +1561,528 @@ cannot tell which.
 The recommendation attached to the deliverable is therefore a hybrid: run all 49 through the
 model, and code a dozen by hand as a human anchor. Without the anchor there is no way to know
 whether the model's pass tracks a human reading at all.
+
+---
+
+## 14 August 2026 — pass 2 came back from a model, and the prediction was wrong
+
+**Provenance, settled before anything else: pass 2 was coded by GPT-5.6 Sol, not by a
+person.** The returned file was named for the human coder, which is why this entry asks the
+question first. It is a model pass. It is not inter-rater reliability, it is not reported as
+such, and the site's disclosure that this project has one coder and no second rater stands.
+
+Sol coded all 49 cells against the sanitised codebook, without `coding-decisions.md` and
+without the reliability protocol section.
+
+| | agree | n | kappa |
+|---|---:|---:|---:|
+| `reached` | 46 | 49 | 0.859 |
+| `express` | 46 | 49 | 0.874 |
+| `party_direction` | 46 | 49 | 0.878 |
+| `court_resolution` | 45 | 49 | 0.728 |
+
+**Attribute level: 183 of 196, 93%. Cell level: 42 of 49, 86%.** Quote the cell figure. The
+four fields are logically nested, so one disputed cell can produce up to four disputed
+attributes and the 196 comparisons are not independent. `score_reliability.py` now prints
+both and says which one flatters the result.
+
+### First: did it actually read the orders?
+
+Worth asking, because a model that inferred from the `source_document` caption and general
+familiarity with MDL practice would produce plausible codings and a meaningless agreement
+rate. Tested against pass 1's independently recorded quotes. All seven of Sol's notes name a
+provision that pass 1 also quotes, several near-verbatim:
+
+- On MDL 3181 Sol wrote "the later-filed-cases clause applies the order to related actions
+  filed in the transferee court." Pass 1's quote of ¶ 6.f: "Later Filed Cases. This Order
+  shall also apply to related cases later filed in, removed to, or transferred to this Court."
+- On MDL 3171 Sol wrote "the order separately fixes automatic consolidation of actions filed
+  in the district." Pass 1's quote of ¶ 1: "Any tag-along action transferred to this Court or
+  filed in this District will be automatically consolidated."
+- On MDL 3175 Sol wrote "a separate sentence expressly refers to lawyers seeking leadership
+  positions." Pass 1's quote: "Any lawyer who seeks a leadership position in the case..."
+
+The orders were read. That materially raises confidence in the 86% and it is the check that
+should run before any agreement figure from a model pass is believed.
+
+### The pre-registered prediction was wrong in an informative way
+
+Recorded 12 August, before any cell was coded:
+
+> Agreement should be highest for `reached` and `express`, which are close to mechanical.
+> Disagreement is expected to **concentrate in `party_direction` and `court_resolution`**.
+
+`court_resolution` does have the weakest kappa, 0.728. Everything else missed. Raw agreement
+is flat across all four fields, 94/94/94/92, and `party_direction` produced the **highest**
+kappa of the four at 0.878 after being named as an expected trouble spot.
+
+**Disagreement did not concentrate in an attribute. It concentrated in a document.** Seven of
+the thirteen attribute disagreements, and two of the seven disputed cells, are MDL 3172, the
+one entry whose "order" is two documents entered four months apart: an Order Upon Transfer of
+18 February 2026 and a chambers letter of 22 June 2026.
+
+Both disputes there are boundary questions, not definitional ones. Pass 1 read the letter's
+proposal-and-hearing calendar as fixing the timing of leadership appointments; pass 2 read the
+February order as silent. Pass 1 read "Magistrate Judge Patricia S. Harris may join our call
+and is assigned to this litigation with me" as stating an assignment rather than a referral;
+pass 2 read it as reaching the subject.
+
+The codebook defines the four fields at length and says almost nothing about what counts as
+the order when the order is compound. **That is the first amendment this exercise has earned:
+the unit of observation needs a rule for compound documents.**
+
+### The seal did its job, and this is the strongest result
+
+**Four of the seven disputed cells turn on an application rule from `coding-decisions.md`,
+which was deliberately withheld from pass 2.** R1, R3 and R6 are load-bearing in pass 1 and
+none of them appears in the published codebook.
+
+Those four are not coder disagreement. They are the published codebook being incomplete
+relative to how pass 1 was actually performed. A reader given only the public document cannot
+reproduce those codings, which is exactly what sealing the rules was designed to detect.
+
+MDL 3166 / `b2a_communication` is the clearest instance. Sol coded `court_resolution` TRUE and
+pointed at interim liaison counsel's notice-transmission role, which is a real provision. Pass
+1 coded FALSE under R3, which fires resolution only where the operative language is about the
+coded subject. Sol found the right text and applied a rule it was never given.
+
+The resolution is to promote R1, R3 and R6 into the codebook, or to re-code those cells
+without them. That choice is substantive and should be made deliberately rather than by
+default.
+
+### What this does and does not license
+
+It does not retire the no-second-rater disclosure. Agreement between two models is weak
+evidence, because correlated error is indistinguishable from a clear definition, and the
+report of this figure must say who coded it.
+
+The two structural findings, though, do not depend on the coder being human. A boundary the
+codebook does not draw is undrawn for any reader, and a codebook that cannot reproduce its own
+codings without a sealed annex is incomplete for any reader. Those two survive the label.
+
+### Next
+
+`reliability-tiebreak.csv`, 15 cells: the 7 disputed plus 8 where the passes agreed, shuffled
+so the human coder cannot tell which is which. Naming the disputed cells would prime exactly
+the hesitation this is meant to measure. The 7 get a human tiebreak; the 8 test whether the
+human tracks pass 1 on cells that were never in doubt.
+
+---
+
+## 14 August 2026 — correcting an entry from yesterday that was already false when written
+
+The entry above headed "MDL 3187 — worse than recorded, and the record now says how" says that
+no search of any kind can reach that MDL and that the only paths are PACER, Bloomberg or
+Westlaw. The retrieval facts in it are accurate. The conclusion was stale by the time it was
+written: **MDL 3187 had already been obtained from Bloomberg Law that same day**, and its row
+now reads `TEXT_AVAILABLE`, `cites_rule = YES`, `AGENDA`, with all twenty subjects coded and a
+paragraph-level record including a missing paragraph 15.
+
+The mistake is worth naming because it is a new shape. Yesterday's work re-ran the retrieval
+ladder against the outside world and confirmed, correctly, that no free source carries those
+orders. It never re-read the dataset's own row to ask whether the block still existed. **The
+world was re-verified and the record was not**, and the two had diverged in the hours between.
+
+That is the mirror image of the error this project spent two days correcting. There the query
+was wrong and the data was trusted; here the data had moved and the query was trusted. The
+rule that covers both: before reporting that something is blocked, missing or absent, re-read
+the row that says so and check its `date_accessed`.
+
+The stale conclusion is left standing above rather than edited out, with this correction
+appended, which is the convention this log has used throughout.
+
+---
+
+## 14 August 2026 — the sealed annex predicts every disagreement in the sample
+
+Ran the obvious test on the pass 2 result. Split the 49 sampled cells by whether pass 1's
+coding note invokes an application rule from `coding-decisions.md`, the file withheld from the
+second coder.
+
+| | disputed | total | rate |
+|---|---:|---:|---:|
+| Needed a sealed application rule | **4** | 4 | **100%** |
+| Codebook alone was enough | 3 | 45 | 7% |
+
+**Fisher exact, two-tailed: p = 0.00017.**
+
+Four cells is a small number and the estimate is correspondingly wide. But the split is
+perfect: every sampled cell that depended on R1, R3 or R6 was disputed, and the cells the
+public codebook covers on its own agreed at 93%. The sealed annex is not a supplement to the
+codebook. In this sample it is exactly the part a second reader cannot reconstruct, and it
+accounts for every failure to reconstruct.
+
+Read the other way, this is the strongest thing the reliability pass has said in the
+codebook's favour. **Where the published definitions suffice, they work.** 42 of 45 cells
+agreed with a coder who had never seen this project, which is a better result than the
+headline 86% suggests.
+
+### R4 was never tested
+
+`coding-decisions.md` says of R4, on anticipated topics versus directed content: "the single
+decision with the largest effect on the numbers. Without it MDL 3163 would show 14 directed
+subjects instead of 4."
+
+**No R4-dependent cell was drawn into the sample.** The stratified draw balanced orders and
+subjects, which is what it was designed to do, and nothing in it was aware that some cells
+carry more interpretive weight than others. So the lever with the largest effect on the
+published figures has had no independent reading at all.
+
+That is a gap in the instrument, not in the codebook, and it argues for a second small sample
+drawn deliberately over the application rules rather than over orders and subjects. Recorded
+here so the next pass does not repeat the omission.
+
+---
+
+## 14 August 2026 — R5 was stated and then departed from, on the order that broke the tie
+
+Checking the compound-document gap turned up something worse than a gap.
+
+**R5, as written:** "The coded unit is the order that sets up the Rule 16.1(a) conference and
+the Rule 16.1(b) report, together with any companion document entered the same day by the same
+judge."
+
+**MDL 3172 is coded from an Order Upon Transfer of 18 February 2026 and a chambers letter of
+22 June 2026.** Four months apart. R5 by its own terms does not reach that letter, and pass 1
+used it anyway. **Thirteen of that order's twenty subject rows draw on the letter and four rest
+on it alone**: `b2a_timing`, `b2a_structure`, `b2a_compensation`, `b2e_related_actions`.
+
+MDL 3170, the other compound entry, is clean: two orders entered the same day by the same
+judge, exactly what R5 describes. So this is one order out of step with a rule that fits
+everywhere else, and the reliability pass found it. Seven of the thirteen attribute
+disagreements are MDL 3172, and the second coder's reading is the one R5 as written supports.
+
+### It moves a published figure
+
+If R5 is enforced and the letter-only rows drop, MDL 3172 falls from 12 subjects reached to 8,
+and the median inclusive coverage among orders that do not cite the Rule moves from 12 to 10.
+That figure is on the site. This is not housekeeping.
+
+### The choice, stated plainly
+
+**Widen R5** to admit a later chambers letter that does the Rule's work. The coding stands, and
+the unit of observation becomes open-ended, needing a principle better than "the documents I
+happened to read."
+
+**Enforce R5** and re-code MDL 3172 from the February order alone. Four rows drop, six need
+re-reading, a published median moves, and the dataset regains internal consistency.
+
+Not resolved here. Recorded so that whichever way it goes, the record shows the departure was
+found by the reliability pass rather than asserted away.
+
+### Method note
+
+The check that found this was mechanical: read each application rule, then test the dataset
+against it rather than against the orders. R5 says "same day"; two entries are compound; one of
+them is not same-day. Nothing in the build or the validator knew R5 existed, so nothing could
+have caught it. **Every rule in `coding-decisions.md` states a testable condition and none of
+them is currently tested.** Turning the other seven into assertions is the obvious next piece
+of work on the instrument.
+
+---
+
+## 14 August 2026 — a third reading of the tiebreak cells, and why its verdict counts for less than it looks
+
+An OpenAI model was asked to argue both sides of each of the 15 tiebreak cells and recommend,
+without being told which 7 were disputed. It reached 14 and declined the fifteenth.
+
+| | n |
+|---|---:|
+| All three readings agree | 8 |
+| Third reading sides with Sol against pass 1 | 5 |
+| Third reading sides with pass 1 against Sol | 1 |
+| Declined for want of source text | 1 |
+
+**The 8 controls all came back identical.** Every cell where pass 1 and Sol already agreed was
+reproduced. That is the validity check the design was for: a reader that got the uncontested
+cells wrong could not be trusted on the contested ones.
+
+**It also declined to code item 35 rather than invent it.** MDL 3180's ECF 3 is not in RECAP,
+which is why this project obtained that order outside RECAP in the first place. The third
+reading found the same wall, said so, and stopped. A pass that fabricates a coding for an order
+it cannot read is worse than no pass, and this one did not.
+
+### Why "5 of 6 against pass 1" is not the headline
+
+Both the second and third readings came from the same vendor's model family. **This is one
+model family voting twice, not two independent readers.** Correlated error is exactly the
+hazard recorded when a model pass was first proposed, and it is present here in its purest
+form. The vote does not move the evidence much.
+
+The reasoning does, because reasoning can be assessed on its own terms regardless of who
+produced it. Three of the six contested readings are worth taking seriously and one is not.
+
+### Item 3 is the most serious, and it is not the R5 problem
+
+On MDL 3172 `b2a_timing` the third reading argues that the August 19 proposal deadline and the
+August 26 hearing are **selection-procedure** facts, not **appointment-timing** facts, and that
+this dataset codes those as separate subjects. Pass 1's R6 makes timing express wherever the
+appointment process sits on "a fixed calendar," which sweeps a selection calendar into the
+timing cell.
+
+If that is right, R6 is not merely unpublished. It is mis-specified, and it double-counts one
+set of facts across two subjects. **That is a stronger criticism of R6 than anything the
+reliability pass produced**, and it is independent of the R5 compound-document question, which
+had been the assumed explanation for everything wrong with MDL 3172.
+
+### Item 47 and item 22 join the R3 question directly
+
+Both turn on R3, that a provision fires resolution only where its operative language is about
+the coded subject. The third reading rejects R3's application in both, at high confidence on
+item 47: it reads MDL 3166 ¶ 6, which makes liaison counsel responsible for transmitting the
+court's orders, as fixing an operative communication duty.
+
+This does not show R3 is wrong. It shows R3 is not derivable from the published codebook, which
+was already established. It does sharpen the choice: R3 is doing enough work that two readings
+without it diverge from pass 1 on every cell it touches.
+
+### Item 22 is where the third reading is weakest
+
+It codes `court_resolution` TRUE on "Magistrate Judge Patricia S. Harris may join our call and
+is assigned to this litigation with me," reasoning that the court has at least fixed who the
+assigned magistrate judge is. Rule 16.1(b)(3)(F) asks whether **matters should be referred**. A
+docket assignment is not a referral, no matter is identified, and the reading concedes as much
+in its own case for FALSE before recommending TRUE anyway. Pass 1 is more persuasive here and
+the third reading's own confidence is only medium.
+
+### Where this leaves the two decisions
+
+Nothing here resolves them, and the vote should not be treated as though it does. What it
+supplies is a fully argued brief on both sides of fourteen cells, which is what the exercise
+was for, and one criticism of R6 that had not been made by anyone.
+
+`reliability-threeway.csv` holds all three readings side by side with the confidence rating.
+`tiebreak-analysis.md` holds the argument. **The human pass is still outstanding and is now the
+only reading that would break the tie rather than lengthen it.**
+
+---
+
+## 14 August 2026 — an outside review, three hits on this log and one miss
+
+An OpenAI model was given a neutral brief on both open decisions and asked to push back. Its
+recommendation is a modified Option C: version the instrument, adopt R1, adopt a tightened R6,
+**do not adopt R3**, re-code the whole dataset under the amended instrument, treat the 49 cells
+as development rather than validation, and estimate reliability on a fresh blind sample.
+Enforce R5 now and add a separately labelled episode-level view later if wanted.
+
+Four of its criticisms are checkable. Three land.
+
+### Hit 1. R3 conflicts with the frozen definition, and the codebook says so in terms
+
+Verified against the codebook. `court_resolution` is defined as TRUE where the court "fixes the
+operative treatment of the subject," and the file then says explicitly:
+
+> **Partial resolution within a subject.** Several of the twenty subject IDs are broad enough
+> that a court may resolve one component and leave another open. … `court_resolution = TRUE`
+> therefore means **the court has made at least one operative determination within the coded
+> subject.** It does not assert that the whole subject is closed.
+
+R3 asks instead what a paragraph is *principally about*. On MDL 3166 ¶ 6, a duty requiring
+liaison counsel to transmit the court's orders and notices to nonleadership counsel is at least
+one operative determination within "methods for communicating with and reporting to the court
+and nonleadership counsel," whatever else the paragraph is principally doing. **R3 silently
+narrows a construct the codebook had already defined broadly**, and it does so without saying
+that the twenty subjects are mutually exclusive, which the codebook nowhere states.
+
+The proposed replacement is better because it is observable: the language must independently
+prescribe, prohibit, continue or solicit treatment mapped to that subject. No dominant-purpose
+test.
+
+### Hit 2. The unit violation is worse than R5
+
+The review found textual support this log had missed. The codebook's own schema, not merely
+R5, defines the unit:
+
+> **Subject × order.** One row per Rule 16.1 subject per source document.
+
+> `order_id` — The specific source document, not just the MDL. **An MDL with two orders
+> produces two sets of rows.**
+
+Checked: MDL 3172 carries **one** `order_id`, `3172-order1`, for twenty rows drawn from two
+documents four months apart. MDL 3170 carries one `order_id` for two orders as well, though
+those were entered the same day by the same judge and are at least within R5.
+
+So the departure is not a gap in an unpublished annex. It is inconsistent with the published
+schema, which says two source documents produce two row sets. That materially strengthens the
+case for enforcing rather than widening.
+
+### Hit 3. This log mis-explained the MDL 3172 disagreement cluster
+
+The entry above says pass 2 "read the February order as silent" where pass 1 read the June
+letter as controlling. **That explanation is wrong, and the second-coder instructions prove
+it**: line 36 of that file tells the coder "MDL 3172 is the Order Upon Transfer of 18 February
+2026 and the chambers letter of 22 June 2026 read together." Both later readings had the letter
+and quoted from it.
+
+The disagreement was never about which documents to read. It is about whether the letter's
+proposal deadline and hearing date are **appointment-timing** facts or **selection-procedure**
+facts, which is the R6 question and nothing to do with R5. The unit problem is real and was
+found here; it simply is not the cause of this cluster. Corrected.
+
+### Miss. The disagreements are reproducible
+
+Point 7 says `reliability-zach.csv` and `reliability-sol.csv` are byte-for-byte identical and
+that "as presently packaged, they cannot reproduce the reported disagreements." The first half
+is true and is this project's own sloppiness: the second pass was returned under the human
+coder's name, renamed once provenance was established, and the misnamed copy was never removed
+from the packet folder.
+
+The second half is wrong. Re-ran it: `reliability-sol.csv` scored against
+`subject-treatment.csv` reproduces 183 of 196 attributes and 42 of 49 cells exactly. The
+duplicate is a naming failure, not an evidentiary one. Worth recording because a reviewer who
+sees two identically sized files with different coders' names will reach for the worst
+inference, and here that inference happened to be wrong.
+
+### On the p-value, the review is right and this log was overconfident
+
+Fisher's exact test assumes the units are independent or exchangeable. These cells are
+clustered within orders and within interpretive rules, so they are neither. Worse, and this log
+should have said so unprompted: **the rule-dependence classification was computed after the
+disagreements were known.** That is post-selection, and a p-value computed on a split chosen
+after seeing the outcome is not an inferential estimate.
+
+Adopting the review's suggested wording for the main text, which states the pattern without the
+inference:
+
+> All four sampled cells whose first-pass coding relied on an unpublished application rule were
+> disputed, compared with three of the other forty-five. Because only four rule-dependent cells
+> were sampled, and cells are clustered within orders and interpretive rules, we treat this as a
+> diagnostic pattern rather than an inferential estimate.
+
+The p-value moves to a methodological appendix or comes out entirely.
+
+---
+
+## 14 August 2026 — the v1.1 recode, and why the full pass was the right call
+
+Codebook v1.1 published. The whole dataset re-coded against it by a model that did not write
+it, in one pass, 300 cells.
+
+**The pass is clean.** All 300 coded, **zero violations of the nesting constraints**, 131 notes
+of which 99 name the application rule that decided the cell. That last figure is what makes
+the pass auditable and it was the point of asking for it.
+
+Against pass 1, which used v1.0: **265 of 300 cells agree, 88%.** At the attribute level, 1,138
+of 1,200, 95%. Higher than the 86% the blind sample produced, which is the expected direction:
+v1.1 publishes the rules that were causing the disagreements.
+
+### Coding all 300 rather than the 35 predicted cells was right, and the numbers say why
+
+This log scoped a 35-cell re-code by asking which cells' pass-1 notes invoked a rule that was
+changing. The full pass tests that prediction:
+
+| | moved | total | rate |
+|---|---:|---:|---:|
+| Predicted to move | 12 | 35 | 34% |
+| Everything else | 23 | 265 | 9% |
+
+The prediction beat chance by about four to one, so the amendments are doing targeted work.
+**But 23 cells moved that the prediction missed, against 12 it caught.** A 35-cell patch would
+have applied v1.1 to a third of the cells v1.1 actually changes and left the rest coded under a
+superseded instrument, with no way to know.
+
+The reason is exactly the circularity an outside review had already flagged: the 35 were
+derived from pass 1's own coding notes, so a cell whose pass-1 coder never recorded a rule
+could not appear on the list however much v1.1 moves it. **A scoping estimate built from the
+artefact being corrected cannot bound the correction.**
+
+### What each amendment did
+
+- **R3 replaced:** 5 of 11 cells moved. Three flipped FALSE to TRUE on `court_resolution`,
+  which is what the replacement predicts, including MDL 3166 `b2a_communication`, the cell an
+  outside reading had argued about by name. **Two flipped the other way**, MDL 3187
+  `b2a_selection_procedure` and `b3g_principal_issues`, which the replacement does not predict
+  and which need reading.
+- **R6 tightened:** 2 of 3 moved.
+- **R1 published unchanged:** 0 of 3 moved, which is the correct result for a rule that did not
+  change.
+- **R5 enforced:** 6 of MDL 3172's 20 cells moved, consistent with the four rows that rested on
+  the June letter alone plus two of the six that cited both documents.
+
+### Effect on the headline figures, not yet published
+
+Non-citing inclusive coverage median falls **12 to 10**, exactly the cost predicted when R5 was
+enforced. Citing coverage is unchanged at 20 and the two universal subjects stay at 15 of 15.
+The resolution inversion, non-citing orders deciding a larger share of what they raise, not
+only survives but widens.
+
+**Nothing from this pass is on the site.** Pass 1 remains canonical. `v11-adjudicate.csv` holds
+the 35 disputed cells with both codings, both notes, and pass 1's pin cite and quote, sorted so
+the twelve predicted cells come first. Each needs a decision, and the site changes only after
+that.
+
+---
+
+## 14 August 2026 — adjudication, and the site moves
+
+Two adjudicators on the 35 cells the v1.1 recode changed. I took the ten that v1.1 had changed
+with no note, on the ground that a silent change is where drift hides. An OpenAI model took all
+35 from a blind packet labelling the two readings A and B with no indication which was which.
+
+**On the ten we both judged, we agreed on six and split on four.**
+
+Of the four splits, **I conceded three**:
+
+- **MDL 3179 `b2a_structure`.** I read "confer regarding the selection of lead and liaison
+  counsel" as prescribing a two-role structure. The other reading is sharper: conferring about
+  *selection* is a selection step, which is the same distinction v1.1's tightened R6 draws
+  between selection procedure and appointment timing, applied to structure. I had it backwards.
+- **MDL 3181 `b2a_leadership`.** I treated the designation of two named attorneys as an interim
+  appointment and therefore resolution. **R7 is my own rule and I failed to apply it**: a
+  court-created coordinating role counts as leadership only where the order gives it a
+  leadership title, and this order gives none.
+- **MDL 3178 `b3g_principal_issues`.** I had flagged this as genuinely arguable when I called
+  it. Two independent readings went the other way.
+
+**One I held, and the reason matters more than the outcome.** MDL 3171 `b2a_responsibilities`.
+The other adjudicator reasoned correctly from what it was shown and was shown too little.
+
+### The blind packet inherited pass 1's blind spots
+
+The `evidence_quote` column in the adjudication packet carried **pass 1's quote**. That is pass
+1's *selection* of what matters. On any cell where pass 1 under-quoted, the second adjudicator
+could not see the language that would change the answer, and the packet therefore biased toward
+reading A on exactly the cells where pass 1 was weakest.
+
+MDL 3171 is the demonstration. The packet carried the agenda item at ¶ 9(ii), "the
+responsibilities and authority of lead counsel." Fetching the order shows ¶ 7: the point of
+contact "shall be authorized to receive orders and notices on behalf of all Plaintiffs and
+shall be responsible for the preparation and transmittal of copies of such orders and notices."
+That is operative language pass 1 never quoted, so the blind adjudicator never saw it.
+
+**Five of the 35 cells went to the second adjudicator with no quoted evidence at all.** Those
+resolutions are the weakest in the set and are flagged in `v11-resolved.csv`.
+
+The lesson generalises past this project: **a blind review packet built from one pass's
+evidence selection is not blind to that pass.** It carries its omissions forward as if they
+were the record. Next time the packet ships the order text, not a quote.
+
+### Result
+
+**22 of 35 cells amended, 13 held.** `subject-treatment.csv` rows carry
+`pass = "1 (v1.0), amended v1.1"` and the reason in `coding_note`. The validator was extended
+to accept that value rather than have amended provenance masquerade as a fresh pass.
+
+Four amended cells needed a pin cite and quote that pass 1 had never recorded, because pass 1
+coded them FALSE and the evidence rule only bites on TRUE. Supplied and marked. **That is a gap
+in the instrument worth naming: a codebook that requires evidence only for positives cannot
+audit its own negatives.**
+
+### What moved on the page
+
+| | was | now |
+|---|---:|---:|
+| Non-citing median coverage, of 19 | 11 | **9** |
+| Non-citing spread | 4 to 14 | **3 to 15** |
+| Citing spread | 18 to 19 | **19 to 19** |
+| Express medians, citing / non-citing | 18 / 11 | **19 / 9** |
+| Resolution rate, citing / non-citing | 19% / 28% | **19% / 27%** |
+| Least-addressed subject | two, at 7 of 14 | **one, at 8 of 15** |
+
+Every headline finding survives. The gap between citing and non-citing orders **widens** rather
+than closing, and the resolution inversion holds. `build.py` refused four times during this
+edit until the prose matched, which is the guard working.
+
+One guard needed fixing rather than satisfying: it hard-coded "The least-addressed items are
+… each" and the amendments left exactly one subject at the floor, so it demanded ungrammatical
+prose. Now generates its own number agreement.

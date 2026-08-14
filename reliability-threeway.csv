@@ -1,0 +1,16 @@
+item,mdl_no,subject_id,was_disputed,gpt_confidence,pass1_reached,sol_reached,gpt_reached,pass1_express,sol_express,gpt_express,pass1_party_direction,sol_party_direction,gpt_party_direction,pass1_court_resolution,sol_court_resolution,gpt_court_resolution,verdict
+3,3172,b2a_timing,YES,medium,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,GPT sides with Sol
+4,3181,b3f_magistrate_master,no,high,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,all three agree
+5,3179,b2a_periodic_review,no,high,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,all three agree
+22,3172,b3f_magistrate_master,YES,medium,FALSE,TRUE,TRUE,FALSE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,TRUE,TRUE,GPT sides with Sol
+25,3175,b2a_periodic_review,no,high,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,all three agree
+27,3175,b2a_leadership,YES,medium,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,TRUE,TRUE,FALSE,FALSE,FALSE,GPT sides with Sol
+28,3174,b2b_vacate_modify,no,high,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,all three agree
+32,3171,b2a_selection_procedure,no,high,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,all three agree
+35,3180,b3b_factual_basis_exchange,YES,low,TRUE,TRUE,NOT_CODED,TRUE,TRUE,NOT_CODED,TRUE,TRUE,NOT_CODED,TRUE,FALSE,NOT_CODED,GPT DECLINED - no source text in RECAP
+37,3163,b3b_factual_basis_exchange,YES,medium,TRUE,FALSE,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,GPT sides with pass 1
+39,3170,b2a_communication,no,high,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,all three agree
+40,3171,b2e_related_actions,no,medium,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,all three agree
+41,3181,b2d_direct_filing,YES,medium,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,TRUE,TRUE,TRUE,GPT sides with Sol
+46,3174,b3b_factual_basis_exchange,no,high,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,all three agree
+47,3166,b2a_communication,YES,high,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,TRUE,TRUE,GPT sides with Sol

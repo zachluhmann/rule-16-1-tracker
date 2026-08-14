@@ -1,8 +1,27 @@
 # Subject-treatment codebook
 
-**Status: definitions frozen 12 August 2026 after testing against five awkward
-provisions (below). No cells coded yet. Any change after pass 1 begins invalidates
-the pass.**
+**VERSION 1.1, 14 August 2026.**
+
+**Status of v1.0:** definitions frozen 12 August 2026 after testing against five
+awkward provisions (below), then used for the whole of pass 1.
+
+**Status of v1.1:** amended after a blind second pass on 49 cells showed that pass 1
+had relied on unpublished application rules. Those rules are now published in full
+below, two of them changed. **v1.1 supersedes v1.0 as the coding instrument.** Every
+cell in `subject-treatment.csv` was coded under v1.0 and is being re-read under v1.1.
+
+Changes from v1.0, all dated 14 August 2026:
+
+| | change |
+|---|---|
+| Unit of observation | Restated. The source document rule was already in the schema and was departed from once; the closure test is now explicit. |
+| Application rules | R1 through R8 moved from a sealed working file into this codebook. |
+| R3 | **Replaced.** The "aboutness" test conflicted with this codebook's own partial-resolution language. |
+| R6 | **Tightened.** The old wording swept selection calendars into appointment timing. |
+| R1, R2, R4, R5, R7, R8 | Published unchanged. |
+
+Nothing in the four field definitions changed. The definitions were never the
+problem; what was missing was the record of how they had been applied.
 
 Governing principle, which applies to this project generally:
 
@@ -40,6 +59,24 @@ The fix is not to pick one construct. It is to stop conflating them.
 Not per MDL. An order may reach one subject through a residual catch-all and
 another through a page of specific instruction; MDL 3171 (Lin) does exactly that.
 Coding at the order level would erase the distinction the file exists to capture.
+
+**What counts as one source document (v1.1, made explicit).** The `order_id` column
+has always said "the specific source document, not just the MDL. An MDL with two
+orders produces two sets of rows." That rule was departed from once, in MDL 3172,
+where a February order and a June chambers letter were coded as a single row set.
+The closure test:
+
+- The **anchor** is the first judicial document setting the Rule 16.1(b) report or
+  the Rule 16.1(a) initial management conference.
+- A **companion** joins the anchor only if it is entered by the same court **on the
+  same day** as the anchor.
+- Anything entered later is its own source document and gets its own `order_id`, or
+  is not coded at all if it falls outside the initial-management window.
+
+A court that manages an MDL through a sequence of documents is doing something this
+dataset's order-level unit cannot express, and the answer is a separate
+episode-level view with its own `episode_id` and source manifest, not a silent
+widening of the order unit for the one MDL where it was noticed.
 
 ---
 
@@ -222,6 +259,118 @@ on the subjects it touches.
 
 **Result: all five code without special pleading.** The definitions are frozen for
 pass 1 on that basis. Any change after coding begins invalidates the pass.
+
+
+---
+
+## Application rules
+
+**New in v1.1.** These eight rules record how the frozen definitions were applied to
+recurring situations the five worked examples did not settle. Each was written the
+first time it was needed and back-applied to earlier orders.
+
+They were kept in a separate working file during pass 1 and withheld from the blind
+second pass, so that the second pass would test the definitions rather than the
+notes. It worked, and the result was unambiguous: **every sampled cell whose coding
+depended on one of these rules was disputed, against three of the other forty-five.**
+A codebook that cannot reproduce its own codings without a private annex is
+incomplete, so the annex is now part of the codebook.
+
+Two rules changed on the way in. Both changes are marked.
+
+### R1. A general discovery stay
+
+A stay of discovery resolves `b3c_discovery`. It resolves any **other** subject only
+where the order's own text ties that subject to the stayed machinery.
+
+*Applied:* MDL 3162 `b3b_factual_basis_exchange` is TRUE, because ¶ 5(g) expressly
+names Rule 26(a)(1) and ¶ 12 tolls Rules 26 through 37. MDL 3171 on materially
+similar facts is FALSE, because ¶ 9(x) makes no reference to the discovery rules.
+
+Without R1 a single stay paragraph cascades resolution across most of (b)(3).
+
+### R2. Fixing motion timing
+
+A provision that fixes when a pretrial motion may be filed, must be renoticed, or is
+due is an operative determination within `b3d_pretrial_motions`. A Rule 12 response
+to a complaint counts, because "answer or otherwise respond" reaches Rule 12 motions.
+
+### R3. Independently prescribed treatment *(REPLACED in v1.1)*
+
+**v1.1 text.** A provision fires `court_resolution` for a subject where its language
+**independently prescribes, prohibits, continues or solicits** treatment mapped to
+that subject. The provision's principal topic is irrelevant. A single paragraph may
+fire more than one subject, because the twenty subjects are not mutually exclusive.
+
+**What v1.0 said, and why it went.** The sealed rule asked whether a provision was
+*about* the subject, and refused resolution where the subject appeared inside a
+paragraph as an instance of something else. That test conflicts with this codebook's
+own definition of `court_resolution`, which says the field is TRUE where the court
+has made **at least one operative determination within the coded subject**, and which
+expressly contemplates partial resolution of a broad subject. An outside review put
+the objection this way: aboutness is not observable, and a dominant-purpose test
+silently imports subject exclusivity that this codebook never states.
+
+*Consequence.* MDL 3166 ¶ 6 makes liaison counsel responsible for transmitting the
+court's orders and notices to nonleadership counsel. Under v1.0 that did not fire
+`b2a_communication` because the paragraph is principally about liaison authority.
+Under v1.1 it does, because the duty independently prescribes a method of
+communicating with nonleadership counsel. Eleven cells across seven MDLs were coded
+under the old R3 and are being re-read.
+
+### R4. Anticipated topics versus directed content
+
+An agenda topic that the **court** anticipates discussing is not a
+`party_direction`. A topic list that specifies the **content of a filing the parties
+must make** is.
+
+*Applied:* MDL 3163 Part IV.B opens "the Court anticipates discussing the following
+topics," so its ten topics are identified but not directed. MDL 3185 reads "The
+parties shall file preliminary status reports … Suggested topics include," so its
+seven topics are directed despite the word "suggested."
+
+**R4 has the largest effect on the published numbers of any rule here. Without it
+MDL 3163 would show 14 directed subjects instead of 4.** It has never been
+independently tested, because no R4-dependent cell was drawn into the reliability
+sample. Treat every R4 coding as provisional until a targeted pass covers it.
+
+### R5. What counts as one order
+
+Superseded by the closure test under **Unit of observation** above, which states the
+same rule and adds what happens to a later document: it becomes its own source
+document or is not coded.
+
+### R6. When leadership timing is express *(TIGHTENED in v1.1)*
+
+**v1.1 text.** `b2a_timing` is express only where the order states, or asks the
+parties to propose, **when the court will make appointments**. Deadlines for
+applications, conferral, objections or proposals belong to
+`b2a_selection_procedure` unless the order connects them to the appointment
+decision.
+
+**What v1.0 said, and why it changed.** The old wording also fired where the order
+"places the appointment process on a fixed calendar." Nearly every selection
+procedure has deadlines, so that phrase swept selection calendars into the timing
+cell and double-counted one set of facts across two subjects. The point was made
+independently by a reader who had the orders and not the rule.
+
+### R7. Naming a coordinating role
+
+A court-created coordinating role is coded as leadership counsel where the order
+gives it a leadership title, and not where it does not. The `express` test is
+nominal by design: it asks what a reader of the order alone would know without
+consulting the Rule.
+
+*Applied:* MDL 3166 ¶ 6 "Interim liaison counsel" is leadership; MDL 3171 ¶ 7 "Point
+of contact," the same provision renamed, is not. The two are functionally identical
+and both rows say so, so a rebuilder applying a functional test can flip MDL 3171.
+
+### R8. Expense sharing is not compensation
+
+Allocating the expenses of one administrative role among a group of counsel is not
+"a means for compensating leadership counsel" under (b)(2)(A)(vii). Coded FALSE
+under the instruction to undercount when unsure, with the reasoning in both rows so
+a rebuilder can flip them.
 
 
 ---
