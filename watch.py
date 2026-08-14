@@ -66,8 +66,17 @@ CATS = {"post_effective_mdl": "hits_in_post_effective_mdl",
         "noise":              "hits_noise_rule_16",
         "unverified":         "hits_unverified"}
 
-THROTTLE = 13.0          # seconds between requests; the account limit is 5/min
-_last    = [0.0]
+# CourtListener's documented limits for an authenticated user, all three applying at once:
+# 5 per minute, 50 per hour, 125 per day. The first version of this file paced on the minute
+# limit alone, at 13 seconds a request, which is 277 an hour. A backfill of 101 documents
+# sailed past the hourly cap eleven minutes in and every request after that was refused. It
+# did not crash: each failure was caught and skipped, so the run would have finished with
+# half a ledger and reported a PASS, because a comparison that only checks whether the
+# classifier OVER-counts a category passes trivially when most documents are missing from it.
+# A silent underfill that validates itself is the exact failure this project keeps finding.
+LIMITS = ((5, 60), (50, 3600), (125, 86400))
+_hist  = []
+THROTTLE = None          # set to a float in tests to bypass the limiter
 
 
 # ---------------------------------------------------------------------------------------
@@ -75,10 +84,24 @@ _last    = [0.0]
 # ---------------------------------------------------------------------------------------
 
 def _throttle():
-    wait = THROTTLE - (time.time() - _last[0])
-    if wait > 0:
-        time.sleep(wait)
-    _last[0] = time.time()
+    """Block until a request can be made without breaching any of the three limits."""
+    if THROTTLE is not None:
+        time.sleep(THROTTLE)
+        return
+    while True:
+        now = time.time()
+        _hist[:] = [t for t in _hist if now - t < LIMITS[-1][1]]
+        waits = []
+        for n, window in LIMITS:
+            recent = [t for t in _hist if now - t < window]
+            if len(recent) >= n:
+                waits.append(window - (now - recent[-n]) + 0.5)
+        if not waits:
+            _hist.append(now)
+            return
+        nap = min(max(waits), 300)
+        print(f"  rate limit: waiting {nap:.0f}s ({len(_hist)} requests so far)", flush=True)
+        time.sleep(nap)
 
 
 def _open(url):
@@ -90,13 +113,17 @@ def _open(url):
 def get(path, params=None, url=None):
     """One request, throttled, with one retry on 429."""
     target = url or (API + path + "?" + urllib.parse.urlencode(params or {}))
-    for attempt in (1, 2):
+    for attempt in (1, 2, 3):
         _throttle()
         try:
             return _open(target)
         except urllib.error.HTTPError as e:
-            if e.code == 429 and attempt == 1:
-                time.sleep(65)
+            # With the limiter above a 429 should not happen. If one does, the limiter's model
+            # of the account's quota is wrong, so back off long enough to clear an hourly
+            # window rather than retrying into the same wall.
+            if e.code == 429 and attempt < 3:
+                print(f"  429 despite the limiter; backing off {600 * attempt}s", flush=True)
+                time.sleep(600 * attempt)
                 continue
             raise
     raise RuntimeError("unreachable")
@@ -235,8 +262,8 @@ def backfill(today, reg):
         return None, "positive control absent; refusing to score anything"
 
     union = sorted(set().union(*now_forms.values()))
-    print(f"backfill: {len(union)} documents")
-    ledger, by_sha1 = read_ledger(), {}
+    print(f"backfill: {len(union)} documents", flush=True)
+    ledger, by_sha1, failed = read_ledger(), {}, {}
     for i, doc_id in enumerate(union, 1):
         if doc_id in ledger:
             continue
@@ -244,11 +271,13 @@ def backfill(today, reg):
         try:
             ledger[doc_id] = classify_one(doc_id, forms, meta, reg, by_sha1, today)
         except Exception as e:
-            print(f"  {doc_id}: {type(e).__name__}: {e}")
+            failed[doc_id] = f"{type(e).__name__}: {e}"
+            print(f"  {i}/{len(union)} {doc_id} FAILED {failed[doc_id]}", flush=True)
+            write_ledger(ledger)     # keep what has been read; a later run resumes from it
             continue
         if i % 10 == 0 or ledger[doc_id]["category"] == "unverified":
             print(f"  {i}/{len(union)} {doc_id} -> {ledger[doc_id]['category']} "
-                  f"({ledger[doc_id]['rule']})")
+                  f"({ledger[doc_id]['rule']})", flush=True)
     write_ledger(ledger)
 
     rows, _ = read_searches()
@@ -273,16 +302,28 @@ def backfill(today, reg):
             if counts[c] > int(r[col]):
                 overs.append(f"{form}/{c}: classifier {counts[c]}, hand triage {int(r[col])}")
 
-    passed = not overs
+    # A missing document is not a neutral absence. The overrun test only asks whether the
+    # classifier put MORE documents in a category than the hand triage did, so every document
+    # it never managed to read makes the test easier to pass. A partial ledger that reports
+    # PASS is worse than an outright failure, because it turns automatic triage on.
+    missing = [d for d in union if d not in ledger]
+    passed = not overs and not missing
     summary = (f"{decided} of {total} form-hits decided by rule or verified quote; "
                + ("no category exceeded the hand triage's totals"
-                  if passed else f"{len(overs)} category overruns"))
+                  if not overs else f"{len(overs)} category overruns")
+               + (f"; {len(missing)} of {len(union)} documents were never read, so the "
+                  f"comparison is not valid" if missing else ""))
     json.dump({"date": today, "passed": passed, "summary": summary, "overruns": overs,
-               "per_form": per_form_report, "documents": len(ledger)},
+               "per_form": per_form_report, "documents": len(ledger),
+               "expected_documents": len(union),
+               "missing": missing[:50], "failures": failed},
               open(VALID, "w"), indent=1, sort_keys=True)
-    print(("PASSED: " if passed else "FAILED: ") + summary)
+    print(("PASSED: " if passed else "FAILED: ") + summary, flush=True)
     for o in overs:
-        print("  overrun " + o)
+        print("  overrun " + o, flush=True)
+    if missing:
+        print(f"  missing {len(missing)}: {missing[:10]}{' ...' if len(missing) > 10 else ''}",
+              flush=True)
     return passed, summary
 
 
@@ -559,10 +600,23 @@ def control_issue(today):
 def backfill_issue(today, summary):
     v = json.load(open(VALID))
     b = [f"# Triage backfill failed on {today}\n", summary + "\n",
-         "The rule classifier put more documents in a category than the hand triage's own "
-         "total for that category, which means at least one of those calls is wrong. "
-         "**Automatic triage stays off** until this passes.\n", "## Overruns\n"]
-    b += [f"- {o}" for o in v.get("overruns", [])]
+         "**Automatic triage stays off** until this passes.\n"]
+    if v.get("missing"):
+        b.append(f"## {len(v['missing'])} of {v.get('expected_documents')} documents were "
+                 f"never read\n")
+        b.append("The comparison is not valid until every document has been classified. The "
+                 "overrun test only asks whether the classifier put MORE documents in a "
+                 "category than the hand triage did, so an unread document makes it easier to "
+                 "pass. A run that stops early must fail, not report a smaller success.\n")
+        for d, why in list(v.get("failures", {}).items())[:20]:
+            b.append(f"- {d}: {why}")
+        b.append("\nThe ledger keeps what was read, so re-running the backfill resumes rather "
+                 "than starting over.\n")
+    if v.get("overruns"):
+        b.append("## Overruns\n")
+        b.append("The classifier put more documents in a category than the hand triage's own "
+                 "total for that category, so at least one of those calls is wrong.\n")
+        b += [f"- {o}" for o in v.get("overruns", [])]
     b.append("\n## Per form\n\n| form | category | classifier | hand triage |\n|---|---|--:|--:|")
     for form, d in v.get("per_form", {}).items():
         for c in d["computed"]:

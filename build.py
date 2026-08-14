@@ -365,6 +365,31 @@ def assert_search_arithmetic():
                      f"hits is {hits}. Every hit belongs to exactly one category.")
 
 
+def assert_links():
+    """Every CourtListener link must carry a slug segment, or it 404s.
+
+    CourtListener serves a docket at /docket/{id}/{slug}/ and returns 404 for the bare
+    /docket/{id}/. It does NOT validate the slug -- /docket/72052106/x/ serves the same page
+    as the canonical URL -- so the requirement is only that the segment be present. Twelve of
+    the sixteen links on this page were published without it and every one of them was dead.
+
+    That is a failure the rest of this file could not have caught: the URL is a string the
+    build copies through, so nothing was inconsistent, nothing was miscounted, and the page
+    verified clean while a reader clicking any of twelve case names got an error. The check is
+    here because a citable dataset whose citations do not resolve is worse than one that
+    admits it has none.
+    """
+    pat = re.compile(r"^https://www\.courtlistener\.com/docket/\d+/(\d+/)?[^/]+/$")
+    for r in csv.DictReader(open(TRACKER)):
+        u = (r.get("courtlistener_url") or "").strip()
+        if not u:
+            continue
+        if not pat.match(u):
+            sys.exit(f"MDL {r['mdl_no']}: courtlistener_url does not resolve to a docket "
+                     f"page: {u!r}\nExpected https://www.courtlistener.com/docket/<id>/<slug>/ "
+                     f"or .../docket/<id>/<entry>/<slug>/. A bare /docket/<id>/ returns 404.")
+
+
 def invocation_stats():
     """Counts over party-invocations.csv, for the findings about non-MDL invocations."""
     rows = list(csv.DictReader(open(INVOCATIONS)))
@@ -687,6 +712,7 @@ def main():
              or prerender(page, s) != page)
     assert_subject_columns()
     assert_search_arithmetic()
+    assert_links()
     # Checked against the page as it will be PUBLISHED, not as it was last saved. A figure
     # that lives in a span is filled by prerender from the CSV, so it cannot go stale and
     # there is nothing for this check to catch; a figure written into the prose as a bare

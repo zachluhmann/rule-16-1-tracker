@@ -2159,3 +2159,95 @@ Two published findings quantify over the whole corpus in a way no count can rech
 local-rule collision finding rests on which districts generate 16.1 references. `build.py`
 verifies the numbers in those sentences and cannot verify the word "exactly." Every week that
 adds a document, the issue says so. Nothing automates the reading.
+
+---
+
+## 14 August 2026 — twelve of sixteen case links were dead, and the build verified clean anyway
+
+Zach clicked a case name on the live page and got a CourtListener 404. Twelve of the sixteen
+`courtlistener_url` values were bare `/docket/{id}/` with no slug segment. CourtListener
+serves a docket at `/docket/{id}/{slug}/` and returns 404 for the bare form. Every one of the
+twelve was dead, and had been since the page went up.
+
+Verified both directions in a browser rather than assumed: `/docket/72052106/` returns 404,
+and `/docket/72052106/x/` serves the docket. CourtListener does not validate the slug, so the
+requirement is only that the segment exist. The four links that worked were entry-level URLs
+carrying a slug because they had been copied from a search result's `absolute_url`; the twelve
+that failed had been typed from the docket id alone.
+
+**The part worth recording is why nothing caught it.** This project has a build that refuses
+to publish when a figure in the prose no longer matches the CSV, an arithmetic check on the
+search log, a closed status vocabulary, a logical-constraint validator over 300 coded cells,
+and a positive control on the search method. None of them look at a URL, because a URL is a
+string the build copies from the CSV into the page. Nothing was inconsistent. Nothing was
+miscounted. Every check passed while the primary citation for twelve of sixteen rows resolved
+to an error page.
+
+Every guard here was built after something went wrong in the *data*. The failure modes that
+had actually occurred were wrong numbers, so the guards check numbers. A citable dataset whose
+citations do not resolve fails at the one thing citation is for, and no amount of internal
+consistency substitutes. `assert_links()` now refuses to build unless every URL matches
+`/docket/{id}/[{entry}/]{slug}/`.
+
+Slugs are derived from the caption the page already publishes rather than fetched from the
+API. Since the slug is not validated on lookup, this only has to be stable and readable.
+
+### A second problem, found while fixing the first
+
+The triage backfill was running when the fix was ready. That job checks out a commit and then
+works for two and a half hours; a human commit landing in between would have made its push a
+non-fast-forward, failed the step, and discarded every classification it had computed. The fix
+was held until the run finished, and `watch.yml` now rebases before pushing.
+
+Two writers to one branch, one of them slow. Worth noting for anything else added to this
+repository that runs long.
+
+---
+
+## 14 August 2026 — the backfill was pacing against the wrong limit, and would have passed itself
+
+The first triage backfill was cancelled twenty-one minutes in. It was not failing loudly. It
+was failing in the way this project keeps having to learn to see.
+
+CourtListener publishes three limits for an authenticated user, all applying at once: **5 per
+minute, 50 per hour, 125 per day.** `watch.py` paced on the first alone, at thirteen seconds a
+request. That is 4.6 a minute and 277 an hour. A backfill of 101 documents plus the sweep is
+about 110 requests, so it cleared the hourly cap somewhere around request fifty, eleven
+minutes in, and everything after that was refused.
+
+**It did not crash, and that is the finding.** Each failed document was caught and skipped so
+the loop could continue. The run would have reached the comparison step with roughly half a
+ledger, and the comparison would have reported **PASS**, because the test only asks whether
+the classifier put MORE documents in a category than the hand triage did. A document never
+read is a document in no category, and every one of them makes the test easier to pass. A
+half-finished run would have certified the classifier and switched automatic triage on.
+
+That is the same shape as the `filed_after` filter and the same shape as the first draft of
+this workflow: a measurement that stays internally consistent while quietly losing the thing
+it was measuring. Three times now, in three unrelated parts of this project, the error has
+been a check that cannot fail for the reason it was written to catch.
+
+### What changed
+
+**A limiter that models all three windows.** It keeps request timestamps and blocks until no
+window is saturated, instead of sleeping a fixed interval. Tested against a simulated clock:
+120 requests take 123 minutes and the worst-case window holds 5, 50 and 120 against caps of 5,
+50 and 125. The backfill now takes about two hours because that is how long the quota takes,
+not because a constant was guessed.
+
+**A partial ledger can no longer pass.** `passed` requires every document in the union to be
+in the ledger. A run that stops early fails and says how many it never read, rather than
+reporting a smaller success.
+
+**The ledger is written after every failure,** so a re-run resumes instead of starting over.
+
+**`PYTHONUNBUFFERED`.** Twenty-one minutes of the run produced not one line of visible log,
+because Python block-buffers stdout to a pipe and the whole run's output fits in the buffer.
+The job looked identical whether it was working or wedged. It was diagnosed from the documented
+rate limits and the clock, not from the log, which is not a position to be in twice.
+
+### What is still not known
+
+Whether the classifier agrees with the hand triage. The run that would have answered that was
+cancelled before it finished. Nothing in this entry is evidence about the classifier's
+accuracy, only about the harness that was supposed to measure it.
