@@ -1,0 +1,2 @@
+run_date,status,union_hits,per_form,new_document_ids,dropped_document_ids,validate,build_check,note
+2026-08-17,NO_CHANGE,102,abbrev=41 spelled_out=36 frcp_acronym=6 frcp_periods=8 report_phrase=13 abbrev_no_spaces=41 long_form=0,,,PASS,PASS,"baseline established, no prior state to diff against"
