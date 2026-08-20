@@ -27,6 +27,44 @@ Each run:
   court, the docket, the clerk's entry text, the matching snippet, the page count, and
   whether a text layer exists. Retrieval is mechanical and no person should be doing it.
 
+The same workflow runs a second schedule at 02:00 UTC on every day except Monday, which
+resumes the one-time triage backfill and does nothing else. It skips Monday so the weekly
+sweep has the day's API allowance to itself. Once the backfill is finished this schedule
+costs nothing at all: the run reads `maintenance/triage-validation.json`, sees the corpus is
+complete under the current rules version, and returns without making a request.
+
+### The API allowance, and why it is a shared budget rather than a pacing problem
+
+CourtListener's documented limits for an authenticated account are 5 a minute, 50 an hour and
+125 a day, all applying at once. Those numbers are exactly what the server meters. Three
+backfills were nevertheless lost to refusals before the reason was read off the reply itself:
+
+    Rate limit exceeded: 125/day. Expected available in 54227 seconds.
+
+**The 125 belongs to the account, not to the run.** The weekly sweep, the backfill, and every
+interactive CourtListener call made anywhere under the same token draw on one pool, and it
+refills one slot at a time over a rolling 24 hours rather than resetting at midnight. A
+process cannot see how much of the day is already gone and no endpoint will tell it, so
+correct pacing is not sufficient and a run can be refused on its first request.
+
+Two rules follow, and they are the opposite of the obvious ones:
+
+- **Do not wait it out.** The refusal carries a `Retry-After` that has been observed at 15.2
+  hours, far longer than any job here is allowed to live. `watch.py` raises `QuotaExhausted`
+  instead of sleeping, keeps what it has read, and stops. The next scheduled run continues.
+- **Do not pace slower.** Pacing does not create quota. A run that is out of allowance and
+  slows down only reads fewer documents before it dies.
+
+For a session doing this work by hand the practical consequence is a budget, not a delay:
+before spending requests on reading documents, consider that the weekly sweep needs about
+eight and the backfill resume needs whatever is left. A session that burns the day's pool
+will show up the following Monday as `QUOTA_EXHAUSTED` in the watch log.
+
+`QUOTA_EXHAUSTED` is not a finding about the record or about the search. It means the sweep
+never ran, so the positive control was never evaluated. Guardrail 11 answers whether the
+query still finds what it should, and that is a question about a query that was actually
+sent. Do not read a quota failure as a control failure.
+
 ### Triage: what the machine may decide, and on what terms
 
 Triage assigns a hit to one of five categories: post-effective MDL, pre-effective MDL,
