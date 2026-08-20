@@ -9,6 +9,7 @@ The property that matters more than any single assertion: the watch must not cha
 published count unless it has been validated, and must never touch the coding files at all.
 """
 import hashlib, io, json, os, re, shutil, subprocess, sys, urllib.parse, urllib.request
+import urllib.error
 
 REPO = os.path.dirname(os.path.abspath(__file__))
 TMP  = "/tmp/watch-test"
@@ -225,7 +226,8 @@ BASE = {
     '"Rule 16.1 of the Federal Rules of Civil Procedure"':  [],
 }
 NEW_DOC, NEW_DOC2, UNDECIDABLE = 999123456, 999123457, 999888777
-ST = {"data": None, "entry": 40, "calls": 0, "doc_text": None}
+ST = {"data": None, "entry": 40, "calls": 0, "doc_text": None,
+      "throw_after": None, "retry_after": 54810, "fetched": []}
 
 # The stub's corpus is built to reproduce the hand triage recorded in the CURRENT rows of
 # rule-16-1-searches.csv, document for document. A stub that returned one kind of document
@@ -286,11 +288,19 @@ class Resp(io.BytesIO):
 def fake_urlopen(req, timeout=None):
     ST["calls"] += 1
     url = req.full_url if hasattr(req, "full_url") else req
+    # The account's daily allowance running out, reproduced exactly as CourtListener does it:
+    # a 429 carrying a Retry-After measured in hours, not seconds. Recorded from a live run on
+    # 20 August 2026, which answered "Rate limit exceeded: 125/day. Expected available in
+    # 54227 seconds." after roughly fifteen requests.
+    if ST["throw_after"] is not None and ST["calls"] > ST["throw_after"]:
+        raise urllib.error.HTTPError(url, 429, "Too Many Requests",
+                                     {"Retry-After": str(ST["retry_after"])}, None)
     qs = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
     if "docket-entries" in url:
         body = {"results": [{"entry_number": ST["entry"], "date_filed": "2026-08-10"}]}
     elif "recap-documents" in url:
         doc_id = int(re.search(r"recap-documents/(\d+)/", url).group(1))
+        ST["fetched"].append(doc_id)
         body = {"id": doc_id, "sha1": hashlib.sha1(str(doc_id).encode()).hexdigest(),
                 "is_available": True, "page_count": 2,
                 "plain_text": TEXTS[KIND.get(doc_id, "post")]}
@@ -308,7 +318,7 @@ def fake_urlopen(req, timeout=None):
 
 
 def run(label, data, entry, expect_status, expect_rc=0, argv=(), doc_text=None):
-    ST.update(data=data, entry=entry, calls=0, doc_text=doc_text)
+    ST.update(data=data, entry=entry, calls=0, doc_text=doc_text, fetched=[])
     os.chdir(TMP)
     sys.modules.pop("watch", None)
     sys.modules.pop("triage", None)
@@ -454,8 +464,124 @@ def part2():
     return all(r)
 
 
+
+
+# ---------------------------------------------------------------------------------------
+# Part 3. What happens when the account's daily allowance runs out.
+#
+# This is not a hypothetical failure mode. Three live backfills were lost to it before the
+# cause was read off the server's own reply: `Rate limit exceeded: 125/day. Expected
+# available in 54227 seconds.` The 125 belongs to the ACCOUNT, so a run can begin with the
+# day already spent by something else, and the server's instruction is to wait fifteen hours,
+# which is longer than the job is allowed to live. The old code obeyed it and was killed by
+# the timeout holding every document it had read.
+#
+# Two things have to be true and neither was:
+#   1. Running out of quota must cost nothing. The run stops, keeps the ledger, says how far
+#      it got, and the next day continues from there rather than starting again.
+#   2. Running out of quota must never be reported as something else. A sweep that never ran
+#      leaves the positive control missing, which is one line away from announcing that the
+#      search method is broken. It is not broken. It was never asked.
+# ---------------------------------------------------------------------------------------
+
+def part3():
+    print("\nPart 3: the account's daily allowance running out\n")
+    shutil.rmtree(TMP, ignore_errors=True)
+    shutil.copytree(REPO, TMP, ignore=shutil.ignore_patterns("__pycache__", ".git"))
+    for f in ("maintenance/watch-log.csv", "maintenance/watch-state.json",
+              "maintenance/triage-ledger.csv", "maintenance/triage-validation.json",
+              "maintenance/.watch-issue.md"):
+        f = os.path.join(TMP, f)
+        if os.path.exists(f):
+            os.remove(f)
+    os.environ["COURTLISTENER_TOKEN"] = "test"
+    os.environ.pop("GITHUB_OUTPUT", None)
+    urllib.request.urlopen = fake_urlopen
+    searches_before = sha(os.path.join(TMP, "rule-16-1-searches.csv"))
+    r = []
+    ST["throw_after"] = None
+
+    print("scenario 7: a normal run first, so there is a state file to protect later")
+    r.append(run("baseline", BASE, 40, "NO_CHANGE")[0])
+    state_before = open(os.path.join(TMP, "maintenance/watch-state.json")).read()
+
+    print("\nscenario 8: the backfill runs out of quota part way through the corpus")
+    ST["throw_after"], ST["retry_after"] = 30, 54810
+    ok, row = run("quota spent mid-backfill", BASE, 41, "BACKFILL_PAUSED", argv=["--backfill"])
+    r.append(ok)
+    v = json.load(open(os.path.join(TMP, "maintenance/triage-validation.json")))
+    read_so_far = set(int(x["document_id"])
+                      for x in __import__("csv").DictReader(
+                          open(os.path.join(TMP, "maintenance/triage-ledger.csv"))))
+    kept = len(read_so_far) > 0
+    print(f"  {'PASS' if kept else 'FAIL'}  the {len(read_so_far)} documents it did read were "
+          f"written to the ledger, not lost with the run")
+    r.append(kept)
+    honest = v["passed"] is False and v["complete"] is False and v["paused_seconds"] == 54810
+    print(f"  {'PASS' if honest else 'FAIL'}  the validation file records a partial run: "
+          f"passed={v['passed']}, complete={v['complete']}")
+    r.append(honest)
+    quiet = not os.path.exists(os.path.join(TMP, "maintenance/.watch-issue.md"))
+    print(f"  {'PASS' if quiet else 'FAIL'}  no issue was opened, because a pause is not a "
+          f"failure and the next run continues it")
+    r.append(quiet)
+    said = "allowance" in row and "FAILED" not in row
+    print(f"  {'PASS' if said else 'FAIL'}  the log row says the allowance ran out rather "
+          f"than implying the classifier is wrong")
+    r.append(said)
+
+    print("\nscenario 9: the next day's resume finishes it without re-reading anything")
+    ST["throw_after"] = None
+    ok, _ = run("resume", BASE, 41, "BACKFILL", argv=["--backfill-resume"])
+    r.append(ok)
+    again = read_so_far & set(ST["fetched"])
+    print(f"  {'PASS' if not again else 'FAIL'}  none of the {len(read_so_far)} documents "
+          f"already decided were fetched a second time"
+          + (f" (re-read {sorted(again)[:5]})" if again else ""))
+    r.append(not again)
+    v = json.load(open(os.path.join(TMP, "maintenance/triage-validation.json")))
+    done = v["complete"] and v["passed"] and v["documents"] == v["expected_documents"]
+    print(f"  {'PASS' if done else 'FAIL'}  the corpus is complete and the comparison is "
+          f"valid ({v['documents']} of {v['expected_documents']})")
+    r.append(done)
+
+    print("\nscenario 10: the schedule keeps firing after it is finished")
+    ok, _ = run("resume, already complete", BASE, 41, "BACKFILL",
+                argv=["--backfill-resume"])
+    free = ST["calls"] == 0
+    print(f"  {'PASS' if free else 'FAIL'}  it made {ST['calls']} requests, so a daily "
+          f"schedule left running forever costs nothing")
+    r.append(free)
+
+    print("\nscenario 11: the weekly sweep meets a spent allowance on its first request")
+    ST["throw_after"], ST["retry_after"] = 0, 54227
+    ok, row = run("quota spent before the sweep", BASE, 43, "QUOTA_EXHAUSTED", expect_rc=1)
+    r.append(ok)
+    body = open(os.path.join(TMP, "maintenance/.watch-issue.md")).read()
+    named = "125/day" in body and "Nothing here is a finding" in body
+    print(f"  {'PASS' if named else 'FAIL'}  the issue names the real cause and says it is "
+          f"not a finding about the data")
+    r.append(named)
+    notblamed = "sweep is broken" not in body and "search method is broken" not in body
+    print(f"  {'PASS' if notblamed else 'FAIL'}  it does NOT report the search as broken; "
+          f"the control was never evaluated, so Guardrail 11 has nothing to say")
+    r.append(notblamed)
+    untouched = open(os.path.join(TMP, "maintenance/watch-state.json")).read() == state_before
+    print(f"  {'PASS' if untouched else 'FAIL'}  the state file was left as it was, so next "
+          f"week still diffs against the last sweep that actually happened")
+    r.append(untouched)
+    held = sha(os.path.join(TMP, "rule-16-1-searches.csv")) == searches_before
+    print(f"  {'PASS' if held else 'FAIL'}  no published count was changed")
+    r.append(held)
+
+    ST["throw_after"] = None
+    print(f"\n  {sum(r)}/{len(r)} passed\n")
+    return all(r)
+
+
 if __name__ == "__main__":
     a = part1()
     b = part2()
-    print(f"\n{'ALL PASSED' if a and b else 'FAILURES ABOVE'}")
-    sys.exit(0 if (a and b) else 1)
+    c = part3()
+    print(f"\n{'ALL PASSED' if a and b and c else 'FAILURES ABOVE'}")
+    sys.exit(0 if (a and b and c) else 1)

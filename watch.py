@@ -76,18 +76,44 @@ CATS = {"post_effective_mdl": "hits_in_post_effective_mdl",
 # A silent underfill that validates itself is the exact failure this project keeps finding.
 # Paced to a FRACTION of the documented caps, not to the caps themselves. The second live
 # backfill obeyed 5/60, 50/3600 and 125/86400 by its own accounting and CourtListener still
-# answered 429, which means the published numbers are not what the server actually meters:
-# either the windows are counted differently, or refused requests count too, or the account's
-# real ceiling is lower. Rather than guess a fourth set of numbers, the limiter now leaves
-# headroom and TIGHTENS ITSELF when it is proved wrong. A 429 is treated as evidence that the
-# model of the quota is incorrect, not as a transient to be retried through.
+# answered 429. For two runs that was read as evidence the published numbers were wrong. It
+# was not. On 20 August 2026 the server said plainly what it was doing:
+#
+#     Rate limit exceeded: 125/day. Expected available in 54227 seconds.
+#
+# The documented limits are exactly what is metered. What was wrong was the assumption that a
+# process begins its day with the full 125. The allowance belongs to the ACCOUNT, not to the
+# run. The weekly watch, every backfill attempt, and every interactive CourtListener call made
+# anywhere else all draw on one daily pool, and that pool refills one slot at a time on a
+# rolling 24-hour window rather than resetting at midnight. A fresh process cannot see how
+# much of it is already gone, and no endpoint will tell it. So this limiter's own arithmetic
+# can be perfectly correct and still meet a 429 on request one.
+#
+# That makes the right answer to a 429 the opposite of retrying harder or pacing slower.
+# Pacing slower does not create quota. It only means fewer documents get read before the job
+# is killed. The run stops, keeps what it has, and says how much is left. See QuotaExhausted.
 LIMITS = ((5, 60), (50, 3600), (125, 86400))
-SAFETY = [0.8]           # multiplier on every cap; reduced further each time a 429 arrives
+SAFETY = [0.8]           # multiplier on every cap; tightened only on a 429 with no Retry-After
 # Stop reading with time to spare against the job's 350-minute timeout, so the run ends by
 # writing what it has rather than by being killed holding it.
 BUDGET_SECONDS = int(os.environ.get("BACKFILL_BUDGET_SECONDS", 300 * 60))
 _hist  = []
 THROTTLE = None          # set to a float in tests to bypass the limiter
+DEADLINE = [None]        # absolute time this run must stop by; None disables the check
+
+
+class QuotaExhausted(Exception):
+    """The day's allowance is spent and the reset is further away than this run can wait.
+
+    Raised instead of sleeping. CourtListener answers a 429 with a Retry-After that has been
+    observed at fifteen hours, which is longer than any job in this repo is allowed to live.
+    Sleeping on it means being killed by the timeout while still holding everything that was
+    read. Raising it means the caller writes the ledger and reports honestly how far it got.
+    """
+
+    def __init__(self, seconds):
+        self.seconds = int(seconds)
+        super().__init__(f"daily quota spent; a slot frees in {self.seconds}s")
 
 
 # ---------------------------------------------------------------------------------------
@@ -136,10 +162,22 @@ def get(path, params=None, url=None):
             # second sleeps burned half the second backfill's time budget on documents it
             # then failed anyway.
             hdr = (e.headers.get("Retry-After") if e.headers else None) or ""
-            nap = int(hdr) if hdr.strip().isdigit() else min(60 * 2 ** (attempt - 1), 300)
-            SAFETY[0] = max(0.25, SAFETY[0] * 0.75)
-            print(f"  429 despite the limiter (attempt {attempt}); pacing down to "
-                  f"{SAFETY[0]:.0%} of the documented caps, waiting {nap}s", flush=True)
+            told = hdr.strip().isdigit()
+            nap = int(hdr) if told else min(60 * 2 ** (attempt - 1), 300)
+            # A Retry-After longer than this run has left is not something to wait out. The
+            # day's allowance is gone, and no amount of patience inside this process brings it
+            # back before the job is killed.
+            if DEADLINE[0] is not None and time.time() + nap > DEADLINE[0]:
+                raise QuotaExhausted(nap)
+            if told:
+                print(f"  429; the server asks for {nap}s and this run can afford to wait",
+                      flush=True)
+            else:
+                # No instruction from the server, so the limiter's own model may really be
+                # wrong. This is the only case where tightening the pacing is a real answer.
+                SAFETY[0] = max(0.25, SAFETY[0] * 0.75)
+                print(f"  429 with no Retry-After (attempt {attempt}); pacing down to "
+                      f"{SAFETY[0]:.0%} of the documented caps, waiting {nap}s", flush=True)
             time.sleep(nap)
     raise RuntimeError(f"429 after 5 attempts at {SAFETY[0]:.0%} of the documented caps")
 
@@ -273,6 +311,20 @@ def validated():
 # backfill
 # ---------------------------------------------------------------------------------------
 
+def backfill_complete():
+    """Has a previous run already read every document under the current rules?
+
+    Answered from the validation file alone, so a scheduled resume on a corpus that is
+    already finished costs nothing at all. Keyed on the rules version for the same reason the
+    ledger is: a file written by an older classifier is not an answer about this one.
+    """
+    try:
+        v = json.load(open(VALID))
+    except Exception:
+        return False
+    return bool(v.get("complete")) and v.get("rules_version") == triage.RULES_VERSION
+
+
 def backfill(today, reg, dockets=None, learned=None):
     """Classify the existing corpus and score it against the triage a human did by reading.
 
@@ -285,8 +337,17 @@ def backfill(today, reg, dockets=None, learned=None):
     the number it got right.
     """
     meta, now_forms = {}, {}
-    for form, q in FORMS:
-        now_forms[form] = sweep(q, meta)
+    # Set before the first request, not before the reading loop: the seven sweeps are requests
+    # too, and a run that has no quota left will meet the 429 there.
+    DEADLINE[0] = time.time() + BUDGET_SECONDS
+    try:
+        for form, q in FORMS:
+            now_forms[form] = sweep(q, meta)
+    except QuotaExhausted as e:
+        return "PAUSED", (f"the day's CourtListener allowance was already spent before the "
+                          f"sweep finished, so the universe was never established. A slot "
+                          f"frees in {e.seconds}s ({e.seconds / 3600:.1f} hours). Nothing was "
+                          f"measured, nothing was scored and nothing was lost.")
     if CONTROL_DOC not in now_forms.get(CONTROL_FORM, set()):
         return None, "positive control absent; refusing to score anything"
 
@@ -301,11 +362,11 @@ def backfill(today, reg, dockets=None, learned=None):
     # the ledger as it goes, and stops cleanly with an honest partial result rather than being
     # killed by the job timeout with everything still in memory. A partial run fails the
     # validation, which is correct: re-running resumes from the ledger.
-    deadline = time.time() + BUDGET_SECONDS
+    paused = None
     for i, doc_id in enumerate(union, 1):
         if ledger.get(doc_id, {}).get("rules_version") == triage.RULES_VERSION:
             continue
-        if time.time() > deadline:
+        if time.time() > DEADLINE[0]:
             print(f"  budget spent with {len([d for d in union if d not in ledger])} "
                   f"documents unread; stopping cleanly. Re-run to resume.", flush=True)
             break
@@ -313,6 +374,15 @@ def backfill(today, reg, dockets=None, learned=None):
         try:
             ledger[doc_id] = classify_one(doc_id, forms, meta, reg, by_sha1, today,
                                           dockets, learned)
+        except QuotaExhausted as e:
+            # Must be caught above the generic handler below. Recorded as a failure it would
+            # be retried once per remaining document, each one raising the same thing, and the
+            # run would end with a hundred identical entries and no explanation.
+            paused = e.seconds
+            print(f"  {i}/{len(union)} stopped at the day's quota; a slot frees in "
+                  f"{e.seconds}s ({e.seconds / 3600:.1f} hours). Everything read so far is "
+                  f"kept and the next run resumes from it.", flush=True)
+            break
         except Exception as e:
             failed[doc_id] = f"{type(e).__name__}: {e}"
             print(f"  {i}/{len(union)} {doc_id} FAILED {failed[doc_id]}", flush=True)
@@ -359,11 +429,20 @@ def backfill(today, reg, dockets=None, learned=None):
                   if not overs else f"{len(overs)} category overruns")
                + (f"; {len(missing)} of {len(union)} documents were never read, so the "
                   f"comparison is not valid" if missing else ""))
+    if paused and missing:
+        summary += (f". The run stopped because the account's daily allowance ran out, not "
+                    f"because anything is wrong with it; a slot frees in {paused}s "
+                    f"({paused / 3600:.1f} hours) and the next run picks up where this one "
+                    f"left off")
     json.dump({"date": today, "passed": passed, "summary": summary, "overruns": overs,
                "per_form": per_form_report, "documents": len(ledger),
-               "expected_documents": len(union),
+               "expected_documents": len(union), "complete": not missing,
+               "rules_version": triage.RULES_VERSION, "paused_seconds": paused,
                "missing": missing[:50], "failures": failed},
               open(VALID, "w"), indent=1, sort_keys=True)
+    if paused and missing:
+        print("PAUSED: " + summary, flush=True)
+        return "PAUSED", summary
     print(("PASSED: " if passed else "FAILED: ") + summary, flush=True)
     for o in overs:
         print("  overrun " + o, flush=True)
@@ -384,8 +463,21 @@ def main(argv):
     reg = triage.load_registry()
     dockets, learned = triage.load_dockets(), {}
 
-    if "--backfill" in argv:
+    if "--backfill" in argv or "--backfill-resume" in argv:
+        # The resume is scheduled daily until it finishes, because the corpus needs more
+        # requests than one day's allowance reliably has left in it. Once the ledger is whole
+        # the schedule keeps firing and this returns before touching the network.
+        if "--backfill-resume" in argv and backfill_complete():
+            print(f"backfill already complete under rules {triage.RULES_VERSION}; "
+                  f"no requests made", flush=True)
+            return 0
         passed, summary = backfill(today, reg, dockets, learned)
+        if passed == "PAUSED":
+            # Not a failure. No issue, no attention flag: the next run continues it. Reported
+            # so that a pause lasting weeks is visible in the log rather than looking quiet.
+            write_log(today, "BACKFILL_PAUSED", 0, [], [], [], "", "", summary)
+            emit(False, f"Rule 16.1 triage backfill {today}: paused, out of quota for today")
+            return 0
         if passed is None:
             write_log(today, "CONTROL_FAILED", 0, [], [], [], "", "", summary)
             emit(True, f"Rule 16.1 backfill {today}: positive control failed")
@@ -401,12 +493,32 @@ def main(argv):
     old_forms   = {k: set(v) for k, v in state.get("forms", {}).items()}
     old_dockets = state.get("dockets", {})
 
-    now_forms, meta, errors = {}, {}, []
+    DEADLINE[0] = time.time() + BUDGET_SECONDS
+    now_forms, meta, errors, quota = {}, {}, [], None
     for form, q in FORMS:
         try:
             now_forms[form] = sweep(q, meta)
+        except QuotaExhausted as e:
+            quota = e.seconds
+            break
         except Exception as e:
             errors.append(f"{form}: {type(e).__name__}: {e}")
+
+    # Checked before the positive control, and this ordering is the whole point of the branch.
+    # A sweep cut short by quota leaves now_forms incomplete, the control document missing, and
+    # the run one line away from announcing that the search method is broken. It is not broken.
+    # It never ran. Guardrail 11 answers "is the query still finding what it should", which is
+    # a question about a query that was actually sent.
+    if quota is not None:
+        write_log(today, "QUOTA_EXHAUSTED", 0, [], [], [], "", "",
+                  f"the account's daily CourtListener allowance was spent before this week's "
+                  f"sweep could finish; a slot frees in {quota}s ({quota / 3600:.1f} hours). "
+                  f"No measurement was recorded, the positive control was NOT evaluated, and "
+                  f"the state file is left as it was. This is not a finding about the record "
+                  f"or about the search. Something else drew on the same daily pool.")
+        open(ISSUE, "w").write(quota_issue(today, quota))
+        emit(True, f"Rule 16.1 watch {today}: out of CourtListener quota, no sweep run")
+        return 1
     ok = not errors
 
     control_ok = CONTROL_DOC in now_forms.get(CONTROL_FORM, set())
@@ -632,6 +744,24 @@ def gate(cmd):
 def clip(s, n):
     s = " ".join((s or "").split())
     return s[:n] + ("…" if len(s) > n else "")
+
+
+def quota_issue(today, seconds):
+    return (
+        f"# The weekly sweep did not run on {today}\n\n"
+        f"CourtListener refused the request with `Rate limit exceeded: 125/day`. A slot frees "
+        f"in {seconds} seconds ({seconds / 3600:.1f} hours).\n\n"
+        f"**Nothing here is a finding about the data or about the search.** No measurement was "
+        f"recorded, the Guardrail 11 positive control was not evaluated, and the state file is "
+        f"unchanged, so next week's diff still compares against the last sweep that actually "
+        f"happened.\n\n"
+        f"The 125 a day belongs to the account, not to this job. Every other thing that talks "
+        f"to CourtListener under the same token draws on the same pool, and it refills one slot "
+        f"at a time over a rolling 24 hours rather than resetting at midnight. So the question "
+        f"worth asking is what else spent it: an interactive session, a backfill resume that "
+        f"was expected to skip Monday, or a second workflow.\n\n"
+        f"No action is needed for the record itself. Re-run this workflow by hand once the "
+        f"window has cleared if you want the week measured rather than skipped.\n")
 
 
 def control_issue(today):

@@ -2392,3 +2392,78 @@ Whether the classifier agrees with the hand triage. Two runs have now been cance
 producing that number. Nothing here is evidence about the classifier's accuracy — only about
 the harness built to measure it, which has now been wrong about the quota twice and about its
 own cache once.
+
+---
+
+## 20 August 2026 — the quota was never a mystery, and reading the error message would have said so
+
+Three backfills were lost to CourtListener 429s. Twice I concluded the published limits were
+not what the server meters, and wrote that conclusion into `watch.py` as a comment: "either
+the windows are counted differently, or refused requests count too, or the account's real
+ceiling is lower." The limiter was rebuilt around that theory twice, first to pace at 80% of
+the documented caps and then to tighten itself further on every refusal.
+
+The theory was wrong, and the server had been saying so the whole time. The full body of the
+429, read on 20 August:
+
+> Rate limit exceeded: 125/day. Expected available in 54227 seconds.
+
+The documented limits are exactly what is metered. The mistake was in a premise nobody wrote
+down: that a process begins its day with the full 125. **The allowance belongs to the account,
+not to the run.** The weekly watch, every backfill attempt, and every interactive
+CourtListener call made anywhere under the same token draw on one pool, and it refills one
+slot at a time across a rolling 24 hours rather than resetting at midnight. So the limiter's
+arithmetic could be perfectly correct and still meet a refusal on request one, because the
+budget it was carefully dividing had already been spent elsewhere.
+
+Every earlier run had spent it. Run 1 cleared the hourly cap. Run 2 spent what was left. The
+Monday sweep spent more. So did the sessions that were checking on all of them.
+
+### What that cost, and why sleeping was the wrong instinct
+
+Run 4 obeyed the server's instruction. It was told to wait 54810 seconds, which is 15.2 hours,
+inside a job with a 350-minute timeout. Honouring `Retry-After` is normally correct and here
+it was fatal: the run would have slept until it was killed, holding every document it had
+read in memory and writing none of them. It was cancelled after fifteen requests.
+
+Pacing slower had also been the wrong instinct, for the same reason. Pacing does not create
+quota. A run that is out of allowance and slows down simply reads fewer documents before it
+dies.
+
+### The change
+
+`QuotaExhausted` replaces the sleep. When the server asks for longer than the run has left,
+the run stops, writes its ledger, and reports how far it got. Three consequences:
+
+- **A pause costs nothing.** The ledger already resumed from `rules_version`; what was missing
+  was anything that would actually re-run it. The backfill is now scheduled daily and picks up
+  where it stopped. Once the corpus is whole it reads the validation file, sees `complete` and
+  a matching rules version, and returns without a single request, so a schedule left running
+  forever is free.
+- **A pause is not a failure.** `BACKFILL_PAUSED` opens no issue. A partial ledger still fails
+  the validation, which stays correct: the overrun test only asks whether the classifier
+  over-filled a category, so every unread document makes passing easier.
+- **A pause is never reported as something else.** This is the part that matters. A weekly
+  sweep cut short by quota leaves the positive control missing, and the run was one line away
+  from announcing that the search method was broken. The quota check now runs *before*
+  Guardrail 11, because Guardrail 11 asks whether the query still finds what it should, and
+  that is a question about a query that was actually sent.
+
+The daily resume skips Monday so the weekly sweep has the pool to itself.
+
+### The shape, for the seventh time
+
+A check that exists, runs, reports something, and is not aimed at the thing that broke. Here
+it was worse than usual: the diagnostic was not absent, it was **read and discarded**. The
+429's status code was handled carefully and its body, which contained the entire answer, was
+never printed. Two rebuilds of the limiter followed from a guess that one `print` would have
+falsified in ten seconds.
+
+Fifteen new checks cover it, including the two that would have caught this: a backfill that
+meets a 15-hour `Retry-After` must keep what it read and re-read none of it, and a sweep that
+meets one must not be reported as a broken search.
+
+### Still not known
+
+Whether the classifier agrees with the hand triage. Four runs, no number. Everything to date
+is about the harness, not the measurement.
