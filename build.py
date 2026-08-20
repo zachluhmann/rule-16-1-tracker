@@ -196,6 +196,13 @@ def subject_stats():
     def per(group, field):
         return sorted(sum(1 for x in scale19 if col[m][x][field]) for m in group)
 
+    # `party_direction` is loaded with the other three and read by nothing below it. That is
+    # not an oversight, and it is worth stating here because a reader who assumes otherwise
+    # will misjudge what the application rules cost. No published figure depends on it: the
+    # medians, ranges and resolution rates all come from `reached`, `express` and
+    # `court_resolution`. Application rule R4 governs `party_direction` alone, which is why
+    # reversing every R4 call in the dataset leaves this page identical. See AUDIT.md,
+    # 20 August 2026.
     col = {}
     for r in csv.DictReader(open("subject-treatment.csv")):
         col.setdefault(r["mdl_no"], {})[r["subject_id"]] = {

@@ -2467,3 +2467,90 @@ meets one must not be reported as a broken search.
 
 Whether the classifier agrees with the hand triage. Four runs, no number. Everything to date
 is about the harness, not the measurement.
+
+---
+
+## 20 August 2026 — the targeted R4 pass, and the claim it was based on
+
+Four documents said, in nearly the same words, that application rule R4 has the largest
+effect on the published numbers of any rule in the codebook, and that every R4 coding was
+provisional until a targeted pass covered it. The README ranked it second among all open
+items, above building the report layer. The pass has now been run. R4 is fine. The claim
+about it was wrong, and wrong in a way none of this project's checks could see.
+
+### What R4 actually reaches
+
+R4 separates a topic the court anticipates discussing from one whose content the parties are
+directed to supply. It governs `party_direction` and no other column. Twenty-three cells turn
+on it: fourteen in MDL 3163, whose Part IV.B is an agenda, and nine in MDL 3185, whose topic
+list sits under a filing requirement.
+
+`party_direction` is read by no published statistic. Every figure on the landing page comes
+from `reached`, `express` or `court_resolution`. `build.py` loads `party_direction` alongside
+them and never uses it; `validate_treatment.py` uses it only for the nesting constraints, and
+`score_reliability.py` only for scoring.
+
+That was tested rather than argued. Reversing every R4 call in a scratch copy, which moves
+twelve of the twenty-three cells, produced:
+
+    published figures that moved: NONE
+    all logical constraints satisfied
+    page matches the CSVs
+
+**Both integrity gates pass whether R4 is applied as written or exactly inverted.** Nothing
+in this repository can tell the two readings apart.
+
+For contrast, the rules whose effects do land on published figures are R1, R6 and R7 through
+`express`, R3 through `express` and `court_resolution`, and R8 through all four. The rule
+singled out as the most consequential is the only one in the codebook whose entire effect is
+invisible to the published output, and the rules that actually move the page were described
+as ordinary.
+
+### What the pass found about the coding itself
+
+R4 is applied consistently. In MDL 3163 direction tracks the pin cite exactly: all ten cells
+resting only on the Part IV.B agenda are undirected, all four reaching Parts I to III are
+directed. The one apparent exception, `b2d_direct_filing`, pins to Part I and is coded
+undirected, and its note gives the reason: Part I resolves the coverage question without
+telling the parties to do anything. Resolution without direction is permitted. No
+misapplication was found.
+
+### The defect that is real
+
+The sentence that decides all twenty-three cells is quoted in none of them.
+
+For MDL 3185, the words that make its topics directed appear in no quote and no coding note
+in the file. For MDL 3163, one quote contains the word "anticipates," but it is a different
+sentence, about following MDL 3094's conference format. The framing line itself is in neither
+order's cells.
+
+This matters more than the ranking error. The README's promise is that "any disagreement is
+with a quotation rather than with a judgment." For every other coded cell that holds. For
+these twenty-three it does not: a reader who wants to check the call has to leave the dataset
+and read the order. The rule is sound, the application is consistent, and the evidence is
+somewhere else.
+
+The AUDIT entry recording that no R4-dependent cell was drawn into the reliability sample
+also understated the problem. Only three cells in the entire file name R4 in a coding note,
+and none of the three is in MDL 3163 or MDL 3185. Nothing marks which cells R4 governs, so a
+sample could not have targeted them even if the draw had tried.
+
+### The shape, again
+
+A claim that was repeated in four documents for a week, that ranked the project's own work
+queue, and that no check could reach. `check_readme` verifies every count in the README's
+current-state sections against the CSVs, and this claim is not a count, so it sailed past.
+The figure it quoted, 14 directed subjects instead of 4, is arithmetically correct. What was
+wrong was the inference drawn from it, and inferences are not what any of these gates test.
+
+The correction is now in the codebook, `coding-decisions.md`, the maintenance protocol and
+the README, where R4 has moved from second in the open-items list to last, restated as an
+evidence gap rather than a measurement risk. The earlier entry above is left as written.
+
+### Still open
+
+Whether MDL 3163 Part IV.B and MDL 3185 say what the codebook quotes them as saying. Both
+framing sentences are quoted in the codebook and in `coding-decisions.md` but nowhere in the
+data, and neither order text is stored in `sources/`. Settling it costs two CourtListener
+requests against a daily allowance the triage backfill currently needs. It is the last thing
+standing between R4 and a complete pass.

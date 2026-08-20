@@ -329,10 +329,23 @@ topics," so its ten topics are identified but not directed. MDL 3185 reads "The
 parties shall file preliminary status reports … Suggested topics include," so its
 seven topics are directed despite the word "suggested."
 
-**R4 has the largest effect on the published numbers of any rule here. Without it
-MDL 3163 would show 14 directed subjects instead of 4.** It has never been
-independently tested, because no R4-dependent cell was drawn into the reliability
-sample. Treat every R4 coding as provisional until a targeted pass covers it.
+**R4 changes twelve cells and no published figure.** Without it MDL 3163 would show
+14 directed subjects instead of 4, which is a real change to the published data. It is
+not a change to any published number. R4 governs `party_direction` alone, and every
+statistic on the landing page is computed from `reached`, `express` and
+`court_resolution`. Reversing every R4 call in the dataset, which moves twelve of the
+twenty-three cells the rule governs, leaves the page identical and passes both integrity
+gates unchanged. The rules that do move published figures are R1, R6 and R7 through
+`express`, R3 through `express` and `court_resolution`, and R8 through all four.
+
+A targeted pass on 20 August 2026 found R4 applied consistently. In MDL 3163 direction
+tracks the pin cite exactly: every cell resting only on the Part IV.B agenda is
+undirected, every cell reaching Parts I to III is directed, and the single exception,
+`b2d_direct_filing`, is resolution without direction, which the codebook permits. What
+that pass could not check is the framing sentence itself. It is quoted in none of the
+twenty-three cells it decides, so those cells cannot be verified from their own
+evidence. Until it is quoted, treat the framing, not the application, as the open
+question.
 
 ### R5. What counts as one order
 

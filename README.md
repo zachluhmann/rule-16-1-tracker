@@ -1132,17 +1132,22 @@ What remains, in descending order of how much it would change what this dataset 
 1. **Fifteen tiebreak cells await a human reading.** Nothing in this dataset has yet been read
    by a lawyer other than its author. A second coder and two adjudicators went through all 300
    cells and 22 were amended; fifteen remain genuinely contested and are recorded as such.
-2. **R4 has never been independently tested** and has the largest effect of any application
-   rule on the published figures. It distinguishes a topic the court anticipates discussing
-   from one whose content the parties are directed to supply. Without it MDL 3163 would show
-   14 directed subjects instead of 4. Every R4 coding is provisional until a targeted pass
-   covers it.
-3. **Build `reports.csv`.** The report layer is probably the better paper, and reports are
+2. **Build `reports.csv`.** The report layer is probably the better paper, and reports are
    easier to find than orders because they name the rule in their own docket text. `collect.py`
    has the queries.
-4. **Back-code `party_invoked_rule`** across all sixteen rows; 10 are still `NOT_CHECKED`.
+3. **Back-code `party_invoked_rule`** across all sixteen rows; 10 are still `NOT_CHECKED`.
    Five are confirmed by document; 3179 rests on an earlier search whose pin cite was never
    captured — do **not** code that one `YES` from memory.
+4. **Twenty-three cells cannot be checked against their own quotes.** They are the cells
+   governed by application rule R4, which separates a topic the court anticipates discussing
+   from one whose content the parties are directed to supply. A targeted pass on 20 August
+   2026 found the rule applied consistently, but the sentence that decides it, the framing
+   line in MDL 3163 Part IV.B and the one in MDL 3185, is quoted in none of the cells it
+   governs. Until it is, those cells rest on a reading rather than on a quotation, which is
+   the one thing this project says it does not do. Earlier versions of this list ranked R4
+   first, on the ground that it had the largest effect on the published figures. That was
+   wrong. R4 governs `party_direction`, which no published statistic reads, and reversing
+   every R4 call in the dataset moves nothing on the page.
 5. **MDL 3176 has issued no qualifying order** at 133 days, inside the 21-198 day range the
    dataset has actually observed. It is the only true negative and its docket is watched
    weekly by `watch.py`.

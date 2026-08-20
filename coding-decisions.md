@@ -58,8 +58,11 @@ are all in Part III. MDL 3185 reads "The parties shall file preliminary status r
 Suggested topics include," so its seven topics are DIRECTED despite the word "suggested."
 MDL 3179's conference purpose clause is IDENTIFIED for the same reason as MDL 3163.
 
-R4 is the single decision with the largest effect on the numbers. Without it MDL 3163
-would show 14 directed subjects instead of 4.
+Without R4, MDL 3163 would show 14 directed subjects instead of 4. That is the largest
+change any application rule makes to the coded cells, and it is worth being exact about
+what it does not change: R4 governs `party_direction`, which no published statistic
+reads. Reversing every R4 call moves no figure on the landing page and passes both
+integrity gates. See AUDIT.md, 20 August 2026.
 
 ## R5. What counts as one order
 
