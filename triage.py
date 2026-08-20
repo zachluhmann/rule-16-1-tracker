@@ -29,6 +29,14 @@ import csv, json, os, re, urllib.request, urllib.error
 
 EFFECTIVE = "2025-12-01"
 
+# Bump this whenever a rule is added, removed or changed. The ledger stamps every row with the
+# version that decided it, and the backfill re-reads any row stamped with an older one.
+# Without it a ledger written by one set of rules is silently carried forward by the next: the
+# resume logic skips anything already recorded, so a validation run would score a mixture of
+# two classifiers and report a single number for it. A cache of verdicts has to know which
+# code produced them or it is not a cache, it is a contaminant.
+RULES_VERSION = "2026-08-15b"
+
 # The Rule's name, in every form the sweep looks for and a few it does not. A document that
 # contains "16.1" but none of these is either Rule 16 noise or about some other 16.1.
 FEDERAL_FORMS = re.compile(
@@ -68,6 +76,27 @@ MDL_PATTERNS = [
 # evidence: an MDL member case carries its own civil number and may never print the MDL's.
 CIVIL_PATTERN = re.compile(r"\b\d+:\d{2}-cv-\d{3,6}\b", re.I)
 BANKRUPTCY_PATTERN = re.compile(r"\b\d{2}-\d{5}\b|\bBankr\.|\badversary\s+proceeding\b", re.I)
+
+
+def load_dockets(tracker="rule-16-1-tracker.csv"):
+    """CourtListener docket id -> MDL number, for every MDL in the universe.
+
+    The tracker has carried these all along, in `courtlistener_url`, and the first version of
+    this file never looked at them. It located a document by scanning its text for an MDL
+    number, which fails whenever the caption is written in a form the regex does not expect:
+    the MDL 3170 report heads itself "Case No. 25 CV 10320", and MDL 3162's own docket is
+    1:25-mc-00179, a MISCELLANEOUS case that a civil-docket pattern cannot match at all.
+
+    Which docket a document sits on is a fact, not a string to be parsed, and it comes free
+    with the search result. It is stronger evidence than anything in the prose and it is
+    checked first.
+    """
+    out = {}
+    for r in csv.DictReader(open(tracker)):
+        m = re.search(r"/docket/(\d+)/", r.get("courtlistener_url") or "")
+        if m and r["mdl_no"].isdigit():
+            out[int(m.group(1))] = int(r["mdl_no"])
+    return out
 
 
 def load_registry(tracker="rule-16-1-tracker.csv",
@@ -118,7 +147,41 @@ def verdict(cat, rule, evidence, **kw):
     return v
 
 
-def classify(doc, reg, by_sha1=None):
+def classify_from_search(hit, reg, dockets=None, learned=None):
+    """Decide a hit from the search result alone, or return None to say "fetch it".
+
+    The search result already carries the clerk's docket entry, the matched snippet, and the
+    docket id. The backfill was spending one request per document to re-download material it
+    was already holding, which is why 102 documents cost 110 requests and ran into the
+    quota. Most of them never needed the fetch.
+
+    This decides ONLY the conjunction of two positive facts:
+
+      1. a federal naming form appears in the clerk's entry or in the matched snippet, so the
+         hit is a real Rule 16.1 reference and not the index returning Rule 16; and
+      2. the document sits on a docket already known to belong to a specific MDL.
+
+    Both are affirmative evidence. Nothing here is decided by ABSENCE, and that restriction is
+    the whole point: a snippet is a window around a match, so a snippet that does not contain
+    "16.1" is not evidence that the document does not, and a snippet with no local-rule marker
+    is not evidence that the filing is not about a local rule. Deciding noise needs the full
+    text and still gets a fetch. The saving is real without the reasoning being loose.
+    """
+    blob = (hit.get("description") or "") + "\n" + (hit.get("snippet") or "")
+    if not FEDERAL_FORMS.search(blob) or LOCAL_FORMS.search(blob):
+        return None
+    did = hit.get("docket_id")
+    mdl = (dockets or {}).get(did) or (learned or {}).get(did)
+    if not mdl or mdl not in reg:
+        return None
+    return verdict(reg[mdl]["side"], "S1",
+                   f"search result alone: names the Rule, filed on docket {did} "
+                   f"(MDL {mdl}). Not fetched.",
+                   mdl_no=str(mdl), method="RULE",
+                   no_text_layer=not hit.get("is_available"))
+
+
+def classify(doc, reg, by_sha1=None, dockets=None, learned=None):
     """One document, one category, plus the rule and the string that decided it.
 
     `doc` is a RECAP document: id, plain_text, description, is_available, sha1. `description`
@@ -173,6 +236,17 @@ def classify(doc, reg, by_sha1=None):
                        no_text_layer=no_text,
                        escalate="names 16.1 but no federal naming form and no local-rule marker")
 
+    # R5a. The docket the document is filed on, which the search result already told us.
+    # A master docket id resolves the case with no parsing at all. `learned` carries member
+    # dockets discovered earlier in the same run: once one document on a member docket has
+    # been tied to an MDL by its text, every later document on that docket inherits it.
+    did = doc.get("docket_id")
+    known_docket = (dockets or {}).get(did) or (learned or {}).get(did)
+    if known_docket and known_docket in reg:
+        return verdict(reg[known_docket]["side"], "R5a",
+                       f"filed on docket {did}, the docket of MDL {known_docket}",
+                       mdl_no=str(known_docket), no_text_layer=no_text)
+
     # R5 to R7 locate the federal-rule reference in a case.
     nums = mdl_numbers(both)
     known = {n for n in nums if n in reg}
@@ -192,6 +266,8 @@ def classify(doc, reg, by_sha1=None):
                            no_text_layer=no_text,
                            escalate="document names MDLs from both sides of the effective date")
         n = sorted(known)[0]
+        if learned is not None and did:
+            learned[did] = n          # a member docket, now known for the rest of the run
         return verdict(sides.pop(), "R5", _around(both, _first_mdl_span(both)),
                        mdl_no=str(n), no_text_layer=no_text)
 

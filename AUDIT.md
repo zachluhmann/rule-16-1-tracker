@@ -2314,3 +2314,81 @@ that broke.
 The claim that the readable orders represent as many distinguishable approaches was made of
 fourteen orders and has not been re-examined since MDL 3187 was added. It is marked in place as
 unreviewed. It is a judgment about the orders, not a count, and it is not mine to make.
+
+---
+
+## 15 August 2026 — the second backfill, and a cache that would have contaminated its own test
+
+The corrected backfill ran for two and a half hours, read 70 of 102 documents, and was
+cancelled. It was not failing the way the first one did.
+
+### The limiter was obeyed and the server refused anyway
+
+The run paced itself to 5 requests a minute, 50 an hour and 125 a day, the three limits
+CourtListener publishes. Its own counter said it was inside all three. CourtListener returned
+429 regardless:
+
+```
+rate limit: waiting 59s (84 requests so far)
+429 despite the limiter; backing off 600s
+429 despite the limiter; backing off 1200s
+69/102 478360512 FAILED HTTPError: HTTP Error 429: Too Many Requests
+```
+
+So the published numbers are not what the server meters. Either the windows are counted
+differently than a rolling window, or refused requests count too, or this account's real
+ceiling is lower. **The response was not to guess a fourth set of numbers.** The limiter now
+paces to 80% of the documented caps and *tightens itself by a further quarter every time a 429
+arrives*, down to a floor of 25%. A 429 is evidence that the model of the quota is wrong, not
+a transient to retry through. It also honours `Retry-After` when the server sends one; the
+blind 600 and 1200 second sleeps burned half the run's time budget on documents it then failed
+anyway.
+
+**The completeness guard worked.** Each refusal was recorded, not skipped, and the run was on
+course to stop at its budget and report FAILED with the missing count. Yesterday's version
+would have skipped them silently and certified the classifier on two thirds of a ledger.
+
+### The classifier was re-downloading what it already held
+
+The deeper problem was not the quota. It was that the backfill spent one request per document
+fetching material the search result had already returned. The search result carries the
+clerk's docket entry, the matched snippet, and **`docket_id`** — and `rule-16-1-tracker.csv`
+has carried all sixteen CourtListener docket ids since the beginning, in `courtlistener_url`,
+which `triage.py` had never read.
+
+Two rules now use that fact:
+
+- **R5a** locates a document by the docket it sits on. This is not only cheaper, it is more
+  accurate: the text scan failed on MDL 3170's report, which heads itself "Case No. 25 CV
+  10320", and on all of MDL 3162, whose docket is **1:25-mc-00179** — a miscellaneous case a
+  civil-docket pattern cannot match. Member dockets are learned within a run.
+- **S1** decides a hit from the search result alone, with no fetch at all, and only on the
+  conjunction of two positive facts: a federal naming form in the entry or snippet, and a
+  docket already known to belong to an MDL. **Nothing is decided by absence.** A snippet is a
+  window around a match, so a snippet without "16.1" is not evidence the document lacks it,
+  and a snippet without a local-rule marker is not evidence the filing is not about one.
+  Deciding noise still needs the full text and still costs a request.
+
+The stubbed backfill fell from 110 requests to 52.
+
+### The finding that made cancelling necessary
+
+The run's 70 classified documents were about to be committed, and **that would have poisoned
+the next validation.** The resume logic skips any document already in the ledger, so the next
+run would have inherited 70 verdicts from the superseded rules, applied the new rules only to
+the residue, and reported a single pass-or-fail number for a mixture of two classifiers.
+
+A cache of verdicts has to know which code produced them, or it is not a cache, it is a
+contaminant. The ledger now stamps every row with `rules_version`, and the backfill re-reads
+any row carrying an older one. `RULES_VERSION` is bumped whenever a rule changes.
+
+That is the same failure shape as the four before it. The resume logic was written to save
+work and it worked exactly as designed; what it could not see was that "already answered" and
+"answered by the code we are testing" are different questions.
+
+### What is still not known
+
+Whether the classifier agrees with the hand triage. Two runs have now been cancelled before
+producing that number. Nothing here is evidence about the classifier's accuracy — only about
+the harness built to measure it, which has now been wrong about the quota twice and about its
+own cache once.

@@ -74,7 +74,15 @@ CATS = {"post_effective_mdl": "hits_in_post_effective_mdl",
 # half a ledger and reported a PASS, because a comparison that only checks whether the
 # classifier OVER-counts a category passes trivially when most documents are missing from it.
 # A silent underfill that validates itself is the exact failure this project keeps finding.
+# Paced to a FRACTION of the documented caps, not to the caps themselves. The second live
+# backfill obeyed 5/60, 50/3600 and 125/86400 by its own accounting and CourtListener still
+# answered 429, which means the published numbers are not what the server actually meters:
+# either the windows are counted differently, or refused requests count too, or the account's
+# real ceiling is lower. Rather than guess a fourth set of numbers, the limiter now leaves
+# headroom and TIGHTENS ITSELF when it is proved wrong. A 429 is treated as evidence that the
+# model of the quota is incorrect, not as a transient to be retried through.
 LIMITS = ((5, 60), (50, 3600), (125, 86400))
+SAFETY = [0.8]           # multiplier on every cap; reduced further each time a 429 arrives
 # Stop reading with time to spare against the job's 350-minute timeout, so the run ends by
 # writing what it has rather than by being killed holding it.
 BUDGET_SECONDS = int(os.environ.get("BACKFILL_BUDGET_SECONDS", 300 * 60))
@@ -96,9 +104,10 @@ def _throttle():
         _hist[:] = [t for t in _hist if now - t < LIMITS[-1][1]]
         waits = []
         for n, window in LIMITS:
+            cap = max(1, int(n * SAFETY[0]))
             recent = [t for t in _hist if now - t < window]
-            if len(recent) >= n:
-                waits.append(window - (now - recent[-n]) + 0.5)
+            if len(recent) >= cap:
+                waits.append(window - (now - recent[-cap]) + 0.5)
         if not waits:
             _hist.append(now)
             return
@@ -116,20 +125,23 @@ def _open(url):
 def get(path, params=None, url=None):
     """One request, throttled, with one retry on 429."""
     target = url or (API + path + "?" + urllib.parse.urlencode(params or {}))
-    for attempt in (1, 2, 3):
+    for attempt in range(1, 6):
         _throttle()
         try:
             return _open(target)
         except urllib.error.HTTPError as e:
-            # With the limiter above a 429 should not happen. If one does, the limiter's model
-            # of the account's quota is wrong, so back off long enough to clear an hourly
-            # window rather than retrying into the same wall.
-            if e.code == 429 and attempt < 3:
-                print(f"  429 despite the limiter; backing off {600 * attempt}s", flush=True)
-                time.sleep(600 * attempt)
-                continue
-            raise
-    raise RuntimeError("unreachable")
+            if e.code != 429:
+                raise
+            # Honour the server's own instruction when it gives one. Blind 600 and 1200
+            # second sleeps burned half the second backfill's time budget on documents it
+            # then failed anyway.
+            hdr = (e.headers.get("Retry-After") if e.headers else None) or ""
+            nap = int(hdr) if hdr.strip().isdigit() else min(60 * 2 ** (attempt - 1), 300)
+            SAFETY[0] = max(0.25, SAFETY[0] * 0.75)
+            print(f"  429 despite the limiter (attempt {attempt}); pacing down to "
+                  f"{SAFETY[0]:.0%} of the documented caps, waiting {nap}s", flush=True)
+            time.sleep(nap)
+    raise RuntimeError(f"429 after 5 attempts at {SAFETY[0]:.0%} of the documented caps")
 
 
 def sweep(q, meta):
@@ -184,8 +196,14 @@ def latest_entry(docket_id):
 # ledger
 # ---------------------------------------------------------------------------------------
 
+# `docket_id` is recorded even though no published figure uses it. It is the field the
+# strongest locating rule reads, and storing it means a later change to the rules can be
+# re-scored against the documents already read, using only the seven sweep requests rather
+# than re-fetching a hundred documents. A ledger that keeps the evidence a rule consumed is
+# a ledger you can re-run a rule against.
 LEDGER_COLS = ["document_id", "first_seen", "forms", "category", "method", "rule",
-               "mdl_no", "no_text_layer", "escalate", "evidence"]
+               "mdl_no", "docket_id", "rules_version", "no_text_layer", "escalate",
+               "evidence"]
 
 
 def read_ledger():
@@ -203,9 +221,15 @@ def write_ledger(rows):
     open(LEDGER, "w", newline="").write(buf.getvalue())
 
 
-def classify_one(doc_id, forms, meta, reg, by_sha1, today):
-    doc = fetch_document(doc_id, meta)
-    v = triage.classify(doc, reg, by_sha1)
+def classify_one(doc_id, forms, meta, reg, by_sha1, today, dockets=None, learned=None):
+    # Try the search result first. It costs nothing, it is already in hand, and for a document
+    # that names the Rule on a docket we recognise it is sufficient. Only what it declines
+    # is worth a request.
+    hit = meta.get(doc_id, {})
+    v = triage.classify_from_search(hit, reg, dockets, learned)
+    doc = hit if v else fetch_document(doc_id, meta)
+    if not v:
+        v = triage.classify(doc, reg, by_sha1, dockets, learned)
     if v["category"] == "unverified" and v.get("escalate"):
         m = triage.ask_model(doc, reg)
         if m and m["category"] != "unverified":
@@ -214,7 +238,9 @@ def classify_one(doc_id, forms, meta, reg, by_sha1, today):
             v = {**v, "method": m["method"], "escalate": m["escalate"] or v["escalate"]}
     row = {"document_id": doc_id, "first_seen": today, "forms": " ".join(sorted(forms)),
            "category": v["category"], "method": v.get("method", "RULE"), "rule": v["rule"],
-           "mdl_no": v.get("mdl_no", ""), "no_text_layer": "YES" if v["no_text_layer"] else "",
+           "mdl_no": v.get("mdl_no", ""), "docket_id": doc.get("docket_id") or "",
+           "rules_version": triage.RULES_VERSION,
+           "no_text_layer": "YES" if v["no_text_layer"] else "",
            "escalate": v.get("escalate", ""), "evidence": v.get("evidence", "")}
     if doc.get("sha1") and v["category"] != "unverified":
         by_sha1[doc["sha1"]] = {"document_id": doc_id, "category": v["category"],
@@ -247,7 +273,7 @@ def validated():
 # backfill
 # ---------------------------------------------------------------------------------------
 
-def backfill(today, reg):
+def backfill(today, reg, dockets=None, learned=None):
     """Classify the existing corpus and score it against the triage a human did by reading.
 
     THE TEST IS ONE-SIDED AND THAT IS STATED ON PURPOSE. The hand triage exists only as
@@ -266,7 +292,9 @@ def backfill(today, reg):
 
     union = sorted(set().union(*now_forms.values()))
     ledger, by_sha1, failed = read_ledger(), {}, {}
-    todo = [d for d in union if d not in ledger]
+    # Anything decided by an older set of rules is read again, not trusted.
+    todo = [d for d in union
+            if ledger.get(d, {}).get("rules_version") != triage.RULES_VERSION]
     print(f"backfill: {len(union)} documents, {len(todo)} still to read", flush=True)
     # A backfill can take longer than the quota allows in one day, and the account's daily
     # allowance is shared with whatever else ran. So it works to a wall-clock budget, writes
@@ -275,7 +303,7 @@ def backfill(today, reg):
     # validation, which is correct: re-running resumes from the ledger.
     deadline = time.time() + BUDGET_SECONDS
     for i, doc_id in enumerate(union, 1):
-        if doc_id in ledger:
+        if ledger.get(doc_id, {}).get("rules_version") == triage.RULES_VERSION:
             continue
         if time.time() > deadline:
             print(f"  budget spent with {len([d for d in union if d not in ledger])} "
@@ -283,7 +311,8 @@ def backfill(today, reg):
             break
         forms = [f for f in now_forms if doc_id in now_forms[f]]
         try:
-            ledger[doc_id] = classify_one(doc_id, forms, meta, reg, by_sha1, today)
+            ledger[doc_id] = classify_one(doc_id, forms, meta, reg, by_sha1, today,
+                                          dockets, learned)
         except Exception as e:
             failed[doc_id] = f"{type(e).__name__}: {e}"
             print(f"  {i}/{len(union)} {doc_id} FAILED {failed[doc_id]}", flush=True)
@@ -322,7 +351,8 @@ def backfill(today, reg):
     # classifier put MORE documents in a category than the hand triage did, so every document
     # it never managed to read makes the test easier to pass. A partial ledger that reports
     # PASS is worse than an outright failure, because it turns automatic triage on.
-    missing = [d for d in union if d not in ledger]
+    missing = [d for d in union
+               if ledger.get(d, {}).get("rules_version") != triage.RULES_VERSION]
     passed = not overs and not missing
     summary = (f"{decided} of {total} form-hits decided by rule or verified quote; "
                + ("no category exceeded the hand triage's totals"
@@ -352,9 +382,10 @@ def main(argv):
         sys.exit("COURTLISTENER_TOKEN is not set")
     today = datetime.date.today().isoformat()
     reg = triage.load_registry()
+    dockets, learned = triage.load_dockets(), {}
 
     if "--backfill" in argv:
-        passed, summary = backfill(today, reg)
+        passed, summary = backfill(today, reg, dockets, learned)
         if passed is None:
             write_log(today, "CONTROL_FAILED", 0, [], [], [], "", "", summary)
             emit(True, f"Rule 16.1 backfill {today}: positive control failed")
@@ -402,14 +433,15 @@ def main(argv):
                for r in ledger.values() if r["rule"] == "R1"}
     triaged = {}
     for doc_id in new:
-        if doc_id in ledger:
-            # Already read in an earlier run that was not allowed to fold it into the counts.
-            # Its verdict stands; re-fetching it would spend a request to reach the same answer.
+        if ledger.get(doc_id, {}).get("rules_version") == triage.RULES_VERSION:
+            # Already read under the CURRENT rules in a run that was not allowed to fold it
+            # into the counts. Its verdict stands; re-fetching would reach the same answer.
             triaged[doc_id] = ledger[doc_id]
             continue
         forms = [f for f in now_forms if doc_id in now_forms[f]]
         try:
-            triaged[doc_id] = classify_one(doc_id, forms, meta, reg, by_sha1, today)
+            triaged[doc_id] = classify_one(doc_id, forms, meta, reg, by_sha1, today,
+                                           dockets, learned)
         except Exception as e:
             errors.append(f"document {doc_id}: {type(e).__name__}: {e}")
     if triaged:

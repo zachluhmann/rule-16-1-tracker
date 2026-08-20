@@ -127,6 +127,79 @@ def part1():
           f"sha1 twin instead of reading as an unrelated civil case (got {v['category']}/{v['rule']})")
     ok.append(good)
 
+    # R5a: the docket the document sits on, which the search result gives free. These three
+    # captions are exactly what defeated the text scan in the first live backfill.
+    print()
+    dockets, learned = triage.load_dockets(os.path.join(REPO, "rule-16-1-tracker.csv")), {}
+    for name, expect, d in [
+        ("MDL 3170 report, caption reads 'Case No. 25 CV 10320'", "post_effective_mdl",
+         dict(id=1, docket_id=71221176, is_available=True, description="",
+              plain_text="Case No. 25 CV 10320\nFED. R. CIV. P. 16.1 REPORT filed pursuant "
+                         "to Fed. R. Civ. P. 16.1.")),
+        ("MDL 3162, a MISCELLANEOUS docket no civil pattern can match", "post_effective_mdl",
+         dict(id=2, docket_id=72028506, is_available=True, description="",
+              plain_text="CLASS ACTION SETTLEMENT ADMINISTRATION LITIGATION 1:25-mc-00179 "
+                         "INITIAL PROCEDURE ORDER under Federal Rule of Civil Procedure 16.1.")),
+        ("no text layer at all, located by its docket", "post_effective_mdl",
+         dict(id=3, docket_id=73170267, is_available=False, plain_text="",
+              description="ORDER under Fed. R. Civ. P. 16.1")),
+        ("a local-rule brief ON an MDL docket stays noise", "noise",
+         dict(id=4, docket_id=71221176, is_available=True, description="",
+              plain_text="OPPOSITION TO THE REQUIREMENTS OF LOCAL RULE 16.1. Local Rule "
+                         "16.1(b) requires a scheduling conference.")),
+        ("Rule 16 noise ON an MDL docket stays noise", "noise",
+         dict(id=5, docket_id=72030009, is_available=True,
+              description="Order on Rule 16 conference",
+              plain_text="ORDER setting a Rule 16 scheduling conference under Rule 26(f).")),
+        ("an ordinary case NOT on an MDL docket is unaffected", "non_mdl",
+         dict(id=6, docket_id=99999999, is_available=True, description="",
+              plain_text="Case 1:21-cv-00090-DMT-CRH conference under Fed. R. Civ. P. 16.1(a).")),
+    ]:
+        v = triage.classify(d, reg, {}, dockets, learned)
+        g = v["category"] == expect
+        ok.append(g)
+        print(f"  {'PASS' if g else 'FAIL'}  R5a  {name} -> {v['category']} ({v['rule']})")
+
+    a = triage.classify(dict(id=7, docket_id=555001, is_available=True, description="",
+                             plain_text="Case 3:26-cv-00157-jdp IN RE: SHELL EGGS 26-md-3175-jdp "
+                                        "under Federal Rule of Civil Procedure 16.1"),
+                        reg, {}, dockets, learned)
+    b = triage.classify(dict(id=8, docket_id=555001, is_available=True, description="",
+                             plain_text="Case 3:26-cv-00157-jdp a later filing citing Fed. R. "
+                                        "Civ. P. 16.1 with no MDL number in it at all"),
+                        reg, {}, dockets, learned)
+    g = a["category"] == "post_effective_mdl" and b["rule"] == "R5a"
+    ok.append(g)
+    print(f"  {'PASS' if g else 'FAIL'}  R5a  a member docket learned from one document is "
+          f"inherited by the next ({a['rule']} then {b['rule']})")
+
+    # classify_from_search decides only the conjunction of two positive facts. Everything
+    # else must return None and get fetched. The danger of a cost optimisation is that it
+    # starts deciding things it cannot see, so the negatives matter more than the positives.
+    print()
+    S = triage.classify_from_search
+    for name, hit, want in [
+        ("names the Rule, on a known MDL docket -> decided",
+         dict(docket_id=71221176, is_available=True, description="ORDER under Fed. R. Civ. P. 16.1",
+              snippet="pursuant to Fed. R. Civ. P. 16.1 the parties shall confer"), "decide"),
+        ("names the Rule, docket NOT known -> fetch",
+         dict(docket_id=99999999, is_available=True, description="",
+              snippet="pursuant to Fed. R. Civ. P. 16.1"), None),
+        ("known MDL docket but no naming form in the snippet -> fetch",
+         dict(docket_id=71221176, is_available=True, description="Order on Rule 16 conference",
+              snippet="ORDER setting a Rule 16 scheduling conference"), None),
+        ("a local-rule marker present -> fetch, never decided here",
+         dict(docket_id=71221176, is_available=True, description="",
+              snippet="motion to stay the requirements of Local Rule 16.1 and Fed. R. Civ. P. 16.1"),
+         None),
+        ("empty search result -> fetch",
+         dict(docket_id=71221176, is_available=False, description="", snippet=""), None),
+    ]:
+        got = S(hit, reg, dockets, {})
+        g = (got is None) if want is None else (got is not None and got["rule"] == "S1")
+        ok.append(g)
+        print(f"  {'PASS' if g else 'FAIL'}  S1   {name}")
+
     # No key set, so the model tier must decline rather than invent an answer.
     for k in ("ANTHROPIC_API_KEY", "OPENAI_API_KEY"):
         os.environ.pop(k, None)
@@ -172,6 +245,19 @@ TEXTS = {
 # text and a stub that gave every hit the same entry would leak the Rule's name into documents
 # that do not contain it. That is not a hypothetical: the first version of this stub did
 # exactly that and turned twenty-five Rule 16 noise hits into ordinary civil cases.
+# The docket each kind of document sits on. Added when the classifier learned to read
+# docket ids: the stub previously put every document on MDL 3170's master docket, which made
+# the new rule classify the entire corpus as post-effective and blew up the distribution. A
+# fixture that is uniform where the real corpus is not will always flatter or wreck a rule
+# that reads the field being faked.
+DOCKET = {
+    "post":  71221176,   # MDL 3170 master, in the tracker
+    "pre":   90000001,   # MDL 3108's docket, deliberately NOT in the tracker: must fall
+                         # through to the text scan and resolve as pre-effective there
+    "non":   90000002,   # an ordinary civil case
+    "noise": 90000003,
+    "undec": 90000004,
+}
 DESCS = {
     "post":  "ORDER RE: INITIAL CASE MANAGEMENT CONFERENCE under Federal Rule of Civil Procedure 16.1.",
     "pre":   "MDL Pretrial Order",
@@ -210,8 +296,9 @@ def fake_urlopen(req, timeout=None):
                 "plain_text": TEXTS[KIND.get(doc_id, "post")]}
     else:
         body = {"results": [{
-            "id": i, "docket_id": 71221176, "document_number": 6, "page_count": 2,
+            "id": i, "document_number": 6, "page_count": 2,
             "is_available": True, "entry_date_filed": "2026-08-11",
+            "docket_id": DOCKET[KIND.get(i, "post")],
             "absolute_url": "/docket/71221176/33/in-re-trans-union/",
             "short_description": "Order AND ~Util - Set/Reset Deadlines",
             "description": DESCS[KIND.get(i, "post")],
