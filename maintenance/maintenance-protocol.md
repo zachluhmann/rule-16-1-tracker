@@ -173,7 +173,10 @@ and once produced a published finding that was false and unfalsifiable by its ow
 
 - MDL 3176 has issued no qualifying order at 133 days. The dataset's only true negative;
   watched weekly at the docket level.
-- R4 has never been independently tested and has the largest effect of any application rule
-  on the published figures. Every R4 coding is provisional until a targeted pass covers it.
+- Twenty-three cells cannot be checked against their own quotes. They are the ones governed
+  by application rule R4, and the sentence that decides them is quoted in none of them. The
+  targeted pass of 20 August 2026 found the rule applied consistently and found that it moves
+  no published figure, so this ranks lower than it used to, but it is still the one place
+  where a cell rests on a reading rather than on a quotation.
 - Fifteen tiebreak cells await a human reading. Nothing in this dataset has yet been read by
   a lawyer other than its author.
