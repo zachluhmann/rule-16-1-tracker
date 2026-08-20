@@ -5,13 +5,25 @@ name: Rule 16.1 watch
 # and 8am in winter; the hour does not matter and drifting one hour is not worth a second
 # cron entry. Also runnable by hand from the Actions tab, which is how the one-time triage
 # backfill is run.
+#
+# The second schedule is the triage backfill, resumed a day at a time. Reading the whole
+# corpus needs more CourtListener requests than one day's allowance reliably has left in it,
+# and that allowance belongs to the account rather than to the run, so a single long job
+# cannot be made to work by pacing. Instead the backfill keeps a ledger, stops when the day
+# runs out, and continues tomorrow. It costs nothing once finished: the run reads the
+# validation file, sees the corpus is complete under the current rules, and exits without a
+# single request.
+#
+# It deliberately skips MONDAY. The weekly sweep runs that afternoon and needs the daily pool
+# to itself; a resume that morning could spend it and leave the sweep unable to run at all.
 on:
   schedule:
     - cron: "0 13 * * 1"
+    - cron: "0 2 * * 0,2,3,4,5,6"
   workflow_dispatch:
     inputs:
       backfill:
-        description: "Score the triage classifier against the hand triage (run once, ~2 hours; paced by CourtListener's 50/hour cap)"
+        description: "Restart the triage backfill from scratch (normally unnecessary; the daily schedule finishes it on its own)"
         type: boolean
         default: false
 
@@ -33,6 +45,10 @@ jobs:
   watch:
     runs-on: ubuntu-latest
     timeout-minutes: 350        # ~110 requests against a 50/hour cap is a little over two hours
+                                # Nothing should ever reach this now. A run that runs out of
+                                # quota stops itself and says so; being killed by the timeout
+                                # is what happened when it tried to sleep off a 15-hour
+                                # Retry-After, and it lost the whole run's reading doing it.
     steps:
       - uses: actions/checkout@v4
 
@@ -54,7 +70,19 @@ jobs:
           # which is the safe direction to fail in.
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python3 watch.py ${{ inputs.backfill && '--backfill' || '' }}
+        run: |
+          # Which of the two schedules fired is decided by the day, not by matching the cron
+          # string. github.event.schedule has to be compared byte for byte against the literal
+          # in this file, and if that comparison ever silently stopped matching, the Monday
+          # sweep would quietly become a backfill resume and no one would be told. The day is
+          # the actual rule anyway: the resume schedule is every day except Monday.
+          if [ "${{ inputs.backfill }}" = "true" ]; then
+            python3 watch.py --backfill
+          elif [ "${{ github.event_name }}" = "schedule" ] && [ "$(date -u +%u)" != "1" ]; then
+            python3 watch.py --backfill-resume
+          else
+            python3 watch.py
+          fi
 
       - name: Commit
         if: always()
