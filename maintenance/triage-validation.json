@@ -1,0 +1,146 @@
+{
+ "complete": false,
+ "date": "2026-08-21",
+ "documents": 67,
+ "expected_documents": 121,
+ "failures": {},
+ "missing": [
+  468666175,
+  468956214,
+  469698931,
+  470618735,
+  471152930,
+  471984950,
+  472234065,
+  472746521,
+  472850310,
+  472885879,
+  473273019,
+  473684030,
+  473684039,
+  473684046,
+  473684056,
+  473684065,
+  473684070,
+  473684076,
+  473684083,
+  473684090,
+  473684094,
+  473684100,
+  473684106,
+  473684113,
+  473684117,
+  474383793,
+  474908391,
+  475500749,
+  476107815,
+  476134119,
+  476134136,
+  476285507,
+  476945490,
+  476945536,
+  477163526,
+  477258871,
+  477258873,
+  477258878,
+  477609302,
+  478194520,
+  478360473,
+  478360480,
+  478360497,
+  478360500,
+  478360503,
+  478360508,
+  478360510,
+  478360511,
+  478360512,
+  478360513
+ ],
+ "overruns": [],
+ "passed": false,
+ "paused_seconds": 59433,
+ "per_form": {
+  "abbrev": {
+   "computed": {
+    "noise": 16,
+    "non_mdl": 2,
+    "post_effective_mdl": 3,
+    "pre_effective_mdl": 1,
+    "unverified": 0
+   },
+   "recorded": {
+    "noise": 25,
+    "non_mdl": 7,
+    "post_effective_mdl": 7,
+    "pre_effective_mdl": 2,
+    "unverified": 0
+   }
+  },
+  "frcp_acronym": {
+   "computed": {
+    "noise": 0,
+    "non_mdl": 3,
+    "post_effective_mdl": 3,
+    "pre_effective_mdl": 0,
+    "unverified": 0
+   },
+   "recorded": {
+    "noise": 0,
+    "non_mdl": 3,
+    "post_effective_mdl": 3,
+    "pre_effective_mdl": 0,
+    "unverified": 0
+   }
+  },
+  "frcp_periods": {
+   "computed": {
+    "noise": 0,
+    "non_mdl": 0,
+    "post_effective_mdl": 1,
+    "pre_effective_mdl": 0,
+    "unverified": 6
+   },
+   "recorded": {
+    "noise": 1,
+    "non_mdl": 6,
+    "post_effective_mdl": 1,
+    "pre_effective_mdl": 0,
+    "unverified": 0
+   }
+  },
+  "report_phrase": {
+   "computed": {
+    "noise": 1,
+    "non_mdl": 0,
+    "post_effective_mdl": 1,
+    "pre_effective_mdl": 0,
+    "unverified": 8
+   },
+   "recorded": {
+    "noise": 1,
+    "non_mdl": 0,
+    "post_effective_mdl": 12,
+    "pre_effective_mdl": 0,
+    "unverified": 0
+   }
+  },
+  "spelled_out": {
+   "computed": {
+    "noise": 1,
+    "non_mdl": 0,
+    "post_effective_mdl": 18,
+    "pre_effective_mdl": 3,
+    "unverified": 1
+   },
+   "recorded": {
+    "noise": 1,
+    "non_mdl": 0,
+    "post_effective_mdl": 31,
+    "pre_effective_mdl": 3,
+    "unverified": 0
+   }
+  }
+ },
+ "rules_version": "2026-08-15b",
+ "summary": "53 of 128 form-hits decided by rule or verified quote; no category exceeded the hand triage's totals; 101 of 121 documents were never read, so the comparison is not valid. The run stopped because the account's daily allowance ran out, not because anything is wrong with it; a slot frees in 59433s (16.5 hours) and the next run picks up where this one left off"
+}
