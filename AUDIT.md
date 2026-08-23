@@ -2685,8 +2685,20 @@ raises an issue for a person. A cautious classifier is usable. A wrong one is no
 abandonment measures is not correctness but how much work the thing actually saves, and that
 number belongs in the open, not inferred from a table.
 
-Fourteen checks cover this, including the one that matters most: a weekly sweep rewrites
-`watch-state.json` and the baseline file must come out byte-identical.
+There was one more hole, found by watching the first run that used the fix. Seeding happened
+inside the scoring block, after the sweep. So a run refused on quota never captured the frozen
+set at all, and the next Monday sweep would overwrite the state file it had to be taken from.
+The window between "the fix is deployed" and "the fix has captured anything" was a single
+scheduled sweep wide, and nothing would have reported a thing.
+
+Seeding now happens before any request is made, and again in normal mode immediately before
+the state file is overwritten. The weekly sweep captures the corpus on its way past. A file
+operation had no business depending on the network.
+
+Eighteen checks cover this, including the two that matter most: a weekly sweep rewrites
+`watch-state.json` and the baseline must come out byte-identical, and a sweep run on a
+repository that has no baseline yet must freeze the corpus as it stood BEFORE that sweep's own
+arrivals, not after.
 
 ### Still open
 

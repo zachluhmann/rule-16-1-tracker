@@ -690,6 +690,39 @@ def part4():
     print(f"  {'PASS' if said else 'FAIL'}  the summary leads with it rather than burying it")
     r.append(said)
 
+    print("\nscenario 17: a weekly sweep captures the baseline BEFORE it overwrites the state")
+    # The hole this closes: seeding used to happen inside the scoring block, so a repository
+    # that had never run a backfill would lose its only record of the pre-growth corpus the
+    # first time a Monday sweep ran, and nothing would have reported anything wrong.
+    shutil.rmtree(TMP, ignore_errors=True)
+    shutil.copytree(REPO, TMP, ignore=shutil.ignore_patterns("__pycache__", ".git"))
+    for f in ("maintenance/watch-log.csv", "maintenance/watch-state.json", LEDGER_P,
+              VALID_P, BASELINE_P, "maintenance/.watch-issue.md"):
+        f = os.path.join(TMP, f)
+        if os.path.exists(f):
+            os.remove(f)
+    r.append(run("first sweep, small corpus", BASE, 40, "NO_CHANGE")[0])
+    before = json.load(open(os.path.join(TMP, "maintenance/watch-state.json")))
+    small = len(before["forms"]["spelled_out"])
+    bp = os.path.join(TMP, BASELINE_P)
+    if os.path.exists(bp):
+        os.remove(bp)
+    grown2 = dict(BASE)
+    grown2['"Federal Rule of Civil Procedure 16.1"'] = \
+        BASE['"Federal Rule of Civil Procedure 16.1"'] + list(range(9100, 9119))
+    r.append(run("second sweep, corpus grew", grown2, 41, "NEW_DOCUMENTS")[0])
+    seeded = os.path.exists(bp)
+    print(f"  {'PASS' if seeded else 'FAIL'}  the sweep seeded the baseline on its way past")
+    r.append(seeded)
+    right = False
+    if seeded:
+        b = json.load(open(bp))
+        kept = len(b["forms"]["spelled_out"])
+        right = kept == small
+        print(f"  {'PASS' if right else 'FAIL'}  it froze the corpus as it was BEFORE the "
+              f"nineteen arrived ({kept} documents, not {small + 19})")
+    r.append(right)
+
     print(f"\n  {sum(r)}/{len(r)} passed\n")
     return all(r)
 

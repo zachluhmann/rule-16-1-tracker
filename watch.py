@@ -334,6 +334,8 @@ def hand_triage_universe():
     if os.path.exists(BASELINE):
         b = json.load(open(BASELINE))
         return {k: set(v) for k, v in b["forms"].items()}, b.get("as_of", "unknown")
+    # Called for its side effect from two places that ignore the return value, so it must be
+    # safe to call when there is nothing yet to seed from.
     if not os.path.exists(STATE):
         return None, None
     st = json.load(open(STATE))
@@ -380,6 +382,11 @@ def backfill(today, reg, dockets=None, learned=None):
     the number it got right.
     """
     meta, now_forms = {}, {}
+    # Seeded before a single request is made. Seeding used to happen down in the scoring
+    # block, which meant a run refused on quota during the sweep never captured the frozen
+    # set, and the next weekly sweep would overwrite the state file it had to be taken from.
+    # The baseline is a local file operation and has no business depending on the network.
+    hand_triage_universe()
     # Set before the first request, not before the reading loop: the seven sweeps are requests
     # too, and a run that has no quota left will meet the 429 there.
     DEADLINE[0] = time.time() + BUDGET_SECONDS
@@ -724,6 +731,12 @@ def main(argv):
     state["pending"] = sorted(unaccounted)
     state["generated"] = today
     state["control"] = {"document": CONTROL_DOC, "form": CONTROL_FORM, "passed": control_ok}
+    # Capture the frozen comparison set BEFORE overwriting the file it is taken from. The
+    # hand triage's totals describe the corpus a person read, and the only surviving record
+    # of which documents that was is the state file this line is about to replace. Without
+    # this, the first weekly sweep after a corpus change silently redefines what the
+    # validation means, and no run reports anything unusual.
+    hand_triage_universe()
     json.dump(state, open(STATE, "w"), indent=1, sort_keys=True)
 
     print(f"{status}: union {len(union_now)}, new {len(new)}, dropped {len(gone)}")
