@@ -1,53 +1,78 @@
 {
+ "abandoned": [
+  {
+   "form": "abbrev",
+   "n": 1,
+   "of": 41
+  },
+  {
+   "form": "frcp_periods",
+   "n": 6,
+   "of": 8
+  },
+  {
+   "form": "report_phrase",
+   "n": 11,
+   "of": 13
+  }
+ ],
+ "abandoned_total": 18,
+ "arrived_since_baseline": 26,
+ "baseline_as_of": "2026-08-23",
  "complete": true,
- "date": "2026-08-22",
+ "date": "2026-08-23",
  "documents": 122,
  "expected_documents": 122,
  "failures": {},
+ "gone_since_baseline": 0,
  "missing": [],
  "overruns": [
-  "abbrev/post_effective_mdl: classifier 8, hand triage 7",
   "abbrev/noise: classifier 26, hand triage 25",
-  "spelled_out/post_effective_mdl: classifier 48, hand triage 31",
-  "spelled_out/noise: classifier 2, hand triage 1",
-  "frcp_acronym/post_effective_mdl: classifier 4, hand triage 3"
+  "spelled_out/noise: classifier 2, hand triage 1"
  ],
  "passed": false,
  "paused_seconds": null,
  "per_form": {
   "abbrev": {
+   "arrived_since": 3,
    "computed": {
     "noise": 26,
-    "non_mdl": 6,
-    "post_effective_mdl": 8,
+    "non_mdl": 5,
+    "post_effective_mdl": 7,
     "pre_effective_mdl": 2,
     "unverified": 1
    },
+   "gone_since": 0,
    "recorded": {
     "noise": 25,
     "non_mdl": 7,
     "post_effective_mdl": 7,
     "pre_effective_mdl": 2,
     "unverified": 0
-   }
+   },
+   "scope": 41
   },
   "frcp_acronym": {
+   "arrived_since": 1,
    "computed": {
     "noise": 0,
     "non_mdl": 3,
-    "post_effective_mdl": 4,
+    "post_effective_mdl": 3,
     "pre_effective_mdl": 0,
     "unverified": 0
    },
+   "gone_since": 0,
    "recorded": {
     "noise": 0,
     "non_mdl": 3,
     "post_effective_mdl": 3,
     "pre_effective_mdl": 0,
     "unverified": 0
-   }
+   },
+   "scope": 6
   },
   "frcp_periods": {
+   "arrived_since": 0,
    "computed": {
     "noise": 1,
     "non_mdl": 0,
@@ -55,47 +80,56 @@
     "pre_effective_mdl": 0,
     "unverified": 6
    },
+   "gone_since": 0,
    "recorded": {
     "noise": 1,
     "non_mdl": 6,
     "post_effective_mdl": 1,
     "pre_effective_mdl": 0,
     "unverified": 0
-   }
+   },
+   "scope": 8
   },
   "report_phrase": {
+   "arrived_since": 4,
    "computed": {
     "noise": 1,
     "non_mdl": 0,
-    "post_effective_mdl": 5,
+    "post_effective_mdl": 1,
     "pre_effective_mdl": 0,
     "unverified": 11
    },
+   "gone_since": 0,
    "recorded": {
     "noise": 1,
     "non_mdl": 0,
     "post_effective_mdl": 12,
     "pre_effective_mdl": 0,
     "unverified": 0
-   }
+   },
+   "scope": 13
   },
   "spelled_out": {
+   "arrived_since": 18,
    "computed": {
     "noise": 2,
     "non_mdl": 0,
-    "post_effective_mdl": 48,
+    "post_effective_mdl": 31,
     "pre_effective_mdl": 3,
-    "unverified": 1
+    "unverified": 0
    },
+   "gone_since": 0,
    "recorded": {
     "noise": 1,
     "non_mdl": 0,
     "post_effective_mdl": 31,
     "pre_effective_mdl": 3,
     "unverified": 0
-   }
+   },
+   "scope": 36
   }
  },
  "rules_version": "2026-08-15b",
- "summary": "110 of 129 form-hits decided by rule or verified quote; 5 category overruns"
+ "scope_form_hits": 104,
+ "summary": "86 of 104 hand-triaged form-hits decided by rule or verified quote, 18 abandoned as unverified that a person had decided; 2 category overruns; 26 form-hits arrived after the baseline of 2026-08-23 and are outside the comparison"
 }
