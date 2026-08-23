@@ -97,6 +97,7 @@ jobs:
           # the run where it matters most: a control failure before any file was written.
           for f in maintenance/watch-log.csv \
                    maintenance/watch-state.json \
+                   maintenance/triage-baseline.json \
                    maintenance/triage-ledger.csv \
                    maintenance/triage-validation.json \
                    rule-16-1-searches.csv \
