@@ -579,9 +579,125 @@ def part3():
     return all(r)
 
 
+
+
+# ---------------------------------------------------------------------------------------
+# Part 4. Scoring against a frozen document set.
+#
+# The 22 August backfill finished and reported five category overruns. Four of them were not
+# errors. The corpus had grown by 26 form-hits since a person recorded the totals, and the
+# comparison scored a LIVE sweep against a FROZEN total, so every arrival read as the
+# classifier over-filling a category. `spelled_out` supplied seventeen phantom overruns on its
+# own. Meanwhile the two real failures produced no overrun at all, because they were the
+# opposite defect: the classifier abandoning hits a person had decided, which can only make an
+# overrun test easier to pass.
+#
+# Both fixes are tested here, and so is the trap in the fix: the obvious place to keep the
+# frozen set is `watch-state.json`, which normal mode rewrites every week. Had the baseline
+# lived there it would have crept forward and the bug would have come back silently.
+# ---------------------------------------------------------------------------------------
+
+BASELINE_P = "maintenance/triage-baseline.json"
+VALID_P    = "maintenance/triage-validation.json"
+LEDGER_P   = "maintenance/triage-ledger.csv"
+
+def part4():
+    print("\nPart 4: scoring against a frozen document set\n")
+    shutil.rmtree(TMP, ignore_errors=True)
+    shutil.copytree(REPO, TMP, ignore=shutil.ignore_patterns("__pycache__", ".git"))
+    for f in ("maintenance/watch-log.csv", "maintenance/watch-state.json", LEDGER_P,
+              VALID_P, BASELINE_P, "maintenance/.watch-issue.md"):
+        f = os.path.join(TMP, f)
+        if os.path.exists(f):
+            os.remove(f)
+    os.environ["COURTLISTENER_TOKEN"] = "test"
+    os.environ.pop("GITHUB_OUTPUT", None)
+    urllib.request.urlopen = fake_urlopen
+    ST["throw_after"] = None
+    r = []
+
+    print("scenario 12: with no state file at all, the backfill refuses to score")
+    ok, row = run("nothing to score against", BASE, 40, "NO_BASELINE", argv=["--backfill"])
+    r.append(ok)
+    scored = os.path.exists(os.path.join(TMP, VALID_P))
+    print(f"  {'PASS' if not scored else 'FAIL'}  it wrote no validation file, so a run with "
+          f"nothing to compare cannot be mistaken for a result")
+    r.append(not scored)
+    notctl = "control" not in row.lower()
+    print(f"  {'PASS' if notctl else 'FAIL'}  it is NOT reported as a control failure; the "
+          f"control is fine and saying otherwise sends someone to debug the query")
+    r.append(notctl)
+
+    print("\nscenario 13: a normal run, then the backfill seeds and uses its own baseline")
+    r.append(run("baseline sweep", BASE, 40, "NO_CHANGE")[0])
+    ok, _ = run("backfill", BASE, 41, "BACKFILL", argv=["--backfill"])
+    r.append(ok)
+    v = json.load(open(os.path.join(TMP, VALID_P)))
+    seeded = os.path.exists(os.path.join(TMP, BASELINE_P))
+    print(f"  {'PASS' if seeded else 'FAIL'}  it seeded {BASELINE_P}")
+    r.append(seeded)
+    clean = v["passed"] and not v["overruns"] and v["arrived_since_baseline"] == 0
+    print(f"  {'PASS' if clean else 'FAIL'}  scored clean on the corpus the baseline covers "
+          f"({v['scope_form_hits']} form-hits in scope, {v['abandoned_total']} abandoned)")
+    r.append(clean)
+    base_sha = sha(os.path.join(TMP, BASELINE_P))
+
+    print("\nscenario 14: nineteen documents arrive; not one may become an overrun")
+    grown = dict(BASE)
+    grown['"Federal Rule of Civil Procedure 16.1"'] = \
+        BASE['"Federal Rule of Civil Procedure 16.1"'] + list(range(9000, 9019))
+    ok, _ = run("backfill after growth", grown, 42, "BACKFILL", argv=["--backfill"])
+    r.append(ok)
+    v2 = json.load(open(os.path.join(TMP, VALID_P)))
+    print(f"        {v2['summary']}")
+    excluded = v2["arrived_since_baseline"] == 19
+    print(f"  {'PASS' if excluded else 'FAIL'}  all 19 arrivals were held outside the "
+          f"comparison (reported {v2['arrived_since_baseline']})")
+    r.append(excluded)
+    phantom = v2["overruns"]
+    print(f"  {'PASS' if not phantom else 'FAIL'}  no phantom overruns"
+          + (f" (got {phantom})" if phantom else ""))
+    r.append(not phantom)
+
+    print("\nscenario 15: a weekly sweep rewrites watch-state.json; the baseline must not move")
+    run("weekly sweep sees them", grown, 43, "NEW_DOCUMENTS")
+    unmoved = sha(os.path.join(TMP, BASELINE_P)) == base_sha
+    print(f"  {'PASS' if unmoved else 'FAIL'}  triage-baseline.json is byte-identical after a "
+          f"normal run rewrote the state file")
+    r.append(unmoved)
+
+    print("\nscenario 16: the classifier abandons hits a person decided")
+    # Rewrite verdicts already in the ledger. The resume skips any row already carrying the
+    # current rules version, so these stand and the scorer sees a classifier that gave up.
+    import csv as _csv
+    lp = os.path.join(TMP, LEDGER_P)
+    rows = list(_csv.DictReader(open(lp)))
+    hit = 0
+    for x in rows:
+        if hit < 4 and x["category"] in ("noise", "non_mdl", "post_effective_mdl"):
+            x["category"] = "unverified"
+            hit += 1
+    w = _csv.DictWriter(open(lp, "w", newline=""), fieldnames=list(rows[0].keys()))
+    w.writeheader(); w.writerows(rows)
+    ok, _ = run("backfill with abandonment", grown, 44, "BACKFILL", argv=["--backfill"])
+    r.append(ok)
+    v3 = json.load(open(os.path.join(TMP, VALID_P)))
+    caught = v3["abandoned_total"] >= 1 and v3["abandoned"]
+    print(f"  {'PASS' if caught else 'FAIL'}  reported {v3['abandoned_total']} abandoned: "
+          f"{[(a['form'], a['n']) for a in v3['abandoned']]}")
+    r.append(bool(caught))
+    said = "abandoned" in v3["summary"]
+    print(f"  {'PASS' if said else 'FAIL'}  the summary leads with it rather than burying it")
+    r.append(said)
+
+    print(f"\n  {sum(r)}/{len(r)} passed\n")
+    return all(r)
+
+
 if __name__ == "__main__":
     a = part1()
     b = part2()
     c = part3()
-    print(f"\n{'ALL PASSED' if a and b and c else 'FAILURES ABOVE'}")
-    sys.exit(0 if (a and b and c) else 1)
+    d = part4()
+    print(f"\n{'ALL PASSED' if a and b and c and d else 'FAILURES ABOVE'}")
+    sys.exit(0 if (a and b and c and d) else 1)

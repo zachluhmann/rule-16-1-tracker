@@ -603,6 +603,15 @@ row that is blocked today may be free next month. Judge Staton's Pretrial Order
 No. 1 in MDL 3181 says C.D. Cal. will publish key orders to an MDL webpage
 "shortly"; that is a row to recheck too.
 
+**Recheck log. Record the negative results too.** A page that has been checked
+five times and is still empty is a different fact from a page nobody has looked at
+since August, and only the log can tell them apart.
+
+| Date | Page | Result |
+|---|---|---|
+| 2026-08-11 | D.N.J. `/mdl-cases`, `/case-management-orders` | MDL 3180 absent |
+| 2026-08-20 | D.N.J. `/mdl-cases` | MDL 3180 still absent; eleven MDLs listed, newest is 3113 |
+
 ---
 
 ## Guardrail 12 — THE INDEX SEARCHES THE CLERK'S TEXT TOO (added 2026-08-13)

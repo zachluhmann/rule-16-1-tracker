@@ -2554,3 +2554,145 @@ framing sentences are quoted in the codebook and in `coding-decisions.md` but no
 data, and neither order text is stored in `sources/`. Settling it costs two CourtListener
 requests against a daily allowance the triage backfill currently needs. It is the last thing
 standing between R4 and a complete pass.
+
+---
+
+## 20 August 2026 — two parts of this project disagreed about whether a document had been read
+
+Item 35 of the reliability tiebreak, MDL 3180's `b3b_factual_basis_exchange`, is the one
+contested cell recorded as undecidable. `tiebreak-analysis.md` says so plainly:
+
+> CourtListener identifies ECF 3 as the June 11, 2026 Initial Procedure Order No. 1 but
+> states: "This item is not yet in the RECAP collection." [...] I therefore cannot quote the
+> operative language or make source-grounded TRUE/FALSE cases and recommendations for this
+> cell.
+
+That is true about CourtListener and false about this project. MDL 3180's order was read in
+full on 11 August, nine days before the tiebreak pass concluded it could not be read, and all
+twenty of its subject cells were coded from it. The exact provision item 35 turns on is
+already recorded verbatim in the tracker's `b3b_mechanism` field: item (g), which reproduces
+Rule 16.1(b)(3)(B) and expands it with the Rule 26(a)(1) stipulation language, plus the note
+that the census at item (o) is asked rather than ordered and that there is no plaintiff fact
+sheet. On that text the cell looks like the same shape as items 28 and 46, both recorded as
+not contestable at high confidence, but this entry does not code it, because coding from a
+summary field in a CSV instead of from the order is exactly the shortcut the protocol exists
+to prevent. Someone has to open the order. That is a two-minute job for whoever read it on
+11 August, not an evidentiary dead end.
+
+The failure here is not the familiar one. It is not a check aimed at the wrong thing. **It is
+two records of the same fact that had no reason to ever meet.** The tiebreak pass went back to
+the source of record and asked CourtListener; the order layer had gone around CourtListener a
+week earlier under Guardrail 9 and never told anyone downstream. Both behaved correctly by
+their own lights.
+
+### The provenance sentence was wrong in the field that exists to carry it
+
+Checking that turned up something worse. MDL 3180's `source_doc_type` read:
+
+> Read in full from the court's PDF 2026-08-11.
+
+The copy read was not the court's PDF. It was a third-party mirror, and the only place that
+fact appeared was the `perma` column, phrased as a to-do: "the copy read was a news-site
+mirror; perma the court's own copy." Guardrail 9 rule 2 is explicit that the mirror goes in
+`source_doc_type`, verbatim, with a re-verification instruction. MDL 3181's row does exactly
+that, at length, in capitals. MDL 3180's did the opposite, and MDL 3180 is the row Guardrail 9
+was written for.
+
+This is not a small row. Reading it moved the published headline from six of thirteen orders
+citing the Rule to seven of fourteen, and the `rule_role` construction is quoted from its ¶ 3.
+An auditor checking the strongest single claim in this dataset would have read the field named
+for provenance and been told the court's own PDF.
+
+`source_doc_type` now carries the caveat, the corroboration that was actually performed, and
+the re-verification instruction, in the shape MDL 3181 already used. One thing still cannot be
+fixed from here: **the mirror host was never recorded**, and Guardrail 9 asks for it verbatim.
+Only the person who read it knows which site it was.
+
+### The recheck, run early and negative
+
+Guardrail 9 says to recheck the court MDL pages monthly, because a row blocked today may be
+free next month. D.N.J.'s `/mdl-cases` was fetched again today, nine days after the first
+check. MDL 3180 is still absent; the page lists eleven MDLs and the newest is 3113. So the row
+still rests on a mirror and the perma to-do stands.
+
+PROTOCOL now carries a recheck log with that negative result in it. A page checked five times
+and still empty is a different fact from a page nobody has looked at since August, and until
+today nothing recorded which of those was true.
+
+---
+
+## 23 August 2026 — the validation finally ran, and four of its five findings were arrivals
+
+The triage backfill completed. It paused at the quota wall on the 21st with twenty documents
+read, resumed on the 22nd and finished all 122, and on the 23rd the schedule fired, read the
+validation file, saw the corpus was complete under the current rules and returned without a
+request. The harness works. The number it produced does not mean what it says.
+
+It reported FAILED with five category overruns. **Four of them are not errors.**
+
+Between the day a person recorded the per-form totals and the day the classifier was scored
+against them, the corpus grew from 103 form-hits to 129. The comparison scored a live sweep
+against a frozen total, so every arrival read as the classifier over-filling a category:
+
+| form | now | then | what changed | |
+|---|--:|--:|---|---|
+| `spelled_out` | 54 | 35 | post +17, noise +1, unverified +1 | growth only |
+| `frcp_acronym` | 7 | 6 | post +1 | growth only |
+| `abbrev` | 43 | 41 | post +1, noise +1, **non_mdl −1** | one real reclassification |
+| `frcp_periods` | 8 | 8 | **non_mdl −6, unverified +6** | no growth at all |
+| `report_phrase` | 17 | 13 | **post −7, unverified +11** | seven abandoned |
+
+`spelled_out` and `frcp_acronym` lost nothing from any category, so their three overruns carry
+no information about accuracy whatsoever. Seventeen of them came from one form.
+
+### The two real failures produced no overrun
+
+Under-decisions cannot trip an overrun test, because under-filling a category only makes that
+test easier to pass. That is the weakness this file has flagged since the backfill was
+designed, and it is exactly what happened.
+
+`frcp_periods` is the cleanest comparison in the set: eight hits then, eight now, no growth to
+confound it. **Six of the eight documents a person called `non_mdl`, the classifier declined to
+call anything.** `report_phrase` abandoned seven that a person had read as post-effective MDL,
+and eleven of its seventeen hits are undecided. Nineteen of 129 form-hits undecided in total,
+concentrated precisely where the human had no difficulty. The undecided pile comes from triage
+rules R4, a document containing "16.1" in no naming form the pattern recognises, and R8, a
+federal form with no docket number to locate it.
+
+So excluding `unverified` from the overrun test did not produce a false pass. It produced a
+false **diagnosis**: an issue that names five overruns, four of them noise, and says nothing
+about the two defects that are real.
+
+### Both fixes, and the trap inside the fix
+
+The comparison is now scoped to the documents both sides can see. Arrivals are counted and
+reported but held outside the test.
+
+The obvious place to keep that frozen set is `watch-state.json`. That would have been wrong in
+a way that took a week to surface: normal mode rewrites that file every Monday, so the baseline
+would creep forward and this bug would come back silently, with no run reporting anything
+unusual. The set lives in `maintenance/triage-baseline.json`, which nothing else writes.
+
+No exact record of the hand triage's document set exists, because only the totals were kept.
+The baseline is seeded from the earliest recorded set and the file says so in its own `note`
+field, next to the numbers it licenses.
+
+Second, a test that was missing entirely: **abandonment**, the count of in-scope hits a person
+decided and the classifier would not. It is reported first, ahead of the overruns, in the
+summary and in the issue. It deliberately does not gate automatic triage, because
+`hits_unverified` is a real column that sums into the arithmetic and every undecided document
+raises an issue for a person. A cautious classifier is usable. A wrong one is not. What
+abandonment measures is not correctness but how much work the thing actually saves, and that
+number belongs in the open, not inferred from a table.
+
+Fourteen checks cover this, including the one that matters most: a weekly sweep rewrites
+`watch-state.json` and the baseline file must come out byte-identical.
+
+### Still open
+
+The hand triage is now stale. Twenty-six form-hits have arrived that no person has read, and
+the weekly reading layer has that backlog waiting.
+
+`triage.py` has a rule called R4 and the codebook has a different rule called R4. Both were
+discussed in the same week. Renaming one costs nothing in verdicts and should happen before it
+costs something in confusion.

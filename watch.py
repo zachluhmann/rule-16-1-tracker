@@ -43,6 +43,7 @@ STATE    = "maintenance/watch-state.json"
 LOG      = "maintenance/watch-log.csv"
 LEDGER   = "maintenance/triage-ledger.csv"
 VALID    = "maintenance/triage-validation.json"
+BASELINE = "maintenance/triage-baseline.json"
 ISSUE    = "maintenance/.watch-issue.md"
 
 CONTROL_DOC  = 472850310
@@ -311,6 +312,48 @@ def validated():
 # backfill
 # ---------------------------------------------------------------------------------------
 
+def hand_triage_universe():
+    """The document set the hand triage's per-form totals actually describe.
+
+    THIS IS THE FIX FOR THE 22 AUGUST RESULT. That run reported five category overruns and
+    four of them were not errors at all. The recorded totals describe the corpus as a person
+    found it in mid-August; the sweep describes the corpus as it stands today. Between the two
+    the corpus grew by 26 form-hits, and a comparison of today's counts against a frozen total
+    reports every new document as the classifier over-filling a category. `spelled_out` alone
+    supplied seventeen phantom overruns that way.
+
+    So the comparison is scoped to the documents both sides can see. The scope cannot come
+    from `watch-state.json`, which is what it looks like it should come from: normal mode
+    rewrites that file every week, so the baseline would creep forward and the bug would
+    return silently a week later. It lives in its own file that nothing else writes.
+
+    No exact record of the hand triage's document set exists, because only the totals were
+    kept. The earliest recorded set is the state file, and using it is an approximation that
+    the file itself has to admit to, in writing, next to the numbers it licenses.
+    """
+    if os.path.exists(BASELINE):
+        b = json.load(open(BASELINE))
+        return {k: set(v) for k, v in b["forms"].items()}, b.get("as_of", "unknown")
+    if not os.path.exists(STATE):
+        return None, None
+    st = json.load(open(STATE))
+    forms = st.get("forms") or {}
+    if not forms:
+        return None, None
+    json.dump({"as_of": datetime.date.today().isoformat(),
+               "seeded_from": STATE,
+               "note": "The document set the hand triage's per-form totals are scored against. "
+                       "Only the totals were recorded, never the document ids, so this is the "
+                       "earliest recorded set and stands in for the real one. Nothing rewrites "
+                       "this file. If it is ever regenerated the comparison silently changes "
+                       "meaning, which is the failure it exists to prevent.",
+               "forms": {k: sorted(v) for k, v in forms.items()}},
+              open(BASELINE, "w"), indent=1, sort_keys=True)
+    print(f"  seeded {BASELINE} from {STATE}; the comparison is now scoped to that set",
+          flush=True)
+    return {k: set(v) for k, v in forms.items()}, datetime.date.today().isoformat()
+
+
 def backfill_complete():
     """Has a previous run already read every document under the current rules?
 
@@ -397,25 +440,48 @@ def backfill(today, reg, dockets=None, learned=None):
 
     rows, _ = read_searches()
     cur = current_rows(rows)
-    overs, decided, total = [], 0, 0
+    base, as_of = hand_triage_universe()
+    if base is None:
+        return "NO_BASELINE", ("there is no frozen document set for the hand triage's totals to be "
+                      "scored against, so nothing can be compared. Run the weekly watch once "
+                      "to produce a state file, then run this again.")
+    overs, abandoned, decided, total = [], [], 0, 0
     per_form_report = {}
+    arrived_total = gone_total = 0
     for form, _ in FORMS:
         r = cur.get(form)
         if not r or int(r["new_documents"]) == 0:
             continue                       # duplicate form: its row is all zeroes by design
+        frozen  = base.get(form, set())
+        scope   = now_forms[form] & frozen          # what both sides can see
+        arrived = len(now_forms[form] - frozen)     # new since the hand triage; not its fault
+        gone    = len(frozen - now_forms[form])     # dropped out of the index since
+        arrived_total += arrived
+        gone_total += gone
         counts = {c: 0 for c in CATS}
-        for doc_id in now_forms[form]:
+        for doc_id in scope:
             if doc_id in ledger:
                 counts[ledger[doc_id]["category"]] += 1
-        total += len(now_forms[form])
+        total += len(scope)
         decided += sum(v for c, v in counts.items() if c != "unverified")
-        per_form_report[form] = {"computed": counts,
-                                 "recorded": {c: int(r[col]) for c, col in CATS.items()}}
-        for c, col in CATS.items():
+        rec = {c: int(r[col]) for c, col in CATS.items()}
+        per_form_report[form] = {"computed": counts, "recorded": rec,
+                                 "arrived_since": arrived, "gone_since": gone,
+                                 "scope": len(scope)}
+        for c in CATS:
             if c == "unverified":
                 continue
-            if counts[c] > int(r[col]):
-                overs.append(f"{form}/{c}: classifier {counts[c]}, hand triage {int(r[col])}")
+            if counts[c] > rec[c]:
+                overs.append(f"{form}/{c}: classifier {counts[c]}, hand triage {rec[c]}")
+        # THE TEST THE 22 AUGUST RUN DID NOT HAVE. An overrun is the classifier putting a
+        # document somewhere a person did not. This is the opposite failure: the classifier
+        # putting a document nowhere, on a hit a person had no trouble deciding. It never
+        # trips an overrun, because under-counting a category can only make that test easier
+        # to pass, and it is what actually went wrong: `frcp_periods` had identical totals on
+        # both sides and the classifier abandoned six of its eight hits.
+        gave_up = counts["unverified"] - rec["unverified"]
+        if gave_up > 0:
+            abandoned.append({"form": form, "n": gave_up, "of": len(scope)})
 
     # A missing document is not a neutral absence. The overrun test only asks whether the
     # classifier put MORE documents in a category than the hand triage did, so every document
@@ -423,10 +489,19 @@ def backfill(today, reg, dockets=None, learned=None):
     # PASS is worse than an outright failure, because it turns automatic triage on.
     missing = [d for d in union
                if ledger.get(d, {}).get("rules_version") != triage.RULES_VERSION]
+    # `passed` stays a claim about ACCURACY alone, and that is deliberate. Abandonment is
+    # reported, prominently, but does not gate automatic triage, because `hits_unverified` is
+    # a real column that sums into the arithmetic and every undecided document raises an issue
+    # for a person. A cautious classifier is usable. A wrong one is not.
+    n_ab = sum(a["n"] for a in abandoned)
     passed = not overs and not missing
-    summary = (f"{decided} of {total} form-hits decided by rule or verified quote; "
+    summary = (f"{decided} of {total} hand-triaged form-hits decided by rule or verified "
+               f"quote, {n_ab} abandoned as unverified that a person had decided; "
                + ("no category exceeded the hand triage's totals"
                   if not overs else f"{len(overs)} category overruns")
+               + (f"; {arrived_total} form-hits arrived after the baseline of {as_of} and are "
+                  f"outside the comparison" if arrived_total else "")
+               + (f"; {gone_total} left the index since" if gone_total else "")
                + (f"; {len(missing)} of {len(union)} documents were never read, so the "
                   f"comparison is not valid" if missing else ""))
     if paused and missing:
@@ -435,6 +510,9 @@ def backfill(today, reg, dockets=None, learned=None):
                     f"({paused / 3600:.1f} hours) and the next run picks up where this one "
                     f"left off")
     json.dump({"date": today, "passed": passed, "summary": summary, "overruns": overs,
+               "abandoned": abandoned, "abandoned_total": n_ab,
+               "baseline_as_of": as_of, "scope_form_hits": total,
+               "arrived_since_baseline": arrived_total, "gone_since_baseline": gone_total,
                "per_form": per_form_report, "documents": len(ledger),
                "expected_documents": len(union), "complete": not missing,
                "rules_version": triage.RULES_VERSION, "paused_seconds": paused,
@@ -446,6 +524,9 @@ def backfill(today, reg, dockets=None, learned=None):
     print(("PASSED: " if passed else "FAILED: ") + summary, flush=True)
     for o in overs:
         print("  overrun " + o, flush=True)
+    for a in abandoned:
+        print(f"  abandoned {a['form']}: {a['n']} of {a['of']} hits a person decided",
+              flush=True)
     if missing:
         print(f"  missing {len(missing)}: {missing[:10]}{' ...' if len(missing) > 10 else ''}",
               flush=True)
@@ -472,6 +553,12 @@ def main(argv):
                   f"no requests made", flush=True)
             return 0
         passed, summary = backfill(today, reg, dockets, learned)
+        if passed == "NO_BASELINE":
+            # Not a control failure. The control is fine; there is simply nothing to score
+            # against, and mislabelling that would send someone to diagnose the query.
+            write_log(today, "NO_BASELINE", 0, [], [], [], "", "", summary)
+            emit(False, f"Rule 16.1 triage backfill {today}: nothing to score against")
+            return 0
         if passed == "PAUSED":
             # Not a failure. No issue, no attention flag: the next run continues it. Reported
             # so that a pause lasting weeks is visible in the log rather than looking quiet.
@@ -790,16 +877,36 @@ def backfill_issue(today, summary):
             b.append(f"- {d}: {why}")
         b.append("\nThe ledger keeps what was read, so re-running the backfill resumes rather "
                  "than starting over.\n")
+    if v.get("abandoned"):
+        b.append(f"## {v.get('abandoned_total')} hits abandoned\n")
+        b.append("These are form-hits inside the comparison scope that the hand triage decided "
+                 "and the classifier would not. They do not make it WRONG, and they do not "
+                 "gate automatic triage, because `hits_unverified` is a real column that sums "
+                 "into the arithmetic and every undecided document raises an issue for a "
+                 "person. They are the measure of how much work it actually saves.\n")
+        b += [f"- {a['form']}: {a['n']} of {a['of']}" for a in v["abandoned"]]
+        b.append("")
     if v.get("overruns"):
         b.append("## Overruns\n")
         b.append("The classifier put more documents in a category than the hand triage's own "
-                 "total for that category, so at least one of those calls is wrong.\n")
+                 "total for that category, so at least one of those calls is wrong. These are "
+                 "counted only over documents BOTH sides can see: "
+                 f"{v.get('arrived_since_baseline', 0)} form-hits that arrived after the "
+                 f"baseline of {v.get('baseline_as_of')} are outside the comparison, because "
+                 "scoring a live sweep against a frozen total reports every new document as "
+                 "an overrun. That is what produced the five overruns on 22 August, four of "
+                 "which were arrivals rather than errors.\n")
         b += [f"- {o}" for o in v.get("overruns", [])]
-    b.append("\n## Per form\n\n| form | category | classifier | hand triage |\n|---|---|--:|--:|")
+    b.append("\n## Per form\n\n| form | in scope | arrived since | category | classifier | "
+             "hand triage |\n|---|--:|--:|---|--:|--:|")
     for form, d in v.get("per_form", {}).items():
+        first = True
         for c in d["computed"]:
             if d["computed"][c] or d["recorded"][c]:
-                b.append(f"| {form} | {c} | {d['computed'][c]} | {d['recorded'][c]} |")
+                head = (f"| {form} | {d.get('scope', '')} | {d.get('arrived_since', '')} "
+                        if first else "|  |  |  ")
+                b.append(head + f"| {c} | {d['computed'][c]} | {d['recorded'][c]} |")
+                first = False
     b.append(f"\nPer-document reasoning is in `{LEDGER}`: every row carries the rule that fired "
              f"and the string it fired on, so a wrong call can be traced to the rule that made "
              f"it rather than argued about in the abstract.\n")
