@@ -475,6 +475,109 @@ def check_readme(s):
     return bad
 
 
+CITATION = "CITATION.cff"
+CITED_IN = ["index.html", "PUBLISH.md", "README.md"]
+
+
+DATA_CSVS = ["rule-16-1-tracker.csv", "subject-treatment.csv", "party-invocations.csv",
+             "rule-16-1-searches.csv", "report-treatment.csv"]
+
+
+def assert_rectangular():
+    """Every data row carries exactly as many fields as the header.
+
+    This is the cheapest check in the file and it exists because of an edit made on
+    23 August 2026. A comma was added inside an unquoted `perma` value in MDL 3180's row,
+    which split one field into two and shifted every column after it by one. The row still
+    parsed. `csv.DictReader` assigns positionally, so `date_accessed`, `coder` and `notes`
+    silently read from the wrong columns and the real note fell into a field with no header,
+    where nothing could see it at all.
+
+    Nothing caught it. The build passed for eight days, every published figure was unaffected
+    because the shift began past the columns they read, and the only reason it surfaced was a
+    round-trip test written for a different purpose noticing that one row would not rewrite.
+
+    A shifted row is worse than a wrong row. A wrong number can be checked against something;
+    a shifted row makes every column after the break quietly describe its neighbour.
+    """
+    bad = []
+    for f in DATA_CSVS:
+        if not os.path.exists(f):
+            continue
+        with open(f, newline="", encoding="utf-8") as fh:
+            rr = list(csv.reader(fh))
+        if not rr:
+            continue
+        n = len(rr[0])
+        for i, row in enumerate(rr[1:], start=2):
+            if len(row) != n and not (len(row) == 1 and not row[0].strip()):
+                bad.append(f"{f} line {i}: {len(row)} fields, header has {n}"
+                           + (f" (first cell {row[0]!r})" if row else ""))
+    if bad:
+        print(f"\nRAGGED CSV - {len(bad)} row(s) do not match their header:")
+        for b in bad[:20]:
+            print("  · " + b)
+        print("\nA row with the wrong field count still parses, and every column after the "
+              "break reads its neighbour's value. Usually an unquoted comma in a text field.")
+        sys.exit(1)
+
+
+MONTHS = ["January", "February", "March", "April", "May", "June", "July",
+          "August", "September", "October", "November", "December"]
+
+
+def cff_version():
+    """The version string alone, e.g. "1.1", or None if CITATION.cff cannot be read."""
+    m = re.search(r'(?m)^version:\s*"?([\d.]+)"?', open(CITATION).read())
+    return m.group(1) if m else None
+
+
+def cited_version():
+    """The full citation form, e.g. "v1.1, August 2026", or None."""
+    cff = open(CITATION).read()
+    ver = re.search(r'(?m)^version:\s*"?([\d.]+)"?', cff)
+    rel = re.search(r'(?m)^date-released:\s*"?(\d{4})-(\d{2})-\d{2}"?', cff)
+    if not ver or not rel:
+        return None
+    return f"v{ver.group(1)}, {MONTHS[int(rel.group(2)) - 1]} {rel.group(1)}"
+
+
+def assert_citation_version():
+    """One version string for the dataset, asserted everywhere it is written down.
+
+    `CITATION.cff` is the source of truth: it is the file GitHub reads to render a citation
+    widget, and it is what a reference manager imports. The same version is also written by
+    hand into the JSON-LD block at the top of index.html, into the visible suggested-citation
+    box further down, and into PUBLISH.md's citation block.
+
+    On 31 August 2026 CITATION.cff was found to be three weeks and several corrections stale,
+    still saying v1.0 and describing figures that had since moved. Fixing it created the
+    opposite problem instantly: the file said 1.1 and three other places still said v1.0. That
+    is the drift this build already guards for the findings, applied to the one string a
+    reader is most likely to copy.
+
+    The test asks whether any WRONG version is present, not whether the right one appears
+    somewhere. A citation that appears twice, correctly once, is still wrong once, and the
+    wrong copy is the one that ends up in a footnote.
+
+    Dated changelog entries are left alone. They are written `v1.0-draft, 12 August 2026` and
+    record what was true on the day; only the parenthesised citation form is asserted.
+    """
+    want = cited_version()
+    if want is None:
+        return [("CITATION.cff", "a version: and a date-released: line")]
+    bad = []
+    for f in CITED_IN:
+        if not os.path.exists(f):
+            continue
+        for m in re.finditer(r"\(v(\d[\d.]*), ([A-Z][a-z]+ \d{4})\)", open(f).read()):
+            got = f"v{m.group(1)}, {m.group(2)}"
+            if got != want:
+                bad.append((f"{f} citation version",
+                            f"{want}, but the file says {got}"))
+    return bad
+
+
 def assert_links():
     """Every CourtListener link must carry a slug segment, or it 404s.
 
@@ -662,7 +765,36 @@ def prose_claims(page):
          f"among them", None),
         ("limitations: chambers-routed reports",
          f"{n('report_channel', 'CHAMBERS_EMAIL')} of the {s['coded']} courts direct", None),
+        # The shape of the dataset, stated in five places: the header badge, the JSON-LD
+        # description, the JSON-LD download entry, the download section's prose and the
+        # download link itself. All five were hand-written and unguarded until 31 August 2026,
+        # found by audit_numbers.py, which lists every numeral on the page that nothing
+        # asserts. They are correct today. Nothing was stopping a column being added to the
+        # tracker and four of the five going stale, and check_contradictions now also refuses
+        # a wrong copy sitting beside a right one.
+        ("shape: header badge",
+         f"{s['universe']} MDLs · {tracker_columns()} variables", None),
+        ("shape: JSON-LD description",
+         f"{tracker_columns()} variables per MDL, each affirmative coding carrying a pin cite",
+         None),
+        ("shape: JSON-LD download entry",
+         f"Order layer ({s['universe']} MDLs, {tracker_columns()} variables)", None),
+        ("shape: download section prose",
+         f"The order layer carries all {tracker_columns()} variables per MDL", None),
+        ("shape: download link",
+         f"The order layer. {s['universe']} MDLs, {tracker_columns()} variables.", None),
     ]
+
+
+def tracker_columns():
+    """How many variables the order layer actually carries, read from its header.
+
+    The page states this in five places and every one of them was typed by hand. A column
+    added to the tracker would have left all five saying the old number, and nothing checked
+    any of them.
+    """
+    with open(TRACKER, encoding="utf-8") as fh:
+        return len(next(csv.reader(fh)))
 
 
 def _flat(s):
@@ -680,6 +812,44 @@ def check_prose(page):
     flat, text = _flat(page), _text(page)
     return [(label, literal) for label, literal, _ in prose_claims(page)
             if _flat(literal) not in flat and _flat(literal) not in text]
+
+
+def check_contradictions(page):
+    """Every WRONG copy of a claim on the page, not merely one right copy somewhere.
+
+    `check_prose` above asks whether the correct sentence is present. That question passes
+    the moment one correct copy survives, so a figure that appears twice can carry a wrong
+    number in one of its copies and the build reports success. `check_readme` was rewritten
+    on 14 August 2026 for exactly this reason and its docstring says so; the guard on the
+    PUBLISHED PAGE was left with the shape the README's guard had abandoned. Demonstrated
+    31 August 2026: a corrupted duplicate of the finding-1 sentence inserted beside the
+    correct one exits 0 with `page matches the CSVs`.
+
+    The test here is mechanical rather than hand-written per claim. Take the asserted
+    literal, replace every run of digits with `\d+`, and that skeleton matches the sentence
+    whatever numbers it carries. Any match that is not the asserted literal is a copy of the
+    claim bearing a different figure, which is a contradiction by construction. The
+    surrounding words do the anchoring, so the skeleton is specific to one sentence and not
+    to the shape `N of M`.
+
+    A claim with no digits in it has nothing to contradict and is skipped; the plain
+    substring test above is the whole check for those.
+    """
+    flat, text = _flat(page), _text(page)
+    out = []
+    for label, literal, _ in prose_claims(page):
+        if not re.search(r"\d", literal):
+            continue
+        want = _flat(literal)
+        skeleton = re.sub(r"\d+", r"\\d+", re.escape(want))
+        wrong = set()
+        for hay in (flat, text):
+            for m in re.finditer(skeleton, hay):
+                if m.group(0) != want:
+                    wrong.add(m.group(0))
+        for w in sorted(wrong):
+            out.append((label, want, w))
+    return out
 
 
 # --------------------------------------------------------------------- render
@@ -745,6 +915,13 @@ def prerender(page, s):
         return None
 
     subs = [
+        # The version badge at the top of the page. It was written by hand and said
+        # "v1.0-draft" for the nineteen days after CITATION.cff moved to 1.1, while the
+        # suggested-citation box eight hundred lines below said v1.1. assert_citation_version
+        # could not see it: that guard matches the parenthesised form "(v1.1, August 2026)"
+        # and the badge carries a bare version with no date. Prerendering it from the same
+        # file removes the possibility rather than adding a tenth guard.
+        put("ver", "v" + (cff_version() or "?")),
         put("t-univ", str(s["universe"])),
         put("t-coded", str(s["coded"])),
         put("t-coded-s", f"{WORDS[s['no_order']].lower()} "
@@ -820,16 +997,20 @@ def main():
     s = stats(data)
     stale = (json.loads(m.group(1)) != data or json.loads(m.group(2)) != inv
              or prerender(page, s) != page)
+    assert_rectangular()
     assert_subject_columns()
     assert_search_arithmetic()
     assert_links()
+    cite_drift = assert_citation_version()
     # Checked against the page as it will be PUBLISHED, not as it was last saved. A figure
     # that lives in a span is filled by prerender from the CSV, so it cannot go stale and
     # there is nothing for this check to catch; a figure written into the prose as a bare
     # literal is untouched by prerender and still gets caught. Running the check on the
     # unrendered page made every span-held count a build failure, which meant a person had to
     # retype a number the build already knew. That is the opposite of what this guard is for.
-    drifted = check_prose(prerender(page, s)) + check_readme(s)
+    rendered = prerender(page, s)
+    drifted = check_prose(rendered) + check_readme(s) + cite_drift
+    contradicted = check_contradictions(rendered)
 
     print(f"universe {s['universe']} · coded {s['coded']} · cite {s['cite']} · "
           f"no-cite {s['nocite']} ({s['pct']}%) · intervals {s['intervals']} "
@@ -843,6 +1024,18 @@ def main():
             print(f"  · {label}\n      expected the page to contain: {literal!r}")
         print("\nFix the wording in index.html, then re-run. The findings are written by "
               "hand on purpose; this check exists so they cannot quietly go stale.")
+
+    if contradicted:
+        print("\nPROSE CONTRADICTION - the page states a figure that disagrees with the CSV, "
+              "in a sentence whose correct copy is also present:")
+        for label, want, wrong in contradicted:
+            print(f"  · {label}\n      the CSV says: {want!r}\n"
+                  f"      the page also says: {wrong!r}")
+        print("\nA right copy elsewhere does not make a wrong copy harmless; a reader who "
+              "lands on the wrong one has no way to tell which to believe. Delete or correct "
+              "the wrong copy in index.html, then re-run.")
+
+    if drifted or contradicted:
         sys.exit(1)
 
     if check:

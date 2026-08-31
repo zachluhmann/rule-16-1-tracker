@@ -123,7 +123,7 @@ def part1():
                 plain_text="Case 3:23-cv-06708-CRB Document 88 Trial brief. Federal Rule of "
                            "Civil Procedure 16.1 is discussed at page 4.")
     v = triage.classify(twin, reg, by_sha1)
-    good = v["category"] == "pre_effective_mdl" and v["rule"] == "R1"
+    good = v["category"] == "pre_effective_mdl" and v["rule"] == "T1"
     print(f"\n  {'PASS' if good else 'FAIL'}  464112237 inherits pre_effective_mdl from its "
           f"sha1 twin instead of reading as an unrelated civil case (got {v['category']}/{v['rule']})")
     ok.append(good)
@@ -159,7 +159,7 @@ def part1():
         v = triage.classify(d, reg, {}, dockets, learned)
         g = v["category"] == expect
         ok.append(g)
-        print(f"  {'PASS' if g else 'FAIL'}  R5a  {name} -> {v['category']} ({v['rule']})")
+        print(f"  {'PASS' if g else 'FAIL'}  T5a  {name} -> {v['category']} ({v['rule']})")
 
     a = triage.classify(dict(id=7, docket_id=555001, is_available=True, description="",
                              plain_text="Case 3:26-cv-00157-jdp IN RE: SHELL EGGS 26-md-3175-jdp "
@@ -169,9 +169,9 @@ def part1():
                              plain_text="Case 3:26-cv-00157-jdp a later filing citing Fed. R. "
                                         "Civ. P. 16.1 with no MDL number in it at all"),
                         reg, {}, dockets, learned)
-    g = a["category"] == "post_effective_mdl" and b["rule"] == "R5a"
+    g = a["category"] == "post_effective_mdl" and b["rule"] == "T5a"
     ok.append(g)
-    print(f"  {'PASS' if g else 'FAIL'}  R5a  a member docket learned from one document is "
+    print(f"  {'PASS' if g else 'FAIL'}  T5a  a member docket learned from one document is "
           f"inherited by the next ({a['rule']} then {b['rule']})")
 
     # classify_from_search decides only the conjunction of two positive facts. Everything
@@ -201,6 +201,43 @@ def part1():
         ok.append(g)
         print(f"  {'PASS' if g else 'FAIL'}  S1   {name}")
 
+    # T5b: the hand-curated docket registry, and the ordering that makes it safe.
+    # On 31 August every hit the `report_phrase` form found was an individual Cal-Maine action
+    # in W.D. Wis. filing its own Rule 16.1 report. None names a federal form, so T4 abandoned
+    # all eleven; none names the MDL, so reading the docket NUMBER would have called them
+    # non_mdl, which is worse. The registry settles them by hand, once.
+    print()
+    known = triage.load_known_dockets(os.path.join(REPO, "maintenance/known-dockets.csv"))
+    print(f"  known dockets: {len(known)} "
+          f"({sum(1 for v in known.values() if isinstance(v, int))} tied to an MDL)")
+    for name, docket, text, expect_cat, expect_rule in [
+        ("a member case filing its own Rule 16.1 Report", 72324494,
+         "PLAINTIFF'S RULE 16.1 REPORT. The parties submit this Rule 16.1 Report.",
+         "post_effective_mdl", "T5b"),
+        ("a docket recorded as not an MDL", 71773410,
+         "Order setting status conference under F.R.C.P. 16.1.", "non_mdl", "T5b"),
+        ("a LOCAL rule brief on a curated MDL docket is still noise", 72324494,
+         "MOTION TO STAY THE REQUIREMENTS OF LOCAL RULE 16.1 in this action.",
+         "noise", "T3"),
+        # The curated fact outranks the text parse, which is the same choice T5a already
+        # makes: the question is which case a filing sits in, and the docket answers it
+        # directly while the text only reports what the filing happens to mention.
+        ("a curated docket outranks an MDL number in the text", 72324494,
+         "Case 3:26-cv-00157 MDL No. 3175. Federal Rule of Civil Procedure 16.1 applies.",
+         "post_effective_mdl", "T5b"),
+        ("and outranks a DIFFERENT MDL named in the text", 72324494,
+         "Case 3:26-cv-00157. See also MDL No. 3084. Fed. R. Civ. P. 16.1 applies.",
+         "post_effective_mdl", "T5b"),
+        ("an uncurated docket is unchanged", 99999999,
+         "The parties submit this Rule 16.1 Report.", "unverified", "T4"),
+    ]:
+        doc = dict(id=1, is_available=True, description="", plain_text=text, docket_id=docket)
+        v = triage.classify(doc, reg, {}, {}, {}, known)
+        g = v["category"] == expect_cat and v["rule"] == expect_rule
+        ok.append(g)
+        print(f"  {'PASS' if g else 'FAIL'}  {v['rule']:<4} {name} "
+              f"-> {v['category']}" + ("" if g else f" (wanted {expect_cat}/{expect_rule})"))
+
     # No key set, so the model tier must decline rather than invent an answer.
     for k in ("ANTHROPIC_API_KEY", "OPENAI_API_KEY"):
         os.environ.pop(k, None)
@@ -227,7 +264,7 @@ BASE = {
 }
 NEW_DOC, NEW_DOC2, UNDECIDABLE = 999123456, 999123457, 999888777
 ST = {"data": None, "entry": 40, "calls": 0, "doc_text": None,
-      "throw_after": None, "retry_after": 54810, "fetched": []}
+      "throw_after": None, "retry_after": 54810, "fetched": [], "dockets_fetched": []}
 
 # The stub's corpus is built to reproduce the hand triage recorded in the CURRENT rows of
 # rule-16-1-searches.csv, document for document. A stub that returned one kind of document
@@ -296,6 +333,12 @@ def fake_urlopen(req, timeout=None):
         raise urllib.error.HTTPError(url, 429, "Too Many Requests",
                                      {"Retry-After": str(ST["retry_after"])}, None)
     qs = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+    if re.search(r"/dockets/(\d+)/", url):
+        did = int(re.search(r"/dockets/(\d+)/", url).group(1))
+        ST["dockets_fetched"].append(did)
+        body = {"id": did, "case_name": f"Testcase {did} v. Someone",
+                "docket_number": f"3:26-cv-{did % 100000:05d}", "court_id": "wiwd"}
+        return Resp(json.dumps(body).encode())
     if "docket-entries" in url:
         body = {"results": [{"entry_number": ST["entry"], "date_filed": "2026-08-10"}]}
     elif "recap-documents" in url:
@@ -318,7 +361,8 @@ def fake_urlopen(req, timeout=None):
 
 
 def run(label, data, entry, expect_status, expect_rc=0, argv=(), doc_text=None):
-    ST.update(data=data, entry=entry, calls=0, doc_text=doc_text, fetched=[])
+    ST.update(data=data, entry=entry, calls=0, doc_text=doc_text, fetched=[],
+              dockets_fetched=[])
     os.chdir(TMP)
     sys.modules.pop("watch", None)
     sys.modules.pop("triage", None)
@@ -722,6 +766,35 @@ def part4():
         print(f"  {'PASS' if right else 'FAIL'}  it froze the corpus as it was BEFORE the "
               f"nineteen arrived ({kept} documents, not {small + 19})")
     r.append(right)
+
+    print("\nscenario 18: an undecided document carries the case it was filed in")
+    # On 31 August eleven documents were abandoned with the escalation "names 16.1 but no
+    # federal naming form". Every one was a member case of MDL 3175 filing its own Rule 16.1
+    # report, and nothing in the ledger said so. The lookup adds identity, never a verdict:
+    # deciding them from the docket NUMBER would have called all eleven non_mdl, because a
+    # member case carries an ordinary civil number and never prints the MDL's.
+    ST["throw_after"] = None
+    unclassifiable = dict(BASE)
+    unclassifiable['"Fed. R. Civ. P. 16.1"'] = BASE['"Fed. R. Civ. P. 16.1"'] + [9500, 9501]
+    KIND[9500] = KIND[9501] = "undec"
+    ok, _ = run("two undecidable documents", unclassifiable, 45, "NEW_DOCUMENTS")
+    r.append(ok)
+    import csv as _csv2
+    led = {x["document_id"]: x for x in _csv2.DictReader(open(os.path.join(TMP, LEDGER_P)))}
+    rows18 = [led.get("9500"), led.get("9501")]
+    named = all(x and "Testcase" in (x["escalate"] or "") for x in rows18)
+    print(f"  {'PASS' if named else 'FAIL'}  both escalations name the case they were filed in"
+          + (f": {rows18[0]['escalate'][-60:]!r}" if rows18[0] else ""))
+    r.append(named)
+    same_docket = len(set(ST["dockets_fetched"])) <= 1 and len(ST["dockets_fetched"]) <= 1
+    print(f"  {'PASS' if same_docket else 'FAIL'}  two documents on one docket cost "
+          f"{len(ST['dockets_fetched'])} docket request(s), not two")
+    r.append(same_docket)
+    verdicts = {x["category"] for x in rows18 if x}
+    safe = verdicts == {"unverified"}
+    print(f"  {'PASS' if safe else 'FAIL'}  the lookup added information and changed no "
+          f"verdict (still {verdicts})")
+    r.append(safe)
 
     print(f"\n  {sum(r)}/{len(r)} passed\n")
     return all(r)

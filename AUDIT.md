@@ -2708,3 +2708,829 @@ the weekly reading layer has that backlog waiting.
 `triage.py` has a rule called R4 and the codebook has a different rule called R4. Both were
 discussed in the same week. Renaming one costs nothing in verdicts and should happen before it
 costs something in confusion.
+
+---
+
+## 31 August 2026 — consecutive document ids are one ingest, not one docket
+
+A correction to a claim made earlier the same day, recorded because the claim was passed on
+before it was checked.
+
+The 31 August validation showed 18 in-scope hits abandoned as unverified, eleven of them from
+the `report_phrase` form. Their RECAP document ids are consecutive, 478360473 through
+478360514, and I read that as one docket's filings counted eleven times, which would have made
+the coverage problem far smaller than it looked. The same inference was applied to the
+thirteen `spelled_out` documents refused under R3b, and to the 37 new documents this week.
+
+The ledger says otherwise. Those eleven documents sit on at least four different dockets,
+72349285, 72349226, 72324565 and 72324494, and **none of them is in the registry.**
+Consecutive document ids mean RECAP ingested a batch at one moment. They say nothing about
+how many cases the batch covered. The eleven are eleven separate cases the classifier cannot
+place, not one case seen eleven times, and the coverage problem is the size it appeared to be.
+
+The correction also kills the fix that was about to be built. R4 abandons a document that
+names 16.1 in no recognised federal form, and it sits above R5a, which places a document by
+the docket it was filed on. Moving R5a above R4 would have decided all eleven, on the theory
+that knowing the case answers the question. It would have decided none of them, because the
+registry does not know any of those four dockets. An hour of work aimed at the wrong rule,
+stopped by one lookup in a file the project already had.
+
+The same check confirmed the other cluster and pointed somewhere useful. The six
+`frcp_periods` documents abandoned under R8 are all on docket **71773410**, and every one
+carries `no_text_layer`. So the search matched the clerk's docket entry, not a filing, which
+is Guardrail 12, and the clerk's summary is the only evidence there is. One docket, six
+entries, one lookup away from being settled.
+
+### What this is an instance of
+
+Not the usual shape. Nothing here failed silently, and no check was aimed wrong. A pattern in
+the data looked like a fact about the world, and the reading was plausible enough to act on
+and cheap enough to verify, and it was reported before it was verified. The order of those two
+things is the whole of the error.
+
+
+---
+
+## 31 August 2026 — the abandonments were the classifier's best work
+
+Four docket lookups, at a cost of four CourtListener requests, settled what the eighteen
+abandoned hits actually are. The answer reverses the reading of them given earlier today.
+
+**Docket 71773410**, carrying all six `frcp_periods` abandonments, is *Garcia v. Garcia, Jr.*,
+adversary proceeding 25-01354 in the Southern District of Florida **bankruptcy** court, a
+dischargeability action over a divorce property settlement. Every one of the six has no text
+layer, so the index matched the clerk's docket entry and the summary is the only evidence
+there is. That is Guardrail 12, and the Southern District of Florida is the district whose
+local rule 16.1 already put RECAP 466008549 in the noise pile.
+
+**All four dockets** carrying the eleven `report_phrase` abandonments are the same thing, and
+they were checked rather than assumed:
+
+| docket | case | number | court |
+|---|---|---|---|
+| 72349285 | Nineteenseventynine d/b/a The Breakfast Joynt v. Cal-Maine Foods, Inc. | 3:26-cv-00178 | W.D. Wis. |
+| 72349226 | King Kullen Grocery Co., Inc. v. Cal-Maine Foods, Inc. | 3:26-cv-00177 | W.D. Wis. |
+| 72324565 | Emery v. Cal-Maine Foods, Inc. | 3:26-cv-00158 | W.D. Wis. |
+| 72324494 | Huyler v. Cal-Maine Foods, Inc. | 3:26-cv-00157 | W.D. Wis. |
+
+Cal-Maine, W.D. Wis., antitrust: every one is a member case of **MDL 3175**, In re Shell Eggs
+Antitrust Litigation, filing its own Rule 16.1 report on its own docket under its own civil
+number. The last row is not a stranger to this project either. `tiebreak-analysis.md` already
+cites 3:26-cv-00157 as the case whose ECF 23 *is* MDL 3175's coded initial management order.
+
+The registry knows MDL 3175 by its master docket, 72280418, and by nothing else. Every member
+docket is invisible to it, which is why R5a never fired and R4 had the last word.
+
+### The fix that was one commit away from being wrong
+
+The repair that suggests itself is to look the docket up and let R7 decide from its number.
+R7 reads a civil or bankruptcy docket number as an ordinary case, so that rule would have
+called all eleven `non_mdl`.
+
+They are not ordinary cases. They are MDL member cases, and a member case carries an ordinary
+civil number and never prints the MDL's. R7's own comment says exactly this and it still
+nearly happened: eleven safe abandonments would have become eleven confident misfilings, in
+`non_mdl`, which is one of the categories the published findings are computed over.
+
+So R4 and R8 refusing to guess was not a coverage failure. On these eleven it was the most
+valuable thing the classifier did all month. The earlier entry today framed 18 of 104
+abandoned as the defect the overrun test was hiding. It is better read as the safety margin
+working: the classifier declined precisely where a rule would have been wrong.
+
+### The change
+
+Nothing decides anything new. Any document left unverified now carries the identity of the
+case it was filed in, appended to its escalation, from one cached lookup per docket. Eleven
+documents across four dockets cost four requests, and a person reading
+`filed in Nineteenseventynine d/b/a The Breakfast Joynt v. Cal-Maine Foods, Inc.,
+3:26-cv-00178, wiwd` settles it at a glance. `triage.py` stays free of network calls; the
+lookup lives in `watch.py`, where the other I/O is.
+
+`RULES_VERSION` moves to `2026-08-31` so the corpus is read again with the enriched
+escalations. No verdict changes, and four checks now cover it, including that two documents on
+one docket cost one request and that the lookup changes no category.
+
+### The finding underneath, which is not about software
+
+**Rule 16.1 reports are being filed on member-case dockets, under individual civil numbers,
+not only on MDL master dockets.** The `report_phrase` form is the only one of the seven that
+surfaces them, and every one it found was abandoned, so none has ever been counted.
+
+If that holds up across MDLs, a sweep that looks only at master dockets undercounts Rule 16.1
+practice, and the undercount is invisible to the method that produces it. That is a question
+about how the Rule actually operates rather than about this classifier, and it is worth more
+than anything else in this entry.
+
+The repair is a data question, not a code question, and it is not made here. The registry maps
+each MDL to one docket. What it lacks is a curated list of member dockets, of the shape
+`maintenance/pre-effective-mdls.csv` already has: a person decides once that 3:26-cv-00157,
+-00158, -00177 and -00178 belong to MDL 3175, and R5a places every future filing on them by
+rule, from an authoritative list rather than a guess about case names. That is the version of
+this fix that cannot misfile anything, and it needs a decision about whether member-docket
+filings belong in the counts at all, which is a question about the dataset rather than about
+the software.
+
+### MDL 3193, probably not a hole
+
+The document that named MDL 3193 sits on docket 72458501, *Lott v. Health Gorilla, Inc.*,
+1:26-cv-21639, S.D. Fla., an ordinary federal-question case. An ordinary case referencing an
+MDL number is consistent with a JPML **motion** docket rather than a centralized MDL, which
+PROTOCOL warns about in as many words, and the 3 August report tops out at 3187. The September
+report settles it, and the monthly reconciliation has been told what the document is.
+
+---
+
+## 31 August 2026 — the member dockets, written down
+
+Three changes, all following from the Cal-Maine finding earlier today.
+
+**`maintenance/known-dockets.csv`.** The tracker maps each MDL to one docket, its master, and
+nothing filed on a member docket is visible to that map. Six dockets are now recorded by hand,
+each with the case name, number, court and the date it was checked: the four Cal-Maine member
+cases in W.D. Wis. that resolve to MDL 3175, the Garcia bankruptcy adversary proceeding in
+S.D. Fla. that resolves to `non_mdl`, and Lott v. Health Gorilla, the S.D. Fla. case that
+names MDL 3193 and is not itself an MDL case.
+
+Rule **T5b** applies it, and its position in the ladder is the whole of its safety. After T3
+and T3b, so a brief about a district's own local rule 16.1 stays noise no matter whose docket
+it sits on. Before T4, so a curated docket answers the question T4 gives up on. Nothing in the
+file is inferred, which is the only reason it can outrank a text parse.
+
+It settles a question that looked like a policy decision and was not. Whether member-case
+filings belong in the counts reads like something to decide, until you notice the hand triage
+already decided it: `report_phrase` is recorded as 12 post-effective MDL hits, and eleven of
+those twelve are the Cal-Maine member filings. The human counted them. T5b makes the
+classifier agree with the human rather than inventing a rule of its own.
+
+**The R4 collision is over.** `triage.py` numbered its rules R0 to R8; the codebook numbers its
+application rules R1 to R8; they are unrelated and both were under discussion in the same week.
+The triage rules are now T0 through T8 plus T5b, and S1 keeps its name. Entries in this file
+dated before today use the old triage names and are left alone, because rewriting a log to
+match a later rename is how a log stops being evidence.
+
+**`CITATION.cff` was three weeks and several corrections stale.** It still said version 1.0,
+released 11 August, and described the dataset as it stood before the headline moved to eight
+of fifteen and before codebook v1.1. It now carries the current figures, says the universe
+comes from the Panel's report rather than from a search, and points at AUDIT.md as part of the
+dataset rather than an appendix to it. The DOI is still pending, and a citation that resolves
+to a moving branch is worth less than one that resolves to a release.
+
+Eighty-nine checks now, seven of them new, including the one that matters: a local-rule brief
+on a curated MDL docket must still come out noise.
+
+---
+
+## 31 August 2026 — one version string, and the report layer gets a table
+
+### Fixing the citation created the problem the citation had
+
+`CITATION.cff` was three weeks stale, so it was updated to v1.1. That instantly made three
+other places wrong: the JSON-LD block at the top of `index.html`, the visible suggested
+citation further down, and `PUBLISH.md`'s citation block all still said v1.0. The fix for one
+stale figure produced three, in the single string a reader is most likely to copy into a
+footnote.
+
+`build.py` now derives the version and month from `CITATION.cff` and asserts them everywhere
+the parenthesised citation form appears. It asks whether any WRONG version is present rather
+than whether the right one appears somewhere, which is the lesson `check_readme` already
+learned: a citation that appears twice and is correct once is still wrong once, and the wrong
+copy is the one that gets cited. Dated changelog entries, written `v1.0-draft, 12 August
+2026`, are left alone; only the citation form is asserted.
+
+Proved by breaking it. With one of the three copies reverted, the build exits 1 and names the
+file. All three now read v1.1.
+
+### `reports.csv` was mostly already built, under another name
+
+The open-items list has asked for a `reports.csv` since 11 August, coding who filed, joint or
+unilateral, page count, Committee Note, Manual, rulemaking record and meet-and-confer failure.
+Nearly all of that is already in `party-invocations.csv` as structured columns, and has been
+for weeks. The list was describing a file that existed.
+
+What was genuinely missing is per-subject coding. `topics_structure` holds it as prose, and
+the prose is already doing analytical work: INV-001's entry observes that the MDL 3162 report
+has **no heading answering 16.1(b)(3)(B)** at all, the nearest thing being a Rule 26(a)(1)
+section. That is a finding stated in a sentence, in one cell, computable for no other report.
+
+`report-treatment.csv` gives it a shape: one row per report per subject, sixty rows, every
+judgment `NOT_CHECKED`, nothing coded by machine. Three columns per cell. `answered`, whether
+the report addressed the subject. `responsive_to_order`, whether it answered something the
+order actually directed. `beyond_order`, whether it went further than the order asked. The
+third is the one worth having, because a report that answers more than its order demanded is
+evidence the Rule is doing work the judge did not.
+
+`validate_treatment.py` now checks the layer, including the project's only cross-layer
+constraint: `responsive_to_order=TRUE` asserts that the ORDER directed the parties on that
+subject, which the order layer already records as `party_direction`, so the two tables are
+checked against each other. Two tables that can disagree about one fact eventually will.
+
+### The guard that could not be tested against real data
+
+The cross-layer check would not fire on any injection. That turned out not to be a bug in the
+check but a fact about the corpus: **both readable reports come from orders that direct the
+parties on all twenty subjects**, so no coding of them can ever violate the constraint. It was
+tested instead against a synthetic report for MDL 3163, which directs on four, where it fires
+on a violation and correctly allows the legitimate case.
+
+### The pattern that turned up while testing it
+
+Counting `party_direction` by MDL, which no published statistic does:
+
+| directs on | MDLs | cites the Rule |
+|---|---|---|
+| 20 of 20 | 3162, 3170, 3174, 3180, 3187 | all five |
+| 16 of 20 | 3171 | yes |
+| 14 or fewer | the other nine | two of nine |
+
+Every order that directs the parties on all twenty subjects cites the Rule, and no order that
+fails to cite it directs on more than fourteen. Citing is not sufficient: MDL 3167 cites and
+directs on three, MDL 3175 cites and directs on two. But the top of the distribution is
+entirely citing orders, and the separation between the two groups is clean.
+
+Two cautions before this goes anywhere near a finding. n is fifteen. And the bottom of the
+distribution is partly the work of codebook rule R4, whose cells in MDLs 3163 and 3185 are the
+twenty-three that cannot be checked against their own quotes; 3163 sits at 4 of 20 and 3185 at
+9 of 20, and both are R4-dependent. The top five are not.
+
+It is also a correction of emphasis to the 20 August entry. That entry established that
+`party_direction` moves no published figure and concluded R4 was therefore low priority, which
+remains true of the rule. It is not true of the column. The column is unpublished because
+nobody computed it, not because there is nothing in it.
+
+---
+
+## 31 August 2026 — a result in the column nothing reads
+
+`invocation_analysis.py` recomputes all of this from the CSVs; run it rather than trusting the
+numbers below.
+
+Split the fifteen coded orders by `rule_role`, which records HOW an order invokes the Rule
+rather than whether it cites it. On the site's nineteen-subject scale:
+
+| how the order invokes the Rule | directs on |
+|---|---|
+| sets the topics as a conference agenda (3162, 3180, 3187) | 19, 19, 19 |
+| reproduces the Rule's topics (3170, 3174) | 19, 19 |
+| sets its own topics, Rule cited residually (3171) | 15 |
+| **incorporates the Rule by reference (3167, 3175)** | **2, 1** |
+| never mentions the Rule (seven orders) | 2, 3, 4, 5, 8, 11, 13 |
+
+The two groups do not overlap: the lowest order that sets out the topics directs on 15, the
+highest that does not directs on 13. Fisher exact, six of six against zero of nine,
+**p = 0.0002**. Dropping MDLs 3163 and 3185, whose `party_direction` cells rest on codebook
+rule R4 and cannot be checked against their own quotes, leaves six of six against zero of
+seven, p = 0.0006.
+
+**Invocation style separates the set better than citation does.** The split the site already
+publishes, cites against does not, gives six of eight against zero of seven, p = 0.007. It is
+weaker because the two incorporation orders cite the Rule and sit at the very bottom of the
+distribution, below five of the seven orders that never mention it.
+
+### Half of this is the instrument, and that has to be said first
+
+The codebook holds that blanket incorporation alone does not satisfy `express`, on the ground
+that a reader must consult the Rule to learn what was incorporated, and `party_direction`
+requires `express`. So the two incorporation orders are pinned near zero by construction. They
+reach all nineteen subjects and express two. Seventeen of the twenty cells in each carry the
+same note and the same pin cite: *INCORPORATED. Reached only by the blanket clause and not
+named anywhere in the order's own text* — `pin_cite: route only, not an express treatment`.
+
+An order saying "address each of the matters listed in Rule 16.1" and an order naming those
+matters impose similar obligations on the parties. This measure scores them 1 and 19.
+
+So the defensible claim is narrower and more useful than the headline: **`party_direction`
+measures how an order says it, not what the parties must do.** Two orders can demand the same
+work and land eighteen points apart, and nothing in the column distinguishes a court that
+worked through each topic from a court that pointed at a list. That is worth knowing before
+the column is used for anything, and it is the strongest argument for the report layer, which
+asks whether the parties' filing actually answered each subject.
+
+### And it corrects an emphasis from 20 August
+
+That entry established that `party_direction` moves no published figure and concluded that
+codebook rule R4 was therefore low priority. That remains true of the rule. It is not true of
+the column. **`party_direction` is unpublished because nobody computed it, not because there
+is nothing in it**, and the first time anyone did compute it, it produced the cleanest
+separation in the dataset and a methodological problem worth a paragraph in any write-up.
+
+### The sharper version: two variables, two columns
+
+It is not that one split beats the other. They explain different columns, and each explains
+its own completely:
+
+| column | separated by citation | separated by invocation style |
+|---|---|---|
+| `reached` | **yes** | no |
+| `express` | no | no |
+| `party_direction` | no | **yes** |
+| `court_resolution` | no | no |
+
+**Whether an order cites the Rule tells you whether it reaches every subject. How it invokes
+the Rule tells you whether it directs the parties on them.** The dataset has only ever asked
+the first question; `rule_role` has been recorded on every row since the first pass and has
+never been used as a predictor.
+
+The two incorporation orders are the wedge that pries the questions apart. They cite, so they
+reach all nineteen like every other citing order. They incorporate rather than name, so they
+direct on one and two, below seven of the nine orders in their group. On citation they look
+like MDL 3162; on direction they look like nothing else in the set.
+
+`court_resolution` is separated by neither, which is consistent with the modest published gap
+of 19% against 27% and is a reason to keep treating resolution as the noisiest of the four.
+
+Nothing here is published. n is fifteen, three of the six in the upper group share a form
+order, and the caveat above is load-bearing.
+
+## 31 August 2026 — the guards had never been watched break, and one of them could not
+
+`build.py` carries nine guards. Every one of them was written the day after a failure it would
+have caught, which is the right way to acquire a guard and a bad way to acquire confidence: a
+check written in response to one corruption has only ever been observed passing. This log
+records the same failure shape eight times now — *a check that exists, runs, reports success,
+and is not aimed at the thing that broke* — and in every one of those eight, the check was
+green the whole time.
+
+So `test_build.py` does the obvious thing nobody had done. Copy the repository to a temporary
+directory, break exactly one thing, run `build.py --check` as a subprocess, and require two
+outcomes: a non-zero exit **and** output that names the thing that was broken. Naming is
+scored because a guard that dies with the wrong message sends the next reader to the wrong
+file, which is precisely how the quota problem burned three runs in August. Each case restores
+what it broke and the suite ends by rebuilding the untouched repository, so a case that
+corrupts and forgets cannot make a later case pass for the wrong reason.
+
+Seventeen cases, all passing. Three things came out of writing them.
+
+### One: the tracker had been corrupt for eight days and the build said it was fine
+
+Writing a round-trip helper for the test needed `rule-16-1-tracker.csv` to parse into uniform
+rows. It does not. The MDL 3180 row has 62 fields where the header has 61.
+
+On 23 August I replaced that row's `perma` value with a string containing a comma and did not
+quote it. The comma split the field, and everything to its right shifted one column: the value
+in `date_accessed` was the tail of the URL, `coder` held the date, `notes` held my initials,
+and the real note fell off the end into a headerless 62nd field.
+
+`build.py --check` passed on 23, 24, 25, 26, 27, 28, 29 and 30 August. So did the scheduled
+Action. Nothing on the site was visibly wrong, because the page renders from the embedded JSON
+block and `csv.DictReader` silently accepts a long row.
+
+The guard that would have caught it takes four lines. `assert_rectangular()` now reads every
+data CSV and requires each row to carry exactly as many fields as the header, and it is the
+first check `main()` runs, because every other check is reading columns that a ragged row has
+already moved. Two of the seventeen test cases are aimed at it: an unquoted comma that splits
+a field, and a row two fields short.
+
+The general lesson is the narrow one. **Nine guards checked what the numbers said and not one
+checked that the file was a table.** Every one of them was reading `row["coder"]` out of a row
+whose `coder` column held a date, and they all agreed the data was clean.
+
+### Two: a test case that did not test anything
+
+The first version of the `check_prose` case searched for `(\d+) of (\d+) readable orders cite`
+and rewrote the number it found. The sentence on the page reads *8 of **the** 15 readable
+orders cite Rule 16.1 by name*. The pattern never matched, the mutation never happened, the
+build passed because nothing was broken, and the suite reported `check_prose  <- did not fail
+at all`.
+
+I nearly filed that as a defect in `check_prose`. It is a defect in the test: the corruption
+test failed to corrupt. That is this log's recurring shape moved up one level, which is worth
+recording precisely because the suite exists to catch the shape and reproduced it on its first
+run. The cases now name the literal in full and assert it occurs exactly once before touching
+it, so a sentence that moves fails loudly as a test problem instead of quietly as a guard
+problem.
+
+### Three: and then there was a real defect, in the guard on the published page
+
+Fixing the test asked the next question. `check_prose` asks *is the correct sentence present*.
+That passes the moment one correct copy survives. What happens when the page carries the
+sentence twice and one copy is wrong?
+
+    8 of the 15 readable orders cite Rule 16.1 by name; 7 do not
+    9 of the 15 readable orders cite Rule 16.1 by name; 6 do not
+
+Both sentences, adjacent, in the published page. `build.py --check` exits **0** and prints
+`page matches the CSVs`.
+
+The stale check does not catch it either, and correctly so: the findings are hand-written on
+purpose and `prerender` does not touch them, so prose the build never generates cannot be
+compared against prose the build would generate.
+
+What makes this one worth a section rather than a line is that **the repository had already
+diagnosed it, in writing, and fixed the wrong file.** From `check_readme`'s docstring, written
+14 August:
+
+> Note the shape of the test. `check_prose` asks whether the RIGHT string is present, which
+> passes as long as one correct copy survives somewhere; the first version of this function
+> copied that and did not notice a corrupted headline while a second correct copy of it sat
+> forty lines away. This one asks whether any WRONG string is present, which is the question
+> that actually matters when a figure appears more than once.
+
+That is the defect, named exactly, seventeen days early, in a docstring that sits eight lines
+above the function still carrying it. The README's guard was rewritten. The page's guard was
+not, and the page is the artifact anyone would cite.
+
+`check_contradictions()` gives it the same shape, mechanically rather than claim by claim.
+Take each asserted literal, replace every run of digits with `\d+`, and the skeleton matches
+that sentence whatever figures it carries; any match that is not the asserted literal is a
+copy of the claim bearing a different number. The surrounding words do the anchoring, so the
+skeleton is specific to one sentence rather than to the shape *N of M*. Claims with no digits
+are skipped, since there is nothing in them to contradict. On the clean page it reports zero,
+which is the check that matters most: a contradiction guard that fires on correct prose would
+be turned off within a week.
+
+Failures print under their own heading, `PROSE CONTRADICTION`, with both strings, because the
+useful thing to tell the reader is not *this is missing* but *both of these are on your page*.
+
+### What this says about the other checks
+
+Seventeen cases is not coverage. `assert_rectangular`, `assert_links`,
+`assert_subject_columns`, `assert_search_arithmetic`, `assert_citation_version`,
+`check_readme`, `check_prose`, `check_contradictions` and the stale block have each now been
+seen to fail on purpose at least once, which is a floor and not a ceiling. The failures that
+took eight days to find were not in the checks. They were in the space between them: a
+corruption of the file's SHAPE while every check inspected its CONTENTS, and a duplicated
+sentence while every check asked about presence rather than absence of the wrong.
+
+Both new guards ask a question no existing guard asked. That is the pattern to keep looking
+for, and it does not come from reading the guards, which all look reasonable. It comes from
+breaking things and watching what still passes.
+
+## 31 August 2026 — the codebook was prose to everything that read it
+
+`report-treatment.csv` carries a `subject_definition` column so a coder can see the question
+without opening the codebook. Ten of the twenty subjects had it blank. The ten that were
+filled in did not match the codebook's wording: the file said *(b)(2)(A)(i) the timing of the
+appointments*, the codebook says *timing of the appointments*, and nothing anywhere compared
+them.
+
+A definition column that disagrees with the codebook is worse than an empty one. A coder
+reads the row, not the codebook, so a drifted definition silently redefines the question being
+coded, and the drift is invisible because the codebook is the thing you would check against
+and it is 29,000 characters of prose.
+
+All sixty cells are now generated from the codebook's own table, and `validate_treatment.py`
+gained `registry_errors()`, which asks three questions nothing had asked before:
+
+- does either CSV use a `subject_id` the codebook does not define
+- does the codebook define one that no row uses
+- does any `subject_definition` disagree with the codebook's wording
+
+Mutation-tested, all three fire and name the offending id. The check reads the codebook's
+markdown table with a regular expression, which makes the codebook the only prose file in the
+project that is also parsed as data. That is a small coupling and it is worth it: the
+alternative is a registry duplicated in three places, which is the arrangement that produced
+the drift.
+
+The general point is the same one the ragged-row failure made a few hours earlier. **Every
+count in this project divides by twenty, and until today nothing checked that there were
+twenty subjects, or that they were the same twenty in both files.** A typo in a `subject_id`
+would have created a twenty-first subject that every denominator kept dividing by twenty, and
+every existing guard would have passed, because they all check values and none checked the
+registry the values are indexed by.
+
+## 31 August 2026 — the gap that was not there, and the discrepancy that is
+
+MDL 3162's joint report has carried a note since it was recorded: *GAP TO CHECK: no section
+answers 16.1(b)(3)(B). Section G answers with Rule 26(a)(1) initial disclosures instead.* The
+hypothesis was propagation, that the court's own list had omitted (b)(3)(B) and the parties
+inherited the omission, which would have been the report layer's first result.
+
+The order layer answers it without reopening the report. MDL 3162's `b3b_factual_basis_
+exchange` is coded `express` with pin cite `¶ 5(g); ¶ 12`, and its coding note says ¶ 5(g)
+"expressly ties this subject to Rule 26(a)(1)."
+
+**So the court did direct the parties on (b)(3)(B), and did it in Rule 26(a)(1) terms.** The
+report's section G, *Initial Disclosures Required by Fed. R. Civ. P. 26(a)(1)*, is the answer
+to ¶ 5(g). There is no missing subject. What looked like a gap was the court's framing carried
+into the parties' headings, which is a finding about vocabulary rather than about coverage,
+and a smaller one.
+
+It cost nothing to settle. The question had been sitting in a notes field for two weeks
+described as needing the document, and the answer was in a different CSV the whole time,
+because nothing in this project ever reads the two layers against each other. The one
+cross-layer constraint that does exist, `responsive_to_order` against `party_direction`, was
+written eight hours ago.
+
+### The comparison that resolved it opened a real one
+
+Lining the report's section letters up against the order layer's ¶ 5 pin cites, they agree
+exactly through H and diverge from I onward.
+
+| subject | pin cite in `subject-treatment.csv` | section in the report |
+|---|---|---|
+| `b3c_discovery` | ¶ 5(h) | H Discovery |
+| — | — | I Expert Disclosures |
+| `b3d_pretrial_motions` | ¶ 5(i) | J Pretrial Motions |
+| `b3e_settlement_facilitation` | ¶ 5(j) | K Measures to Facilitate Resolution |
+| `b3f_magistrate_master` | ¶ 5(k) | L Referral of Matters to U.S. Magistrate Judge |
+| `b3g_principal_issues` | ¶ 5(l) | M Principal Factual and Legal Issues |
+
+Two readings fit, and they are not compatible.
+
+**Either** the parties inserted *Expert Disclosures* as a new section I, in which case every
+report section from I to Q answers the order paragraph one letter behind it, and the recorded
+claim that the census is ¶ 5(o) is wrong by one, since the report's census is section O.
+
+**Or** the court's ¶ 5(i) is expert disclosures, the report tracks ¶ 5 one for one across all
+seventeen items, and four pin cites in `subject-treatment.csv` are each one letter early.
+
+The two candidates are not independent evidence: the pin cites and the ¶ 5(o) census claim
+were recorded by the same reader in the same pass. One look at IPO No. 1 ¶ 5 settles it, and
+**one of the two files is wrong either way.** Queued with item 35 as a check that costs two
+minutes for someone with the order in hand.
+
+Nothing published depends on it. Pin cites are evidence pointers rather than counted values,
+so a shifted letter does not move a figure on the page; it sends a reader checking the
+dataset's work to the wrong paragraph, which for a dataset whose whole claim is checkability
+is the failure that matters most.
+
+## 31 August 2026 — a prediction written down before the document is read
+
+The report layer is uncoded and two of its three reports are readable. Before reading either,
+the order layer already implies a specific, falsifiable claim about what one of them will say,
+and writing it down first is worth more than writing it down after.
+
+**MDL 3170.** Judge Gettleman's CMO #2 reproduces seventeen of the Rule's eighteen enumerated
+report items in the Rule's own order and drops exactly one, (b)(3)(E), measures to facilitate
+resolution. Its list runs from *Any likely pretrial motions* straight to the magistrate
+referral item. The report filed against it has no section for (b)(3)(E) either, which is what
+tracking the order rather than the Rule predicts and is already recorded in the invocation
+layer.
+
+Under codebook v1.1, `b3e_settlement_facilitation` for MDL 3170 is nonetheless coded `reached`,
+`express` and `party_direction`, amended on 14 August from a pass-1 `FALSE`. The reason given
+is item 1.d, which directs the parties to address leadership
+
+> responsibilities and authority in conducting pretrial activities and any role in
+> facilitating resolution of the MDL proceedings
+
+**That amendment is a claim about what the parties had to do, and the report can check it.**
+
+- If the report addresses measures to facilitate resolution inside its leadership section,
+  the v1.1 reading is confirmed by the conduct of the people the order was addressed to.
+- If it does not, the codebook attributes to the order a direction its actual readers did not
+  take from it, and `answered=FALSE` with `responsive_to_order=FALSE` is the finding that says
+  so.
+
+Either result is evidence about the codebook and not only about this report, which is the
+first time anything in this project has been able to test a coding rule against something
+outside the coder's own reading. The prediction is written into
+`report-treatment.csv`'s `coding_note` for that row so it cannot be quietly revised after the
+fact, and this entry is dated before the document was opened.
+
+### And a structural map for MDL 3162, so the coding pass is mechanical
+
+INV-001's twenty rows now carry which of the report's seventeen lettered sections, if any, is
+the dedicated heading for that subject. Eleven subjects have one. Eight are the (b)(2)(A)
+sub-items, which the recorded heading list does not break out and which the map therefore
+sends to section A. One, `b3b_factual_basis_exchange`, is section G under the court's Rule
+26(a)(1) framing.
+
+> **Corrected the same day, on reading the document.** The report DOES break out the (b)(2)(A)
+> sub-items: section A carries roman sub-items i to vii tracking (b)(2)(A)(i) to (vii) one for
+> one, and it carries them twice, once under Plaintiffs' Position and again under Defendants'.
+> The map said otherwise because `topics_structure` recorded only the top-level lettered
+> headings, and a map built from a partial record inherits its gaps. The coded rows supersede
+> it. This is worth leaving visible: the map was offered as an observation about headings and
+> it was an observation about the heading list that had been written down, which is not the
+> same thing.
+
+The map is an observation about headings and says nothing about whether a section answers its
+subject. Every judgment column stays `NOT_CHECKED`. It exists so that the reading pass is
+looking for something specific in a forty-nine page document rather than reading it cold, and
+so that a second coder gets the same starting point as the first.
+
+## 31 August 2026 — the badge at the top of the page said v1.0-draft
+
+`assert_citation_version` was written this morning because CITATION.cff had gone three weeks
+stale, and it asserts the parenthesised citation form `(v1.1, August 2026)` everywhere it is
+written by hand. It passed.
+
+`audit_numbers.py`, run for an unrelated reason, lists every numeral in the page's prose that
+nothing asserts. Near the bottom of the list: **`v1.0-draft`**.
+
+It is the version badge in the header, the first thing on the page under the title, and it had
+said v1.0-draft since the file was written. The suggested-citation box eight hundred lines
+below it, and the JSON-LD block at the top, both say v1.1. A reader looking at the page sees
+one version; a reader copying the citation gets another.
+
+The new guard could not see it. It matches `(vX.Y, Month YYYY)` and the badge is a bare
+version with no date, so the string was outside the pattern by construction. This is the third
+time today a guard has been found aimed slightly to one side of the thing it was meant to
+protect, and it is the same lesson in a third costume: **the guard covered the format it was
+written against, not the fact it was written about.**
+
+The fix is not a tenth guard. The badge now carries `id="ver"` and is filled by `prerender`
+from CITATION.cff, which makes it a derived value like every count on the page: it cannot
+disagree with the citation file, and a hand edit to it fails the stale check instead. Version
+parsing moved into `cff_version()` and `cited_version()` so the badge and the guard read the
+same line of the same file.
+
+`test_build.py` gained an eighteenth case for it. The suite's whole point is that a guard
+nobody has watched break is untested, and the badge's protection is now the stale check, which
+is a different guard from the one a reader would expect to be protecting a version string.
+
+## 31 August 2026 — five statements of the dataset's shape, none of them checked
+
+The same run of `audit_numbers.py` that found the version badge also listed `61` and `16` among
+the numerals nothing asserts. The page states the shape of the order layer in five places:
+
+- the header badge, `16 MDLs · 61 variables`
+- the JSON-LD `description`, `61 variables per MDL, each affirmative coding carrying a pin cite`
+- the JSON-LD download entry, `Order layer (16 MDLs, 61 variables)`
+- the download section's prose, `The order layer carries all 61 variables per MDL`
+- the download link itself, `The order layer. 16 MDLs, 61 variables.`
+
+All five are correct today. All five were typed by hand and none was checked. Adding a column
+to `rule-16-1-tracker.csv` would have left every one of them stating the old number, in a page
+whose entire claim is that its figures are computed from the CSVs. Two of the five are inside
+the JSON-LD block, which is the machine-readable description a search engine or a dataset
+registry reads, so the stale copy is the one a citation index would pick up.
+
+`tracker_columns()` now reads the count from the header and all five are asserted as prose
+claims, which also puts them under `check_contradictions`. Mutation-tested by adding a
+sixty-second column: the build fails and names all five.
+
+**The pattern across today's three finds is one pattern.** The ragged row, the version badge
+and these five are all cases where the page asserted something about the DATA'S STRUCTURE
+rather than about a value computed from it, and every guard in the build was aimed at values.
+Structure was checked nowhere: not the row width, not the column count, not the subject
+registry, not the version string. Four separate guards were added today and all four ask a
+structural question, which is not a coincidence but the shape of the hole.
+
+## 31 August 2026 — the report layer, coded, and Rule 16.1(b)(3)(E) comes out backwards
+
+Forty of the sixty report-layer cells are coded. Both readable reports, twenty subjects each,
+every affirmative carrying a pin cite and a verbatim quotation. MDL 3175's remains
+`readable=NO`.
+
+**This is a machine first pass and it is marked as one.** Every row carries
+`coder = claude (machine pass 1)`. Nothing in it is published, and the project's standing rule
+that coding is a person's work is not changed by it: what changed is that the second coder now
+starts from a draft with quotes attached instead of from an empty file. Two cells in INV-002
+and three in INV-001 are flagged `CONTESTABLE` in their coding notes with the alternative
+reading spelled out, because those are where a second reader is most likely to differ and the
+reliability pass showed divergence concentrates exactly there.
+
+### The pre-registered test passed
+
+Recorded this morning, before the document was opened: MDL 3170's CMO #2 drops (b)(3)(E) from
+its enumerated list, and codebook v1.1 nonetheless codes the subject `party_direction=TRUE` on
+the strength of the leadership item's phrase *any role in facilitating resolution of the MDL
+proceedings*. The test was whether the parties, answering the leadership item, would address
+resolution.
+
+They did, three times. Inside the leadership section: a proposed subcommittee *(4) to handle
+ADR/settlement efforts, as appropriate*, and among lead counsel's enumerated responsibilities
+*To conduct settlement negotiations on behalf of Plaintiffs and putative class members*.
+Outside it, under the magistrate and master heading, *a special master for settlement* with a
+selection timetable.
+
+**A topic the order did not house did not disappear. It dispersed.** The v1.1 amendment is
+confirmed by the conduct of the people the order was addressed to, which is the first time
+anything in this project has tested a coding rule against evidence outside the coder's own
+reading of the order.
+
+### And then the other report inverted it
+
+MDL 3162's IPO No. 1 asked the question. Paragraph 5(j), in the Rule's own words: *whether the
+court should consider any measures to facilitate resolving some or all actions before the
+court*. The joint report's answer, section K, in its entirety:
+
+> The Parties have not identified any measures which they currently believe will facilitate
+> resolution of this matter.
+
+One sentence. In a forty-nine page report, from all plaintiffs and all defendants, filed after
+a meet-and-confer and several rounds of email.
+
+| | (b)(3)(E) in the order | (b)(3)(E) in the report |
+|---|---|---|
+| MDL 3170 | omitted from the enumerated list | addressed three times, in three sections |
+| MDL 3162 | asked, in the Rule's own words | one sentence, declining |
+
+**The court that asked got less than the court that did not.** n is two, one report is
+unilateral and one is joint, and nothing about this is publishable yet. But it is the first
+result the report layer has produced that the order layer could not have produced, and it
+points the opposite way from the assumption built into the subject: that a court raising a
+topic causes the parties to engage with it.
+
+The honest reading is narrower and still interesting. Section K is one sentence because the
+parties had nothing to say in March, three weeks after a meet-and-confer, in a case where
+defendants are about to move to dismiss everything. MDL 3170's report reached resolution
+because resolution came up inside questions about who leads and who masters, not because
+anyone was asked about it directly. **Rule 16.1(b)(3)(E) may be answered better as a
+consequence of other questions than as a question.** That is a claim a rules committee could
+act on and it needs more than two reports.
+
+### Section L is the same shape
+
+*At this time, the Parties do not believe it is necessary for the Court to refer any matters to
+a U.S. Magistrate Judge.* Also the whole section. And also incomplete: the master half of
+(b)(3)(F) is answered twenty pages earlier, inside discovery, where plaintiffs defer to the
+Court on a Special Master for fact discovery and ESI. Coded answered under L with the
+dispersal recorded and flagged contestable.
+
+### What the two reports say about 16.1(b)(1) itself
+
+Both were already known to record a dispute about what a Rule 16.1 report IS. Coding them
+sharpened it to a sentence a committee could use. MDL 3162's plaintiffs, in section M, on the
+principal factual and legal issues:
+
+> The Court's request for a joint statement of principal factual and legal issues is a
+> well-established case management tool designed to provide the Court with a neutral framework
+> for understanding the landscape of the litigation — not an opportunity for early advocacy.
+
+They then say defendants *responded with argument and advocacy more appropriate for motion
+practice*. In MDL 3170 the single-report mechanism failed outright and one firm filed alone,
+spending its leadership section arguing its own qualifications. **The Rule says the report
+should be single and may reflect divergent views. It does not say whether it is a negotiation
+document or an advocacy document, and in the only two reports located, the parties fought
+about that in both.**
+
+## 31 August 2026 — a fourth report, a court being pushed, and a method that cannot prove a negative
+
+Back-coding `party_invoked_rule` was on the list as bulk low-risk work. One search returned
+three things that are none of those.
+
+### A fourth Rule 16.1(b)(1) report, in MDL 3174, and nobody had seen it
+
+RECAP document 480083510, filed 21 May 2026 on the MDL 3174 master docket, 127,237 characters.
+It opens:
+
+> Pursuant to Your Honor's April 16, 2026 Order and Fed. R. Civ. P. 16.1(b), the parties hereby
+> submit the following joint report:
+
+The 16 April order is the one the order layer already calls the purest transcription in the
+set, the three-page order that reproduces the Rule using the Rule's own subsection
+designations. This is the report it asked for. Recorded as **INV-020**, the fourth 16.1(b)(1)
+report and the second joint one.
+
+**It makes the negotiation-document question three for three.** Every located report records a
+dispute about what a Rule 16.1 report is:
+
+| | what happened |
+|---|---|
+| MDL 3170 | the single-report mechanism failed outright; one firm filed alone |
+| MDL 3162 | plaintiffs say defendants *responded with argument and advocacy more appropriate for motion practice* |
+| MDL 3174 | plaintiffs object in the second paragraph that Boeing *takes the liberty of substantively arguing* |
+
+Three MDLs, three courts, three unrelated sets of counsel, the same objection. Rule 16.1(b)(1)
+and its Note say the report should be single and may reflect divergent views. Neither says
+whether it is a negotiation document or an advocacy document, and in every instance located,
+the parties have fought about exactly that. This was the project's sharpest open question at
+n=2 and it is now the project's sharpest finding at n=3.
+
+### The parties in MDL 3176 are using the Rule on a court that has not used it
+
+MDL 3176 is the tracker's only true negative: transferred 2 April 2026, no qualifying order, no
+conference scheduled. On 20 August 2026 the plaintiffs filed, at docket entry 37:
+
+> NOTICE of Readiness to Proceed Under Federal Rule of Civil Procedure 16.1
+
+with fifteen attachments: a draft initial case management report, a draft protective order, a
+draft discovery order and a draft eDiscovery order, all dated 29 July, and eleven exhibits that
+are the email chain with defence counsel from 1 July to 14 August. Five days later
+forty-seven defendants filed a joint response to it. **INV-021** and **INV-022**.
+
+Rule 16.1(a) imposes a duty on the COURT and 16.1(b) on the PARTIES. Nothing in the Rule gives
+a party a motion. What these plaintiffs have done is assemble the record of their own
+compliance and file it, which is the closest thing to enforcement the Rule's structure allows,
+and the defendants have contested it rather than ignored it. **Whether Rule 16.1 can be invoked
+against a transferee court is a question the Advisory Committee did not answer and the
+Committee Note does not discuss.** It is now being litigated.
+
+It also changes what the dataset's true negative means. MDL 3176 is not a proceeding where
+nobody thought about Rule 16.1. It is one where both sides have, in writing, and the court has
+not yet.
+
+### And the method that found none of this had already reported a negative
+
+`party_invoked_rule` for MDL 3174 was coded **NO** on 13 August 2026, on the finding that both
+hits on that docket were the court's own orders replicated onto member dockets. That entry
+called it "the useful one" because a count that read hits as filings would have miscounted it.
+
+The joint report was on the docket on 21 May, twelve weeks before that pass. It was missed
+because the 13 August method read **docket entry descriptions** and nothing else, and the
+clerk's description of this entry is:
+
+> JOINT STATUS REPORT signed by all parties. Estimated Trial Days: 21.
+
+No rule, no number, no report. Guardrail 12 records that the index covers descriptions as well
+as document text. The corollary was never drawn and is now demonstrated: **a
+description-only read can confirm that something exists and can never establish that something
+does not.** The one `NO` in the column was produced by exactly that inference and it was wrong.
+
+`party_invoked_rule` now stands at seven YES, nine NOT_CHECKED, and no NO. The nine are not
+NOT_CHECKED out of laziness; establishing a negative there means reading documents, not
+descriptions, and the remaining sweep hit the day's quota.
+
+### The quota, behaving as designed
+
+The 125/day was spent finishing this, with `Expected available in 18788 seconds`. Five hours,
+rolling, exactly as the 20 August entry established. No pacing was attempted and nothing was
+retried. The second naming form's sweep is tomorrow's work.
+
+Tonight's scheduled backfill resume will find the corpus complete under the deployed rules and
+return without a request, so nothing is lost. If it does need requests it will report
+`QUOTA_EXHAUSTED` and leave the state file untouched, which it has already done once in
+production on 24 August.

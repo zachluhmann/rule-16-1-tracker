@@ -35,7 +35,7 @@ EFFECTIVE = "2025-12-01"
 # resume logic skips anything already recorded, so a validation run would score a mixture of
 # two classifiers and report a single number for it. A cache of verdicts has to know which
 # code produced them or it is not a cache, it is a contaminant.
-RULES_VERSION = "2026-08-15b"
+RULES_VERSION = "2026-08-31"
 
 # The Rule's name, in every form the sweep looks for and a few it does not. A document that
 # contains "16.1" but none of these is either Rule 16 noise or about some other 16.1.
@@ -128,6 +128,55 @@ def load_registry(tracker="rule-16-1-tracker.csv",
     return reg
 
 
+def load_known_dockets(path="maintenance/known-dockets.csv", tracker=None):
+    """Dockets a person has identified by hand, and what each one resolves to.
+
+    The tracker maps each MDL to ONE docket, its master. Everything filed on a member docket
+    is invisible to that map, and member dockets are where a surprising amount of Rule 16.1
+    practice actually happens: on 31 August 2026 every hit the `report_phrase` form found was
+    an individual Cal-Maine action in W.D. Wis. filing its own Rule 16.1 report under its own
+    civil number, and all eleven were abandoned because nothing tied the docket to MDL 3175.
+
+    The obvious alternative was to read the docket NUMBER and let T7 call it an ordinary civil
+    case. That is exactly wrong: a member case carries an ordinary civil number and never
+    prints the MDL's, so it would have filed eleven MDL documents under `non_mdl`, a category
+    the published findings are computed over.
+
+    So membership is decided by a person, once, and recorded here with the evidence. The file
+    also carries dockets confirmed NOT to be MDL cases, because that judgment is worth keeping
+    too and costs a request to make twice.
+
+    `resolves_to` is either an MDL number or one of the non-MDL categories.
+
+    IT MUST NOT CARRY A MASTER DOCKET. The tracker already resolves all sixteen of those
+    through `load_dockets`, and T5b runs before T5a, so a master docket listed here would
+    shadow the tracker and every document on it would be recorded as settled by hand when it
+    was settled by the tracker. Worse, the two would then be free to disagree. On 31 August
+    2026 all sixteen masters were added to this file, for a reason that looked good and was
+    wrong: MDL 3162's docket is `1:25-mc-00179-JDB`, a miscellaneous number, and a rule that
+    parses the number files it as `non_mdl`. `load_dockets` had already solved that, by not
+    parsing the number at all. The check below makes the mistake impossible instead of
+    leaving it to whoever edits the file next.
+    """
+    out = {}
+    if not os.path.exists(path):
+        return out
+    for r in csv.DictReader(open(path)):
+        d, to = (r.get("docket_id") or "").strip(), (r.get("resolves_to") or "").strip()
+        if d.isdigit() and to:
+            out[int(d)] = int(to) if to.isdigit() else to
+    if tracker is not False:
+        masters = load_dockets() if tracker is None else tracker
+        clash = sorted(set(out) & set(masters))
+        if clash:
+            raise ValueError(
+                f"{path} lists {len(clash)} docket(s) the tracker already resolves: "
+                f"{clash}. Master dockets belong in rule-16-1-tracker.csv's "
+                f"courtlistener_url and nowhere else; this file is for member dockets and "
+                f"for dockets confirmed not to be MDL cases. Remove them.")
+    return out
+
+
 def mdl_numbers(text):
     """Every MDL number the text names. Plural on purpose: a transfer order names two."""
     found = set()
@@ -181,7 +230,7 @@ def classify_from_search(hit, reg, dockets=None, learned=None):
                    no_text_layer=not hit.get("is_available"))
 
 
-def classify(doc, reg, by_sha1=None, dockets=None, learned=None):
+def classify(doc, reg, by_sha1=None, dockets=None, learned=None, known=None):
     """One document, one category, plus the rule and the string that decided it.
 
     `doc` is a RECAP document: id, plain_text, description, is_available, sha1. `description`
@@ -194,12 +243,12 @@ def classify(doc, reg, by_sha1=None, dockets=None, learned=None):
     both = text + "\n" + desc
     no_text = not (doc.get("is_available") and text.strip())
 
-    # R0. Nothing to read at all. Not a decision, an absence of one.
+    # T0. Nothing to read at all. Not a decision, an absence of one.
     if not both.strip():
-        return verdict("unverified", "R0", "", no_text_layer=no_text,
+        return verdict("unverified", "T0", "", no_text_layer=no_text,
                        escalate="no document text and no docket entry text")
 
-    # R1. A document already classified under a different id. Two copies of one filing on a
+    # T1. A document already classified under a different id. Two copies of one filing on a
     # master docket and a member docket are one filing, and RECAP gives them the same sha1.
     # This is the rule that catches the case the human first got wrong: RECAP 464112237 read
     # as an unrelated D. Ariz. civil case and is in fact the same brief as 464110936 in MDL
@@ -207,53 +256,76 @@ def classify(doc, reg, by_sha1=None, dockets=None, learned=None):
     sha = doc.get("sha1")
     if sha and by_sha1 and sha in by_sha1:
         prior = by_sha1[sha]
-        return verdict(prior["category"], "R1",
+        return verdict(prior["category"], "T1",
                        f"identical to document {prior['document_id']} (sha1 {sha[:12]})",
                        mdl_no=prior.get("mdl_no", ""), no_text_layer=no_text)
 
-    # R2. The index treats 16.1 as 16. A document with no literal "16.1" anywhere is a Rule 16
+    # T2. The index treats 16.1 as 16. A document with no literal "16.1" anywhere is a Rule 16
     # document the tokeniser handed back, not a Rule 16.1 document.
     if "16.1" not in both:
-        return verdict("noise", "R2", "no literal '16.1' in the document or the docket entry",
+        return verdict("noise", "T2", "no literal '16.1' in the document or the docket entry",
                        no_text_layer=no_text)
 
     fed = FEDERAL_FORMS.search(both)
     loc = LOCAL_FORMS.search(both)
 
-    # R3. "16.1" present, no federal naming form, and a local-rule marker. The other 16.1.
+    # T3. "16.1" present, no federal naming form, and a local-rule marker. The other 16.1.
     if not fed and loc:
-        return verdict("noise", "R3", _around(both, loc.start()), no_text_layer=no_text)
+        return verdict("noise", "T3", _around(both, loc.start()), no_text_layer=no_text)
 
-    # R3b. Both. A filing that argues about a district's local rule 16.1 AND cites the federal
+    # T3b. Both. A filing that argues about a district's local rule 16.1 AND cites the federal
     # Rule is a real thing and no rule here can say which one the hit is for.
     if fed and loc:
-        return verdict("unverified", "R3b", _around(both, loc.start()), no_text_layer=no_text,
+        return verdict("unverified", "T3b", _around(both, loc.start()), no_text_layer=no_text,
                        escalate="names both the federal Rule 16.1 and a local rule 16.1")
 
-    # R4. "16.1" present and nothing says which 16.1 it is. A rule cannot settle this.
+    # T5b. A docket a person has already identified. This runs BEFORE T4 and AFTER T3/T3b,
+    # and both halves of that placement are load-bearing. After T3/T3b, because a brief about
+    # a district's own local rule 16.1 is still noise no matter whose docket it sits on, and
+    # the local-rule guardrail is the one this project has actually been bitten by. Before T4,
+    # because T4's question is "which 16.1 is this" and a curated docket answers it: the
+    # eleven Cal-Maine filings say "Rule 16.1 Report" in an MDL whose own management order
+    # invokes the federal Rule, and T4 abandoned every one of them.
+    #
+    # Nothing here is inferred. The map is hand-written, one row per docket, carrying the case
+    # name and the date a person checked it.
+    settled = (known or {}).get(doc.get("docket_id"))
+    if settled is not None:
+        if isinstance(settled, int):
+            if settled in reg:
+                return verdict(reg[settled]["side"], "T5b",
+                               f"filed on docket {doc.get('docket_id')}, recorded by hand as a "
+                               f"case in MDL {settled}",
+                               mdl_no=str(settled), no_text_layer=no_text)
+        else:
+            return verdict(settled, "T5b",
+                           f"filed on docket {doc.get('docket_id')}, recorded by hand as "
+                           f"{settled}", no_text_layer=no_text)
+
+    # T4. "16.1" present and nothing says which 16.1 it is. A rule cannot settle this.
     if not fed:
-        return verdict("unverified", "R4", _around(both, both.find("16.1")),
+        return verdict("unverified", "T4", _around(both, both.find("16.1")),
                        no_text_layer=no_text,
                        escalate="names 16.1 but no federal naming form and no local-rule marker")
 
-    # R5a. The docket the document is filed on, which the search result already told us.
+    # T5a. The docket the document is filed on, which the search result already told us.
     # A master docket id resolves the case with no parsing at all. `learned` carries member
     # dockets discovered earlier in the same run: once one document on a member docket has
     # been tied to an MDL by its text, every later document on that docket inherits it.
     did = doc.get("docket_id")
     known_docket = (dockets or {}).get(did) or (learned or {}).get(did)
     if known_docket and known_docket in reg:
-        return verdict(reg[known_docket]["side"], "R5a",
+        return verdict(reg[known_docket]["side"], "T5a",
                        f"filed on docket {did}, the docket of MDL {known_docket}",
                        mdl_no=str(known_docket), no_text_layer=no_text)
 
-    # R5 to R7 locate the federal-rule reference in a case.
+    # T5 to T7 locate the federal-rule reference in a case.
     nums = mdl_numbers(both)
     known = {n for n in nums if n in reg}
     unknown = nums - known
 
     if unknown and not known:
-        return verdict("unverified", "R6", f"names MDL {sorted(unknown)}, none in the registry",
+        return verdict("unverified", "T6", f"names MDL {sorted(unknown)}, none in the registry",
                        no_text_layer=no_text,
                        escalate=f"MDL {sorted(unknown)[0]} is in neither the tracker nor "
                                 f"maintenance/pre-effective-mdls.csv. Either the universe is "
@@ -262,23 +334,23 @@ def classify(doc, reg, by_sha1=None, dockets=None, learned=None):
     if known:
         sides = {reg[n]["side"] for n in known}
         if len(sides) > 1:
-            return verdict("unverified", "R6", f"names MDLs {sorted(known)} on both sides",
+            return verdict("unverified", "T6", f"names MDLs {sorted(known)} on both sides",
                            no_text_layer=no_text,
                            escalate="document names MDLs from both sides of the effective date")
         n = sorted(known)[0]
         if learned is not None and did:
             learned[did] = n          # a member docket, now known for the rest of the run
-        return verdict(sides.pop(), "R5", _around(both, _first_mdl_span(both)),
+        return verdict(sides.pop(), "T5", _around(both, _first_mdl_span(both)),
                        mdl_no=str(n), no_text_layer=no_text)
 
-    # R7. A civil or bankruptcy docket number, no MDL named anywhere. Ordinary case.
-    # Weak on its own, which is why R1's sha1 check runs first: an MDL member-case filing
+    # T7. A civil or bankruptcy docket number, no MDL named anywhere. Ordinary case.
+    # Weak on its own, which is why T1's sha1 check runs first: an MDL member-case filing
     # carries a civil number and may never print the MDL's.
     if CIVIL_PATTERN.search(both) or BANKRUPTCY_PATTERN.search(both):
         m = CIVIL_PATTERN.search(both) or BANKRUPTCY_PATTERN.search(both)
-        return verdict("non_mdl", "R7", _around(both, m.start()), no_text_layer=no_text)
+        return verdict("non_mdl", "T7", _around(both, m.start()), no_text_layer=no_text)
 
-    return verdict("unverified", "R8", _around(both, fed.start()), no_text_layer=no_text,
+    return verdict("unverified", "T8", _around(both, fed.start()), no_text_layer=no_text,
                    escalate="names the federal rule but no docket number of any kind")
 
 
@@ -298,7 +370,7 @@ def _first_mdl_span(text):
 
 
 # ---------------------------------------------------------------------------------------
-# The model tier. Reached only by R4, R6 and R8, which is to say only where no rule decides.
+# The model tier. Reached only by T4, T6 and T8, which is to say only where no rule decides.
 # ---------------------------------------------------------------------------------------
 
 PROMPT = """You are triaging one document from a federal court docket for a research \

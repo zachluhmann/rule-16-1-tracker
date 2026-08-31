@@ -1129,12 +1129,28 @@ against 52% unbacked when that was the project's largest structural finding. The
 
 What remains, in descending order of how much it would change what this dataset can claim:
 
+0. **Decide what to do with the invocation finding.** `invocation_analysis.py` reports that
+   every order setting out the Rule's topics in its own words directs the parties on 15 or more
+   of 19 subjects, and every order that incorporates the Rule by reference or never mentions it
+   directs on 13 or fewer, with no overlap (Fisher p = 0.0002). Invocation style separates the
+   set better than citation does, which is the variable the published findings use. But the two
+   incorporation orders are pinned near zero by the codebook's own construction, so part of the
+   result is the instrument's. See AUDIT.md, 31 August 2026. Nothing is published; this needs a
+   decision about whether it belongs on the page, in a paper, or nowhere.
 1. **Fifteen tiebreak cells await a human reading.** Nothing in this dataset has yet been read
    by a lawyer other than its author. A second coder and two adjudicators went through all 300
    cells and 22 were amended; fifteen remain genuinely contested and are recorded as such.
-2. **Build `reports.csv`.** The report layer is probably the better paper, and reports are
-   easier to find than orders because they name the rule in their own docket text. `collect.py`
-   has the queries.
+2. **Code the report layer.** `report-treatment.csv` is scaffolded and entirely uncoded: three
+   16.1(b)(1) reports by twenty subjects, sixty rows, every judgment `NOT_CHECKED` and one
+   report not yet readable. Note that most of what this list used to ask for under the name
+   `reports.csv` already exists in `party-invocations.csv`, which carries filer, joint or
+   unilateral, page count, Committee Note, Manual, rulemaking record, meet-and-confer dispute
+   and subsection mislabel as structured columns. What was missing is per-subject coding, and
+   that is what the new table holds: for each subject, did the report answer it, was the answer
+   responsive to something the order directed, and did it go beyond what the order asked. The
+   third column is where the interesting question lives. `validate_treatment.py` checks the
+   layer and joins it to the order layer, so the two tables cannot disagree about whether an
+   order directed the parties on a subject.
 3. **Back-code `party_invoked_rule`** across all sixteen rows; 10 are still `NOT_CHECKED`.
    Five are confirmed by document; 3179 rests on an earlier search whose pin cite was never
    captured — do **not** code that one `YES` from memory.
@@ -1729,3 +1745,146 @@ with a same-numbered local rule, which is the kind of practice datum a rules com
 act on. It is also a caution for anyone measuring Rule 16.1 uptake by search: four of the
 twenty-five abbreviated-form hits are genuine citations to the Rule in cases the Rule does
 not govern.
+
+---
+
+# EIGHTH PASS — 2026-08-31 · THE GUARDS GET TESTED
+
+## What is in the repo now, corrected
+
+The table under SIXTH PASS is a snapshot of 12 August and is left as written. This is the
+current inventory of everything that runs.
+
+| File | What it is |
+|---|---|
+| `rule-16-1-tracker.csv` | 16 rows, one per MDL. The order layer. Canonical. |
+| `subject-treatment.csv` | **300 rows**, one per subject per order, four booleans each. Canonical. |
+| `party-invocations.csv` | 19 rows, one per party filing or non-MDL order that invokes the Rule. |
+| `report-treatment.csv` | 60 rows, three 16.1(b)(1) reports x 20 subjects. **Uncoded.** |
+| `rule-16-1-searches.csv` | The search ledger: every query form, every hit, its triage category. |
+| `subject-treatment-codebook.md` | Definitions, frozen before coding began. Now also read as data. |
+| `coding-decisions.md` | The eight application rules pass 1 used. Sealed from pass 2. |
+| `build.py` | Renders the page and runs ten guards. Refuses to build on any failure. |
+| `validate_treatment.py` | Guards the coding files: constraints, evidence, cross-layer, registry. |
+| `watch.py` | The weekly Action. Sweeps for new documents, triages, never codes. |
+| `triage.py` | The rule tier, T0-T8 plus S1. Assigns a category only where a rule decides it. |
+| `invocation_analysis.py` | Recomputes the invocation finding from the CSVs. |
+| `test_watch.py` | 103 offline checks. No network, no token. |
+| `test_build.py` | 17 corruption-injection cases. Breaks a thing, requires the build to name it. |
+| `maintenance/known-dockets.csv` | Six hand-verified docket identities the classifier may rely on. |
+| `maintenance/maintenance-protocol.md` | What runs when, and what is deliberately not automated. |
+
+`migrate_subject_columns.py` was a one-shot and has run. It is kept because the migration it
+performed changed 27 cells and a reader should be able to see how.
+
+## Two defects the new suite found on its first run
+
+**The tracker had been ragged for eight days.** A `perma` value containing an unquoted comma
+split the MDL 3180 row into 62 fields against a 61-field header, shifting `date_accessed`,
+`coder` and `notes` one column to the right. `build.py --check` passed every day from 23 to
+30 August, and so did the scheduled Action, because nine guards were reading the row's
+contents and none was reading its shape. `assert_rectangular` now runs first.
+
+**`check_prose` could not see a wrong copy beside a right one.** It asks whether the correct
+sentence is present, which passes the moment one correct copy survives. Two adjacent
+sentences on the published page, one saying 8 of 15 and one saying 9 of 15, exit 0 with `page
+matches the CSVs`. `check_readme` had been rewritten for exactly this shape on 14 August and
+its docstring says so; the guard on the page itself was left with the shape the README's had
+abandoned. `check_contradictions` now asks the other question, by taking each asserted
+literal, replacing its digits with `\d+`, and reporting any match that is not the literal.
+
+Neither defect was in a check. Both were in the space between the checks, and neither is
+visible from reading them, only from breaking things and watching what still passes.
+
+## The subject registry is now read out of the codebook
+
+`report-treatment.csv` carries a `subject_definition` column that was typed by hand. Ten of
+the twenty subjects were blank and the ten that were filled did not match the codebook's
+wording. All sixty cells are now generated from the codebook's own table, and
+`validate_treatment.py` fails if either CSV uses a `subject_id` the codebook does not define,
+omits one it does, or carries a definition that disagrees with it. It is the only place in
+the project that reads the codebook as data rather than as prose.
+
+## What the report layer says, on its first pass
+
+**Rule 16.1(b)(3)(E) comes out backwards.** MDL 3162's court asked the question in the Rule's
+own words at IPO No. 1 ¶ 5(j). The joint report's entire answer, section K, is *"The Parties
+have not identified any measures which they currently believe will facilitate resolution of
+this matter."* One sentence in forty-nine pages. MDL 3170's court omitted the subject from its
+list altogether, and its report addressed resolution three times: an ADR subcommittee,
+settlement-negotiation authority for lead counsel, and a special master for settlement.
+
+| | (b)(3)(E) in the order | (b)(3)(E) in the report |
+|---|---|---|
+| MDL 3170 | omitted from the enumerated list | addressed three times, in three sections |
+| MDL 3162 | asked, in the Rule's own words | one sentence, declining |
+
+n is two, one report is joint and one unilateral, and none of this is on the site. It is the
+first result the report layer produced that the order layer could not have, and it points
+against the assumption built into the subject, that a court raising a topic makes the parties
+engage with it. The narrower reading is that **(b)(3)(E) may be answered better as a
+consequence of other questions than as a question**, since MDL 3170's parties reached
+resolution through questions about who leads and who masters.
+
+**A pre-registered test passed.** Before either document was opened, the codebook v1.1
+amendment coding MDL 3170's `b3e_settlement_facilitation` as `party_direction=TRUE` was written
+down as a falsifiable prediction: if the amendment is right, the report will address resolution
+inside its leadership section. It does. First time this project has tested a coding rule
+against evidence outside the coder's own reading.
+
+**The 3162 report restructures the court's list rather than tracking it.** It promotes ¶ 5(h)(iii),
+expert disclosures, out of discovery into its own section I, and moves ¶ 5(m), defendant
+corporate identities, to the end as section Q. Both edits in a document that files itself
+"Pursuant to ¶ 5 of the Court's Initial Procedure Order No. 1."
+
+## Three things one search turned up, and a method correction
+
+**A FOURTH RULE 16.1(b)(1) REPORT, in MDL 3174.** RECAP 480083510, filed 21 May 2026, 127,237
+characters, opening *"Pursuant to Your Honor's April 16, 2026 Order and Fed. R. Civ. P.
+16.1(b), the parties hereby submit the following joint report."* That April order is the one
+this project already calls the purest transcription of the Rule in the set. Now `INV-020`.
+
+**Which makes the negotiation-document question three for three.** Every located report records
+a dispute about what a Rule 16.1 report is. MDL 3170: the single-report mechanism failed and
+one firm filed alone. MDL 3162: plaintiffs say defendants *"responded with argument and
+advocacy more appropriate for motion practice."* MDL 3174: plaintiffs object in the report's
+second paragraph that Boeing *"takes the liberty of substantively arguing."* Three MDLs, three
+courts, three unrelated sets of counsel, the same objection. The Rule says the report should be
+single and may reflect divergent views; it does not say what kind of document it is.
+
+**THE PARTIES IN MDL 3176 ARE USING THE RULE ON A COURT THAT HAS NOT USED IT.** MDL 3176 is the
+tracker's only true negative, transferred 2 April 2026 with no qualifying order and no
+conference scheduled. On 20 August the plaintiffs filed a **"NOTICE of Readiness to Proceed
+Under Federal Rule of Civil Procedure 16.1"** at docket entry 37, attaching a draft initial
+case management report, a draft protective order, a draft discovery order, a draft eDiscovery
+order, and eleven exhibits that are the email chain with defence counsel. Five days later
+forty-seven defendants filed a joint response to it. `INV-021` and `INV-022`.
+
+Rule 16.1(a) imposes a duty on the court and 16.1(b) on the parties; nothing in it gives a
+party a motion. These plaintiffs assembled the record of their own compliance and filed it,
+which is the closest thing to enforcement the Rule's structure allows. **Whether Rule 16.1 can
+be invoked against a transferee court is a question the Committee Note does not discuss, and it
+is now being litigated.** It also changes what the true negative means: not a proceeding where
+nobody thought about the Rule, but one where both sides have and the court has not.
+
+**AND THE ONE `NO` IN `party_invoked_rule` WAS WRONG.** MDL 3174 was coded NO on 13 August on
+the ground that both hits on its docket were the court's own orders. The joint report had been
+on the docket since 21 May. It was missed because that pass read docket entry descriptions
+only, and the clerk's description reads *"JOINT STATUS REPORT signed by all parties. Estimated
+Trial Days: 21."* — no rule, no number, no report. **A description-only read can confirm that
+something exists and can never establish that something does not.** The column now stands at
+seven YES, nine NOT_CHECKED, and no NO.
+
+## What is still open
+
+- **The report layer has a machine first pass.** 40 of 60 cells coded, both readable reports,
+  every affirmative carrying a pin cite and a verbatim quotation; MDL 3175's report is
+  `readable=NO`. Every row is marked `coder = claude (machine pass 1)` and **nothing from it is
+  published**. It needs a human pass, and five cells are flagged `CONTESTABLE` in their coding
+  notes with the alternative reading written out. See `AUDIT.md`, 31 August.
+- **`party_invoked_rule` is `NOT_CHECKED` on 9 of 16 tracker rows.** The second naming form's
+  sweep is unfinished; the day's CourtListener quota ran out. Establishing a negative there
+  means reading documents, not docket descriptions.
+- **Item 35**, MDL 3180's `b3b_factual_basis_exchange`, needs two minutes with the order.
+- **The mirror host for MDL 3180's copy** is recorded as a placeholder and only the person
+  who found it knows which site it was.

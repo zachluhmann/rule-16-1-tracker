@@ -197,7 +197,7 @@ the letter need recomputing before it is sent.** The README, the landing page an
 
 > **Suggested citation:**
 > Zach Luhmann, *Rule 16.1 Tracker: Initial Management Orders in Multidistrict
-> Litigation Since December 1, 2025* (v1.0, August 2026),
+> Litigation Since December 1, 2025* (v1.1, August 2026),
 > https://zachluhmann.github.io/rule-16-1-tracker/ (last visited [date]).
 >
 > Licensed CC BY 4.0. Corrections and challenges to any coding decision are

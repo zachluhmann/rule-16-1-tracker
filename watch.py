@@ -260,7 +260,46 @@ def write_ledger(rows):
     open(LEDGER, "w", newline="").write(buf.getvalue())
 
 
-def classify_one(doc_id, forms, meta, reg, by_sha1, today, dockets=None, learned=None):
+_DOCKETS_SEEN = {}
+
+
+def docket_identity(docket_id):
+    """Case name, number and court for a docket, cached, one request per docket ever.
+
+    WHY THIS EXISTS, AND WHY IT DOES NOT DECIDE ANYTHING. On 31 August the six documents
+    abandoned under R8 turned out to be one bankruptcy adversary proceeding, and eleven
+    abandoned under R4 turned out to be MEMBER CASES of MDL 3175: individual antitrust actions
+    against Cal-Maine in W.D. Wis., each filing its own Rule 16.1 report on its own docket
+    under its own civil number.
+
+    The obvious repair was to look the docket up and let R7 decide from its number. That would
+    have called all eleven `non_mdl`, because a member case carries an ordinary civil number
+    and never prints the MDL's. A safe abandonment would have become a confident misfiling in
+    the category the published findings are about. R7's own comment warns of exactly this and
+    it still nearly happened.
+
+    So the lookup adds identity to the escalation and stops. A person reading
+    "Nineteenseventynine v. Cal-Maine Foods, 3:26-cv-00178, W.D. Wis." settles it at a glance;
+    no rule here can, and pretending otherwise is how a dataset meant to be cited acquires a
+    wrong number.
+    """
+    if not docket_id:
+        return ""
+    if docket_id in _DOCKETS_SEEN:
+        return _DOCKETS_SEEN[docket_id]
+    try:
+        r = get(f"dockets/{docket_id}/",
+                {"fields": "id,case_name,docket_number,court_id"})
+        out = (f"{r.get('case_name') or 'unknown case'}, "
+               f"{r.get('docket_number') or 'no number'}, {r.get('court_id') or '?'}")
+    except Exception as e:
+        out = f"docket {docket_id} could not be read ({type(e).__name__})"
+    _DOCKETS_SEEN[docket_id] = out
+    return out
+
+
+def classify_one(doc_id, forms, meta, reg, by_sha1, today, dockets=None, learned=None,
+                 known=None):
     # Try the search result first. It costs nothing, it is already in hand, and for a document
     # that names the Rule on a docket we recognise it is sufficient. Only what it declines
     # is worth a request.
@@ -268,13 +307,19 @@ def classify_one(doc_id, forms, meta, reg, by_sha1, today, dockets=None, learned
     v = triage.classify_from_search(hit, reg, dockets, learned)
     doc = hit if v else fetch_document(doc_id, meta)
     if not v:
-        v = triage.classify(doc, reg, by_sha1, dockets, learned)
+        v = triage.classify(doc, reg, by_sha1, dockets, learned, known)
     if v["category"] == "unverified" and v.get("escalate"):
         m = triage.ask_model(doc, reg)
         if m and m["category"] != "unverified":
             v = {**v, **m, "rule": v["rule"] + "+MODEL"}
         elif m:
             v = {**v, "method": m["method"], "escalate": m["escalate"] or v["escalate"]}
+    # Anything still undecided gets the one fact that makes it decidable by a person: which
+    # case it is. Cached per docket, so eleven documents on four dockets cost four requests.
+    if v["category"] == "unverified":
+        who = docket_identity(doc.get("docket_id"))
+        if who:
+            v = {**v, "escalate": (v.get("escalate", "") + f" | filed in {who}").strip(" |")}
     row = {"document_id": doc_id, "first_seen": today, "forms": " ".join(sorted(forms)),
            "category": v["category"], "method": v.get("method", "RULE"), "rule": v["rule"],
            "mdl_no": v.get("mdl_no", ""), "docket_id": doc.get("docket_id") or "",
@@ -370,7 +415,7 @@ def backfill_complete():
     return bool(v.get("complete")) and v.get("rules_version") == triage.RULES_VERSION
 
 
-def backfill(today, reg, dockets=None, learned=None):
+def backfill(today, reg, dockets=None, learned=None, known=None):
     """Classify the existing corpus and score it against the triage a human did by reading.
 
     THE TEST IS ONE-SIDED AND THAT IS STATED ON PURPOSE. The hand triage exists only as
@@ -423,7 +468,7 @@ def backfill(today, reg, dockets=None, learned=None):
         forms = [f for f in now_forms if doc_id in now_forms[f]]
         try:
             ledger[doc_id] = classify_one(doc_id, forms, meta, reg, by_sha1, today,
-                                          dockets, learned)
+                                          dockets, learned, known)
         except QuotaExhausted as e:
             # Must be caught above the generic handler below. Recorded as a failure it would
             # be retried once per remaining document, each one raising the same thing, and the
@@ -550,6 +595,7 @@ def main(argv):
     today = datetime.date.today().isoformat()
     reg = triage.load_registry()
     dockets, learned = triage.load_dockets(), {}
+    known = triage.load_known_dockets()
 
     if "--backfill" in argv or "--backfill-resume" in argv:
         # The resume is scheduled daily until it finishes, because the corpus needs more
@@ -559,7 +605,7 @@ def main(argv):
             print(f"backfill already complete under rules {triage.RULES_VERSION}; "
                   f"no requests made", flush=True)
             return 0
-        passed, summary = backfill(today, reg, dockets, learned)
+        passed, summary = backfill(today, reg, dockets, learned, known)
         if passed == "NO_BASELINE":
             # Not a control failure. The control is fine; there is simply nothing to score
             # against, and mislabelling that would send someone to diagnose the query.
@@ -647,7 +693,7 @@ def main(argv):
         forms = [f for f in now_forms if doc_id in now_forms[f]]
         try:
             triaged[doc_id] = classify_one(doc_id, forms, meta, reg, by_sha1, today,
-                                           dockets, learned)
+                                           dockets, learned, known)
         except Exception as e:
             errors.append(f"document {doc_id}: {type(e).__name__}: {e}")
     if triaged:
