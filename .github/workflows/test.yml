@@ -1,0 +1,53 @@
+name: Tests
+
+# Runs on every push and pull request. The watch already gates itself: it will not commit
+# unless validate_treatment.py and build.py both pass, so a bad automated run publishes
+# nothing. Nothing gated a HUMAN commit. This repository is updated from a browser upload
+# page, so there is no local hook, no staging step and no opportunity to run anything before
+# the change is live on GitHub Pages.
+#
+# What that meant in practice: on 23 August 2026 an unquoted comma in a hand-edited value
+# split a row of rule-16-1-tracker.csv, and the corruption sat in the published dataset for
+# eight days. The guard that catches it now, assert_rectangular, did not exist then, and the
+# guards that did exist all passed. This workflow is the answer to the second half of that
+# problem, which is that nothing ran the guards at all on a human change.
+#
+# Everything here is standard library and offline. No token, no network, no secrets, so it
+# also runs on a fork's pull request.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Ordered cheapest and most fundamental first, so the log names the real problem rather
+      # than a consequence of it. A ragged CSV breaks every check downstream of it, and a
+      # reader who sees the coding validator fail first will go looking in the wrong file.
+      - name: The page and its guards
+        run: python3 build.py --check
+
+      - name: The coding files
+        run: python3 validate_treatment.py
+
+      - name: The watch, offline
+        run: python3 test_watch.py
+
+      # Copies the repository to a temporary directory, breaks one thing at a time, and
+      # requires build.py --check to exit non-zero AND to name what was broken. It does not
+      # touch the working tree.
+      - name: The guards, broken on purpose
+        run: python3 test_build.py
