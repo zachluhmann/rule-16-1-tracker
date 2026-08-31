@@ -1,0 +1,7 @@
+docket_id,resolves_to,case_name,docket_number,court,verified_on,note
+71773410,non_mdl,"Garcia v. Garcia, Jr.",25-01354,flsb,2026-08-31,"Bankruptcy adversary proceeding over a divorce property settlement, S.D. Fla. Not an MDL. Six docket entries matched F.R.C.P. 16.1 with no text layer, so the clerk's summary is the only evidence."
+72324494,3175,"Huyler v. Cal-Maine Foods, Inc.",3:26-cv-00157,wiwd,2026-08-31,Member case of MDL 3175. tiebreak-analysis.md cites this docket's ECF 23 as MDL 3175's coded initial management order. Files its own Rule 16.1 report.
+72324565,3175,"Emery v. Cal-Maine Foods, Inc.",3:26-cv-00158,wiwd,2026-08-31,Member case of MDL 3175. Files its own Rule 16.1 report under its own civil number.
+72349226,3175,"King Kullen Grocery Co., Inc. v. Cal-Maine Foods, Inc.",3:26-cv-00177,wiwd,2026-08-31,Member case of MDL 3175. Files its own Rule 16.1 report under its own civil number.
+72349285,3175,"Nineteenseventynine d/b/a The Breakfast Joynt v. Cal-Maine Foods, Inc.",3:26-cv-00178,wiwd,2026-08-31,Member case of MDL 3175. Files its own Rule 16.1 report under its own civil number.
+72458501,non_mdl,"Lott v. Health Gorilla, Inc.",1:26-cv-21639,flsd,2026-08-31,Ordinary federal-question case that names MDL 3193. Consistent with a JPML motion docket rather than a centralized MDL; the 3 August 2026 pending list tops out at 3187.

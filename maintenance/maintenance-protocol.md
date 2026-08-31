@@ -65,6 +65,40 @@ never ran, so the positive control was never evaluated. Guardrail 11 answers whe
 query still finds what it should, and that is a question about a query that was actually
 sent. Do not read a quota failure as a control failure.
 
+### Two things were called R4, and now only one is
+
+Until 31 August 2026 `triage.py` numbered its rules R0 to R8 and the codebook numbered its
+application rules R1 to R8. They are unrelated, they were discussed in the same week, and
+codebook R4 and triage R4 mean entirely different things. The triage rules are now **T0, T1,
+T2, T3, T3b, T4, T5, T5a, T5b, T6, T7, T8**, plus S1 for the search-result tier. The codebook
+keeps R.
+
+AUDIT.md entries dated before 31 August 2026 use the old triage names and are left as written,
+because rewriting a log to match a later rename is how a log stops being evidence. Read `R4`
+in an entry from August as `T4` if the entry is about triage, and as itself if it is about
+coding.
+
+### The curated docket registry, `maintenance/known-dockets.csv`
+
+The tracker maps each MDL to one docket, its master. Every filing on a member docket is
+invisible to that map, and member dockets turn out to be where a good deal of Rule 16.1
+practice happens: on 31 August 2026 every hit the `report_phrase` form returned was an
+individual Cal-Maine action in W.D. Wis. filing its own Rule 16.1 report under its own civil
+number, and rule T4 abandoned all eleven because nothing tied the docket to MDL 3175.
+
+Reading the docket NUMBER instead would have been worse than abandoning them. A member case
+carries an ordinary civil number and never prints the MDL's, so T7 would have filed eleven MDL
+documents under `non_mdl`, which is a category the published findings are computed over.
+
+So membership is decided by a person, once, and written down. Each row carries the docket id,
+what it resolves to (an MDL number, or `non_mdl`), the case name, the docket number, the court
+and the date it was checked. Rule **T5b** applies it, positioned after T3 and T3b so that a
+brief about a district's own local rule 16.1 is still noise no matter whose docket it is on,
+and before T4 so that a curated docket answers the question T4 gives up on.
+
+**Add a row only after reading the docket.** The registry is authoritative precisely because
+nothing in it was inferred, and one guessed row makes the whole file a guess.
+
 ### Triage: what the machine may decide, and on what terms
 
 Triage assigns a hit to one of five categories: post-effective MDL, pre-effective MDL,
@@ -120,8 +154,9 @@ nothing when there is not one.
 
 `test_watch.py` runs the whole thing offline, with no network and no token: the rule tier
 against nine documents whose category this repository already records, then the watch across
-six scenarios including an unvalidated classifier, an undecidable document, and a control
-failure. It asserts that the coding files are byte-identical afterwards.
+eighteen scenarios including an unvalidated classifier, an undecidable document, quota
+exhaustion mid-run, a frozen validation baseline, and a control failure. It asserts that the
+coding files are byte-identical afterwards. 103 checks.
 
 ## 2. Weekly, scheduled Cowork session, reading layer
 
@@ -158,11 +193,71 @@ ways, and the local-rule collision finding rests on which districts generate 16.
 `build.py` verifies the numbers in those sentences and cannot verify the word "exactly." The
 issue opened for any week that adds documents says so.
 
+## The guards, and the suite that breaks them on purpose
+
+`build.py --check` runs ten guards before it will write the page. They are listed here in the
+order it runs them, which is deliberate: a guard that reads a column is useless if a guard
+that checks the table's shape has not run first.
+
+| guard | the question it asks |
+|---|---|
+| `assert_rectangular` | does every data CSV row carry the header's field count |
+| `assert_subject_columns` | do the tracker's 20 derived columns equal the order layer's `reached` |
+| `assert_search_arithmetic` | do the search ledger's categories sum, and use the recorded vocabulary |
+| `assert_links` | is every docket URL a form CourtListener will actually serve |
+| `assert_citation_version` | do CITATION.cff, index.html, PUBLISH.md and README.md name one version |
+| `check_prose` | is the correct figure present in each hand-written finding |
+| `check_contradictions` | is a WRONG copy of any finding also present |
+| `check_readme` | does any count in the README disagree with the CSVs |
+| the stale block | does the embedded JSON match the CSVs, and the prerender match the page |
+
+Anything the page states as a figure should be **prerendered from the data rather than
+guarded**, where that is possible. A prerendered value cannot drift, and a hand edit to one
+fails the stale check. The version badge in the header was hand-written, said `v1.0-draft`
+for nineteen days while the citation box said v1.1, and was invisible to the guard written
+for exactly that drift because the guard matches the parenthesised citation form. It is
+prerendered now. Reach for a guard when a sentence has to be written by hand, which is true
+of the findings and is not true of a number.
+
+`validate_treatment.py` guards the coding files rather than the page: the logical constraints
+that hold by construction, the evidence requirements, the one cross-layer constraint between
+the report layer and the order layer, and the subject registry itself, which is read out of
+the codebook's own table so neither CSV can drift from the definitions coding was done under.
+
+**`test_build.py` is the suite that proves those guards fire.** It copies the repository to a
+temporary directory, breaks exactly one thing, runs `build.py --check` as a subprocess, and
+requires a non-zero exit AND output that names what was broken. Seventeen cases. Naming is
+scored because a guard that dies with the wrong message sends the next reader to the wrong
+file. Run it whenever a guard is added or changed, and add a case in the same commit: a guard
+with no case has only ever been observed passing, which is the state every guard in this
+repository was in until 31 August 2026.
+
+Writing it found two live defects on its first run. `rule-16-1-tracker.csv` had been ragged
+for eight days, one field wide on the MDL 3180 row, and every guard passed because they were
+all reading contents and none was reading shape. And `check_prose` could not see a wrong copy
+of a finding sitting beside a correct one, a defect `check_readme`'s docstring had described
+in writing seventeen days earlier while the page's own guard kept the shape the README's had
+abandoned. Both are in `AUDIT.md` under 31 August.
+
 ## What must never be skipped
 
 **`build.py` before every upload.** It refuses to build when a hand-written figure in the
 findings no longer matches the CSVs, and it has caught real drift repeatedly, including four
 times in one session.
+
+**`python3 test_build.py` after touching `build.py`.** A guard nobody has watched break is a
+guard nobody has tested.
+
+Both are now enforced. `.github/workflows/test.yml` runs `build.py --check`,
+`validate_treatment.py`, `test_watch.py` and `test_build.py` on every push and pull request,
+in that order, cheapest and most fundamental first so the log names the real problem rather
+than a consequence of it. It needs no token and no network, so it also runs on a fork.
+
+That workflow exists because of an asymmetry. The watch gates itself: `watch.py` runs
+`validate_treatment.py` and `build.py` and refuses to commit unless both pass, so a bad
+automated run publishes nothing. **Nothing gated a human commit.** This repository is updated
+through a browser upload page, so there is no local hook and no staging step between an edit
+and a live page. The eight-day ragged row went up that way.
 
 **`entry_date_filed_after`, never `filed_after`.** The second restricts by case filing date
 and once produced a published finding that was false and unfalsifiable by its own method.
