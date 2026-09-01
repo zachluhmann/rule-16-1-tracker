@@ -1,19 +1,19 @@
 document_id,first_seen,forms,category,method,rule,mdl_no,docket_id,rules_version,no_text_layer,escalate,evidence
-461253327,2026-08-21,abbrev abbrev_no_spaces,noise,RULE,R2,,71291087,2026-08-15b,,,no literal '16.1' in the document or the docket entry
-461413897,2026-08-21,abbrev abbrev_no_spaces,noise,RULE,R2,,70244989,2026-08-15b,,,no literal '16.1' in the document or the docket entry
-462266622,2026-08-21,abbrev abbrev_no_spaces,noise,RULE,R2,,69965532,2026-08-15b,,,no literal '16.1' in the document or the docket entry
-462306811,2026-08-21,abbrev abbrev_no_spaces,noise,RULE,R2,,70324816,2026-08-15b,,,no literal '16.1' in the document or the docket entry
-462459060,2026-08-21,abbrev abbrev_no_spaces,post_effective_mdl,RULE,R5a,3170,71221176,2026-08-15b,,,"filed on docket 71221176, the docket of MDL 3170"
-464110936,2026-08-21,spelled_out,pre_effective_mdl,RULE,R5,3084,67856158,2026-08-15b,,,Case 3:23-md-03084-CRB Document 4893 Filed 01/05/26 Page 1 of 16 1 2 [Submitting counsel below] 3 4 UN
-464112237,2026-08-21,spelled_out,pre_effective_mdl,RULE,R5,3084,71927080,2026-08-15b,,,"OF NORTHERN DISTRICT OF CALIFORNIA SAN FRANCISCO DIVISION 6 7 IN RE: UBER TECHNOLOGIES, INC., No. 3:23-md-03084-CRB 8 PASSENGER SEXUAL ASSAULT LITIGATION PLAINTIFF’S TRIAL BRIEF RE: DUTY 9"
-464150837,2026-08-21,abbrev abbrev_no_spaces frcp_periods report_phrase,post_effective_mdl,RULE,S1,3170,71221176,2026-08-15b,,,"search result alone: names the Rule, filed on docket 71221176 (MDL 3170). Not fetched."
-464378026,2026-08-21,spelled_out,post_effective_mdl,RULE,R5a,3162,72028506,2026-08-15b,,,"filed on docket 72028506, the docket of MDL 3162"
-465828995,2026-08-21,abbrev abbrev_no_spaces,noise,RULE,R2,,71491901,2026-08-15b,,,no literal '16.1' in the document or the docket entry
-466008549,2026-08-21,report_phrase,noise,RULE,R3,,71870485,2026-08-15b,,,"D, et al.,. Defendants. -----------------'/ PLAINTIFF DONNAHUE GEORGE'S OPPOSITION TO , DEFEN:DANTS DTCC AND FINRA'S MOTION TO STAY THE REQUIREMENTS OF LOCAL RULE 16.1 Plaintiff Donnahue George (""Plaintiff'), pro se, respectfully files this Opposition to the Motion of Defendants The Depository Trust & Clearin"
-466579138,2026-08-21,abbrev abbrev_no_spaces,noise,RULE,R2,,71511670,2026-08-15b,,,no literal '16.1' in the document or the docket entry
-467474059,2026-08-21,abbrev abbrev_no_spaces,noise,RULE,R2,,71787813,2026-08-15b,,,no literal '16.1' in the document or the docket entry
-467594539,2026-08-21,frcp_periods,unverified,RULE,R8,,71773410,2026-08-15b,YES,names the federal rule but no docket number of any kind,"Notice of Filing Scheduling Report Pursuant to F.R.C.P. 16.1, Filed by Plaintiff Elizabeth Garcia. (Corona, Ricardo) Modified on 2/5/2026 to correct text of all capitalization lettering (Covington, Katrinka)"
-468092821,2026-08-21,frcp_periods,unverified,RULE,R8,,71773410,2026-08-15b,YES,names the federal rule but no docket number of any kind,"Motion to Proposals Pursuant to F.R.C.P. 16.1(2)(D) Filed by Defendant Roberto Garcia Jr. (Soto, Bianca) (Entered: 02/09/2026)"
+461253327,2026-09-01,abbrev abbrev_no_spaces,noise,RULE,T2,,71291087,2026-08-31,,,no literal '16.1' in the document or the docket entry
+461413897,2026-09-01,abbrev abbrev_no_spaces,noise,RULE,T2,,70244989,2026-08-31,,,no literal '16.1' in the document or the docket entry
+462266622,2026-09-01,abbrev abbrev_no_spaces,noise,RULE,T2,,69965532,2026-08-31,,,no literal '16.1' in the document or the docket entry
+462306811,2026-09-01,abbrev abbrev_no_spaces,noise,RULE,T2,,70324816,2026-08-31,,,no literal '16.1' in the document or the docket entry
+462459060,2026-09-01,abbrev abbrev_no_spaces,post_effective_mdl,RULE,T5a,3170,71221176,2026-08-31,,,"filed on docket 71221176, the docket of MDL 3170"
+464110936,2026-09-01,spelled_out,pre_effective_mdl,RULE,T5,3084,67856158,2026-08-31,,,Case 3:23-md-03084-CRB Document 4893 Filed 01/05/26 Page 1 of 16 1 2 [Submitting counsel below] 3 4 UN
+464112237,2026-09-01,spelled_out,pre_effective_mdl,RULE,T5,3084,71927080,2026-08-31,,,"OF NORTHERN DISTRICT OF CALIFORNIA SAN FRANCISCO DIVISION 6 7 IN RE: UBER TECHNOLOGIES, INC., No. 3:23-md-03084-CRB 8 PASSENGER SEXUAL ASSAULT LITIGATION PLAINTIFF’S TRIAL BRIEF RE: DUTY 9"
+464150837,2026-09-01,abbrev abbrev_no_spaces frcp_periods report_phrase,post_effective_mdl,RULE,S1,3170,71221176,2026-08-31,,,"search result alone: names the Rule, filed on docket 71221176 (MDL 3170). Not fetched."
+464378026,2026-09-01,spelled_out,post_effective_mdl,RULE,T5a,3162,72028506,2026-08-31,,,"filed on docket 72028506, the docket of MDL 3162"
+465828995,2026-09-01,abbrev abbrev_no_spaces,noise,RULE,T2,,71491901,2026-08-31,,,no literal '16.1' in the document or the docket entry
+466008549,2026-09-01,report_phrase,noise,RULE,T3,,71870485,2026-08-31,,,"D, et al.,. Defendants. -----------------'/ PLAINTIFF DONNAHUE GEORGE'S OPPOSITION TO , DEFEN:DANTS DTCC AND FINRA'S MOTION TO STAY THE REQUIREMENTS OF LOCAL RULE 16.1 Plaintiff Donnahue George (""Plaintiff'), pro se, respectfully files this Opposition to the Motion of Defendants The Depository Trust & Clearin"
+466579138,2026-09-01,abbrev abbrev_no_spaces,noise,RULE,T2,,71511670,2026-08-31,,,no literal '16.1' in the document or the docket entry
+467474059,2026-09-01,abbrev abbrev_no_spaces,noise,RULE,T2,,71787813,2026-08-31,,,no literal '16.1' in the document or the docket entry
+467594539,2026-09-01,frcp_periods,non_mdl,RULE,T5b,,71773410,2026-08-31,YES,,"filed on docket 71773410, recorded by hand as non_mdl"
+468092821,2026-09-01,frcp_periods,non_mdl,RULE,T5b,,71773410,2026-08-31,YES,,"filed on docket 71773410, recorded by hand as non_mdl"
 468190135,2026-08-21,frcp_periods,unverified,RULE,R8,,71773410,2026-08-15b,YES,names the federal rule but no docket number of any kind,Notice of Hearing (Re: 31 Motion to Proposals Pursuant to F.R.C.P. 16.1(2)(D) Filed by Defendant Roberto Garcia Jr. filed by Defendant Roberto Garcia) Hearing scheduled for 02/18/2026 at 09:30 AM by Video Conference. (
 468308847,2026-08-21,frcp_periods,unverified,RULE,R8,,71773410,2026-08-15b,YES,names the federal rule but no docket number of any kind,Response to (31 Motion to Proposals Pursuant to F.R.C.P. 16.1(2)(D) filed by Defendant Roberto Garcia) Filed by Plaintiff Elizabeth Garcia (Attachments: # 1 Exhibit # 2 Exhibit # 3 Exhibit # 4 Exhibit # 5 Exh
 468438384,2026-08-21,frcp_acronym,non_mdl,RULE,R7,,71985711,2026-08-15b,,,"Case 2:25-cv-02393-MMD-MDC Document 12 Filed 02/09/26 Page 1 of 4 1 SAO Justin G. Randall, Esq. 2 Nevada Bar No. 12476"

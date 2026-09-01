@@ -7,7 +7,7 @@
   },
   {
    "form": "frcp_periods",
-   "n": 6,
+   "n": 4,
    "of": 8
   },
   {
@@ -16,25 +16,76 @@
    "of": 13
   }
  ],
- "abandoned_total": 18,
- "arrived_since_baseline": 26,
+ "abandoned_total": 16,
+ "arrived_since_baseline": 43,
  "baseline_as_of": "2026-08-23",
- "complete": true,
- "date": "2026-08-23",
- "documents": 122,
- "expected_documents": 122,
+ "complete": false,
+ "date": "2026-09-01",
+ "documents": 139,
+ "expected_documents": 139,
  "failures": {},
  "gone_since_baseline": 0,
- "missing": [],
+ "missing": [
+  468190135,
+  468308847,
+  468438384,
+  468494370,
+  468652551,
+  468666175,
+  468956214,
+  469698931,
+  470618735,
+  471152930,
+  471984950,
+  472234065,
+  472746521,
+  472850310,
+  472885879,
+  473273019,
+  473684030,
+  473684039,
+  473684046,
+  473684056,
+  473684065,
+  473684070,
+  473684076,
+  473684083,
+  473684090,
+  473684094,
+  473684100,
+  473684106,
+  473684113,
+  473684117,
+  474383793,
+  474908391,
+  475500749,
+  476107815,
+  476134119,
+  476134136,
+  476285507,
+  476945490,
+  476945536,
+  477163526,
+  477258871,
+  477258873,
+  477258878,
+  477609302,
+  478194520,
+  478360473,
+  478360480,
+  478360497,
+  478360500,
+  478360503
+ ],
  "overruns": [
   "abbrev/noise: classifier 26, hand triage 25",
   "spelled_out/noise: classifier 2, hand triage 1"
  ],
  "passed": false,
- "paused_seconds": null,
+ "paused_seconds": 38866,
  "per_form": {
   "abbrev": {
-   "arrived_since": 3,
+   "arrived_since": 6,
    "computed": {
     "noise": 26,
     "non_mdl": 5,
@@ -75,10 +126,10 @@
    "arrived_since": 0,
    "computed": {
     "noise": 1,
-    "non_mdl": 0,
+    "non_mdl": 2,
     "post_effective_mdl": 1,
     "pre_effective_mdl": 0,
-    "unverified": 6
+    "unverified": 4
    },
    "gone_since": 0,
    "recorded": {
@@ -110,7 +161,7 @@
    "scope": 13
   },
   "spelled_out": {
-   "arrived_since": 18,
+   "arrived_since": 32,
    "computed": {
     "noise": 2,
     "non_mdl": 0,
@@ -129,7 +180,7 @@
    "scope": 36
   }
  },
- "rules_version": "2026-08-15b",
+ "rules_version": "2026-08-31",
  "scope_form_hits": 104,
- "summary": "86 of 104 hand-triaged form-hits decided by rule or verified quote, 18 abandoned as unverified that a person had decided; 2 category overruns; 26 form-hits arrived after the baseline of 2026-08-23 and are outside the comparison"
+ "summary": "88 of 104 hand-triaged form-hits decided by rule or verified quote, 16 abandoned as unverified that a person had decided; 2 category overruns; 43 form-hits arrived after the baseline of 2026-08-23 and are outside the comparison; 124 of 139 documents were never read, so the comparison is not valid. The run stopped because the account's daily allowance ran out, not because anything is wrong with it; a slot frees in 38866s (10.8 hours) and the next run picks up where this one left off"
 }
