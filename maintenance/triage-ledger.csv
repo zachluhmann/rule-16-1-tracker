@@ -14,20 +14,20 @@ document_id,first_seen,forms,category,method,rule,mdl_no,docket_id,rules_version
 467474059,2026-09-01,abbrev abbrev_no_spaces,noise,RULE,T2,,71787813,2026-08-31,,,no literal '16.1' in the document or the docket entry
 467594539,2026-09-01,frcp_periods,non_mdl,RULE,T5b,,71773410,2026-08-31,YES,,"filed on docket 71773410, recorded by hand as non_mdl"
 468092821,2026-09-01,frcp_periods,non_mdl,RULE,T5b,,71773410,2026-08-31,YES,,"filed on docket 71773410, recorded by hand as non_mdl"
-468190135,2026-08-21,frcp_periods,unverified,RULE,R8,,71773410,2026-08-15b,YES,names the federal rule but no docket number of any kind,Notice of Hearing (Re: 31 Motion to Proposals Pursuant to F.R.C.P. 16.1(2)(D) Filed by Defendant Roberto Garcia Jr. filed by Defendant Roberto Garcia) Hearing scheduled for 02/18/2026 at 09:30 AM by Video Conference. (
-468308847,2026-08-21,frcp_periods,unverified,RULE,R8,,71773410,2026-08-15b,YES,names the federal rule but no docket number of any kind,Response to (31 Motion to Proposals Pursuant to F.R.C.P. 16.1(2)(D) filed by Defendant Roberto Garcia) Filed by Plaintiff Elizabeth Garcia (Attachments: # 1 Exhibit # 2 Exhibit # 3 Exhibit # 4 Exhibit # 5 Exh
-468438384,2026-08-21,frcp_acronym,non_mdl,RULE,R7,,71985711,2026-08-15b,,,"Case 2:25-cv-02393-MMD-MDC Document 12 Filed 02/09/26 Page 1 of 4 1 SAO Justin G. Randall, Esq. 2 Nevada Bar No. 12476"
-468494370,2026-08-21,frcp_acronym,non_mdl,RULE,R7,,71935884,2026-08-15b,,,"Case 2:25-cv-02300-GMN-BNW Document 11 Filed 02/10/26 Page 1 of 3 1 SAO Justin G. Randall, Esq. 2 Nevada Bar No. 12476 E"
-468652551,2026-08-21,spelled_out,post_effective_mdl,RULE,R5a,3171,72240870,2026-08-15b,,,"filed on docket 72240870, the docket of MDL 3171"
-468666175,2026-08-22,frcp_periods,unverified,RULE,R8,,71773410,2026-08-15b,YES,names the federal rule but no docket number of any kind,BNC Certificate of Mailing - Hearing (Re: 32 Notice of Hearing (Re: 31 Motion to Proposals Pursuant to F.R.C.P. 16.1(2)(D) Filed by Defendant Roberto Garcia Jr. filed by Defendant Roberto Garcia) Hearing scheduled for 02/18/2026 at 09:30 AM by Video Conference.)
-468956214,2026-08-22,abbrev abbrev_no_spaces,non_mdl,RULE,R7,,72266500,2026-08-15b,,,Case 2:26-cv-01394-EP-JBC Document 2 Filed 02/17/26 Page 1 of 5 PageID: 72 UNITED STATES DISTRICT COURT
-469698931,2026-08-22,frcp_periods,unverified,RULE,R8,,71773410,2026-08-15b,YES,names the federal rule but no docket number of any kind,"Order Denying Defendant Roberto Garcia, Jr.s Motion to Proposals Pursuant to F.R.C.P. 16.1(2)(D) as Moot (Re: # 31) (Covington, Katrinka) (Entered: 02/23/2026)"
-470618735,2026-08-22,frcp_acronym,non_mdl,RULE,R7,,71985711,2026-08-15b,,,"Case 2:25-cv-02393-MMD-MDC Document 15 Filed 03/03/26 Page 1 of 3 1 Justin G. Randall, Esq. 2 Nevada Bar No. 12476 ER INJURY ATTORNEYS"
-471152930,2026-08-22,abbrev abbrev_no_spaces,post_effective_mdl,RULE,R5a,3162,72028506,2026-08-15b,,,"filed on docket 72028506, the docket of MDL 3162"
-471984950,2026-08-22,spelled_out,post_effective_mdl,RULE,R5a,3171,72240870,2026-08-15b,,,"filed on docket 72240870, the docket of MDL 3171"
-472234065,2026-08-22,abbrev abbrev_no_spaces,noise,RULE,R2,,69855191,2026-08-15b,,,no literal '16.1' in the document or the docket entry
-472746521,2026-08-22,abbrev abbrev_no_spaces,noise,RULE,R2,,72090819,2026-08-15b,,,no literal '16.1' in the document or the docket entry
-472850310,2026-08-22,spelled_out,pre_effective_mdl,RULE,R5,3108,68837976,2026-08-15b,,,CASE 0:24-md-03108-DWF-DJF Doc. 540 Filed 03/19/26 Page 1 of 1 UNITED STATES DISTRICT COURT
+468190135,2026-09-02,frcp_periods,non_mdl,RULE,T5b,,71773410,2026-08-31,YES,,"filed on docket 71773410, recorded by hand as non_mdl"
+468308847,2026-09-02,frcp_periods,non_mdl,RULE,T5b,,71773410,2026-08-31,YES,,"filed on docket 71773410, recorded by hand as non_mdl"
+468438384,2026-09-02,frcp_acronym,non_mdl,RULE,T7,,71985711,2026-08-31,,,"Case 2:25-cv-02393-MMD-MDC Document 12 Filed 02/09/26 Page 1 of 4 1 SAO Justin G. Randall, Esq. 2 Nevada Bar No. 12476"
+468494370,2026-09-02,frcp_acronym,non_mdl,RULE,T7,,71935884,2026-08-31,,,"Case 2:25-cv-02300-GMN-BNW Document 11 Filed 02/10/26 Page 1 of 3 1 SAO Justin G. Randall, Esq. 2 Nevada Bar No. 12476 E"
+468652551,2026-09-02,spelled_out,post_effective_mdl,RULE,T5a,3171,72240870,2026-08-31,,,"filed on docket 72240870, the docket of MDL 3171"
+468666175,2026-09-02,frcp_periods,non_mdl,RULE,T5b,,71773410,2026-08-31,YES,,"filed on docket 71773410, recorded by hand as non_mdl"
+468956214,2026-09-02,abbrev abbrev_no_spaces,non_mdl,RULE,T7,,72266500,2026-08-31,,,Case 2:26-cv-01394-EP-JBC Document 2 Filed 02/17/26 Page 1 of 5 PageID: 72 UNITED STATES DISTRICT COURT
+469698931,2026-09-02,frcp_periods,non_mdl,RULE,T5b,,71773410,2026-08-31,YES,,"filed on docket 71773410, recorded by hand as non_mdl"
+470618735,2026-09-02,frcp_acronym,non_mdl,RULE,T7,,71985711,2026-08-31,,,"Case 2:25-cv-02393-MMD-MDC Document 15 Filed 03/03/26 Page 1 of 3 1 Justin G. Randall, Esq. 2 Nevada Bar No. 12476 ER INJURY ATTORNEYS"
+471152930,2026-09-02,abbrev abbrev_no_spaces,post_effective_mdl,RULE,T5a,3162,72028506,2026-08-31,,,"filed on docket 72028506, the docket of MDL 3162"
+471984950,2026-09-02,spelled_out,post_effective_mdl,RULE,T5a,3171,72240870,2026-08-31,,,"filed on docket 72240870, the docket of MDL 3171"
+472234065,2026-09-02,abbrev abbrev_no_spaces,noise,RULE,T2,,69855191,2026-08-31,,,no literal '16.1' in the document or the docket entry
+472746521,2026-09-02,abbrev abbrev_no_spaces,noise,RULE,T2,,72090819,2026-08-31,,,no literal '16.1' in the document or the docket entry
+472850310,2026-09-02,spelled_out,pre_effective_mdl,RULE,T5,3108,68837976,2026-08-31,,,CASE 0:24-md-03108-DWF-DJF Doc. 540 Filed 03/19/26 Page 1 of 1 UNITED STATES DISTRICT COURT
 472885879,2026-08-22,abbrev abbrev_no_spaces,noise,RULE,R2,,72067753,2026-08-15b,,,no literal '16.1' in the document or the docket entry
 473273019,2026-08-22,abbrev abbrev_no_spaces,noise,RULE,R2,,72070047,2026-08-15b,,,no literal '16.1' in the document or the docket entry
 473684030,2026-08-22,spelled_out,post_effective_mdl,RULE,R5,3175,72349285,2026-08-15b,,,"ORDER Member cases: 25-cv-946-jdp, 25-cv-1016-jdp, 26-cv-102-jdp, 26-md-3175-jdp 26-cv-138-jdp, 26-cv-139-jdp, 26-cv-140-jdp, 26-cv-155-jdp, 26-cv-156-jdp, 26-cv-157-jdp, 26-cv-158-jdp,"
