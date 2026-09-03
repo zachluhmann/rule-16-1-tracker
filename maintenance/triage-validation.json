@@ -12,29 +12,15 @@
   }
  ],
  "abandoned_total": 12,
- "arrived_since_baseline": 43,
+ "arrived_since_baseline": 44,
  "baseline_as_of": "2026-08-23",
  "complete": false,
- "date": "2026-09-02",
+ "date": "2026-09-03",
  "documents": 139,
- "expected_documents": 139,
+ "expected_documents": 140,
  "failures": {},
  "gone_since_baseline": 0,
  "missing": [
-  472885879,
-  473273019,
-  473684030,
-  473684039,
-  473684046,
-  473684056,
-  473684065,
-  473684070,
-  473684076,
-  473684083,
-  473684090,
-  473684094,
-  473684100,
-  473684106,
   473684113,
   473684117,
   474383793,
@@ -70,14 +56,28 @@
   479971934,
   480083510,
   480234094,
-  480535618
+  480535618,
+  480550413,
+  480592868,
+  480741139,
+  480764974,
+  480764975,
+  480764976,
+  480764977,
+  480764979,
+  480764985,
+  480764989,
+  480764992,
+  481453140,
+  482384663,
+  482384664
  ],
  "overruns": [
   "abbrev/noise: classifier 26, hand triage 25",
   "spelled_out/noise: classifier 2, hand triage 1"
  ],
  "passed": false,
- "paused_seconds": 62750,
+ "paused_seconds": 62783,
  "per_form": {
   "abbrev": {
    "arrived_since": 6,
@@ -156,7 +156,7 @@
    "scope": 13
   },
   "spelled_out": {
-   "arrived_since": 32,
+   "arrived_since": 33,
    "computed": {
     "noise": 2,
     "non_mdl": 0,
@@ -177,5 +177,5 @@
  },
  "rules_version": "2026-08-31",
  "scope_form_hits": 104,
- "summary": "92 of 104 hand-triaged form-hits decided by rule or verified quote, 12 abandoned as unverified that a person had decided; 2 category overruns; 43 form-hits arrived after the baseline of 2026-08-23 and are outside the comparison; 110 of 139 documents were never read, so the comparison is not valid. The run stopped because the account's daily allowance ran out, not because anything is wrong with it; a slot frees in 62750s (17.4 hours) and the next run picks up where this one left off"
+ "summary": "92 of 104 hand-triaged form-hits decided by rule or verified quote, 12 abandoned as unverified that a person had decided; 2 category overruns; 44 form-hits arrived after the baseline of 2026-08-23 and are outside the comparison; 97 of 140 documents were never read, so the comparison is not valid. The run stopped because the account's daily allowance ran out, not because anything is wrong with it; a slot frees in 62783s (17.4 hours) and the next run picks up where this one left off"
 }

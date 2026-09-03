@@ -28,20 +28,20 @@ document_id,first_seen,forms,category,method,rule,mdl_no,docket_id,rules_version
 472234065,2026-09-02,abbrev abbrev_no_spaces,noise,RULE,T2,,69855191,2026-08-31,,,no literal '16.1' in the document or the docket entry
 472746521,2026-09-02,abbrev abbrev_no_spaces,noise,RULE,T2,,72090819,2026-08-31,,,no literal '16.1' in the document or the docket entry
 472850310,2026-09-02,spelled_out,pre_effective_mdl,RULE,T5,3108,68837976,2026-08-31,,,CASE 0:24-md-03108-DWF-DJF Doc. 540 Filed 03/19/26 Page 1 of 1 UNITED STATES DISTRICT COURT
-472885879,2026-08-22,abbrev abbrev_no_spaces,noise,RULE,R2,,72067753,2026-08-15b,,,no literal '16.1' in the document or the docket entry
-473273019,2026-08-22,abbrev abbrev_no_spaces,noise,RULE,R2,,72070047,2026-08-15b,,,no literal '16.1' in the document or the docket entry
-473684030,2026-08-22,spelled_out,post_effective_mdl,RULE,R5,3175,72349285,2026-08-15b,,,"ORDER Member cases: 25-cv-946-jdp, 25-cv-1016-jdp, 26-cv-102-jdp, 26-md-3175-jdp 26-cv-138-jdp, 26-cv-139-jdp, 26-cv-140-jdp, 26-cv-155-jdp, 26-cv-156-jdp, 26-cv-157-jdp, 26-cv-158-jdp,"
-473684039,2026-08-22,spelled_out,post_effective_mdl,RULE,R1,3175,72349226,2026-08-15b,,,identical to document 473684030 (sha1 1a147012ed8a)
-473684046,2026-08-22,spelled_out,post_effective_mdl,RULE,R1,3175,72335264,2026-08-15b,,,identical to document 473684039 (sha1 1a147012ed8a)
-473684056,2026-08-22,spelled_out,post_effective_mdl,RULE,R1,3175,71918174,2026-08-15b,,,identical to document 473684046 (sha1 1a147012ed8a)
-473684065,2026-08-22,spelled_out,post_effective_mdl,RULE,R1,3175,72324565,2026-08-15b,,,identical to document 473684056 (sha1 1a147012ed8a)
-473684070,2026-08-22,spelled_out,post_effective_mdl,RULE,R1,3175,72324494,2026-08-15b,,,identical to document 473684065 (sha1 1a147012ed8a)
-473684076,2026-08-22,spelled_out,post_effective_mdl,RULE,R1,3175,72324353,2026-08-15b,,,identical to document 473684070 (sha1 1a147012ed8a)
-473684083,2026-08-22,spelled_out,post_effective_mdl,RULE,R1,3175,72324278,2026-08-15b,,,identical to document 473684076 (sha1 1a147012ed8a)
-473684090,2026-08-22,spelled_out,post_effective_mdl,RULE,R1,3175,72025969,2026-08-15b,,,identical to document 473684083 (sha1 1a147012ed8a)
-473684094,2026-08-22,spelled_out,post_effective_mdl,RULE,R1,3175,72309854,2026-08-15b,,,identical to document 473684090 (sha1 1a147012ed8a)
-473684100,2026-08-22,spelled_out,post_effective_mdl,RULE,R1,3175,72280418,2026-08-15b,,,identical to document 473684094 (sha1 1a147012ed8a)
-473684106,2026-08-22,spelled_out,post_effective_mdl,RULE,R1,3175,72309790,2026-08-15b,,,identical to document 473684100 (sha1 1a147012ed8a)
+472885879,2026-09-03,abbrev abbrev_no_spaces,noise,RULE,T2,,72067753,2026-08-31,,,no literal '16.1' in the document or the docket entry
+473273019,2026-09-03,abbrev abbrev_no_spaces,noise,RULE,T2,,72070047,2026-08-31,,,no literal '16.1' in the document or the docket entry
+473684030,2026-09-03,spelled_out,post_effective_mdl,RULE,T5b,3175,72349285,2026-08-31,,,"filed on docket 72349285, recorded by hand as a case in MDL 3175"
+473684039,2026-09-03,spelled_out,post_effective_mdl,RULE,T1,3175,72349226,2026-08-31,,,identical to document 473684030 (sha1 1a147012ed8a)
+473684046,2026-09-03,spelled_out,post_effective_mdl,RULE,T1,3175,72335264,2026-08-31,,,identical to document 473684039 (sha1 1a147012ed8a)
+473684056,2026-09-03,spelled_out,post_effective_mdl,RULE,T1,3175,71918174,2026-08-31,,,identical to document 473684046 (sha1 1a147012ed8a)
+473684065,2026-09-03,spelled_out,post_effective_mdl,RULE,T1,3175,72324565,2026-08-31,,,identical to document 473684056 (sha1 1a147012ed8a)
+473684070,2026-09-03,spelled_out,post_effective_mdl,RULE,T1,3175,72324494,2026-08-31,,,identical to document 473684065 (sha1 1a147012ed8a)
+473684076,2026-09-03,spelled_out,post_effective_mdl,RULE,T1,3175,72324353,2026-08-31,,,identical to document 473684070 (sha1 1a147012ed8a)
+473684083,2026-09-03,spelled_out,post_effective_mdl,RULE,T1,3175,72324278,2026-08-31,,,identical to document 473684076 (sha1 1a147012ed8a)
+473684090,2026-09-03,spelled_out,post_effective_mdl,RULE,T1,3175,72025969,2026-08-31,,,identical to document 473684083 (sha1 1a147012ed8a)
+473684094,2026-09-03,spelled_out,post_effective_mdl,RULE,T1,3175,72309854,2026-08-31,,,identical to document 473684090 (sha1 1a147012ed8a)
+473684100,2026-09-03,spelled_out,post_effective_mdl,RULE,T1,3175,72280418,2026-08-31,,,identical to document 473684094 (sha1 1a147012ed8a)
+473684106,2026-09-03,spelled_out,post_effective_mdl,RULE,T1,3175,72309790,2026-08-31,,,identical to document 473684100 (sha1 1a147012ed8a)
 473684113,2026-08-22,spelled_out,post_effective_mdl,RULE,R1,3175,72309413,2026-08-15b,,,identical to document 473684106 (sha1 1a147012ed8a)
 473684117,2026-08-22,spelled_out,post_effective_mdl,RULE,R1,3175,72257890,2026-08-15b,,,identical to document 473684113 (sha1 1a147012ed8a)
 474383793,2026-08-22,abbrev abbrev_no_spaces,noise,RULE,R2,,72073787,2026-08-15b,,,no literal '16.1' in the document or the docket entry
