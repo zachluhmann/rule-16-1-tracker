@@ -112,6 +112,7 @@ document_id,first_seen,forms,category,method,rule,mdl_no,docket_id,rules_version
 485442538,2026-09-04,abbrev abbrev_no_spaces,noise,RULE,T2,,69799908,2026-08-31,,,no literal '16.1' in the document or the docket entry
 486327401,2026-09-05,spelled_out,post_effective_mdl,RULE,T5a,3187,73492845,2026-08-31,,,"filed on docket 73492845, the docket of MDL 3187"
 487105415,2026-09-05,abbrev abbrev_no_spaces,noise,RULE,T2,,73381922,2026-08-31,,,no literal '16.1' in the document or the docket entry
+487598175,2026-09-21,spelled_out,noise,RULE,T2,,71843630,2026-08-31,,,no literal '16.1' in the document or the docket entry
 487636204,2026-09-05,abbrev abbrev_no_spaces,noise,RULE,T2,,73636954,2026-08-31,,,no literal '16.1' in the document or the docket entry
 487870878,2026-09-05,abbrev abbrev_no_spaces,noise,RULE,T2,,73234234,2026-08-31,,,no literal '16.1' in the document or the docket entry
 488079236,2026-09-05,abbrev abbrev_no_spaces,non_mdl,RULE,T7,,73361409,2026-08-31,,,Case 2:26-cv-05694-JKS-JBC Document 13 Filed 07/30/26 Page 1 of 5 PageID: 197 UNITED STATES DISTRICT COURT
