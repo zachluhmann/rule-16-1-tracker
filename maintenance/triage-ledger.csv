@@ -146,6 +146,7 @@ document_id,first_seen,forms,category,method,rule,mdl_no,docket_id,rules_version
 492528265,2026-09-05,abbrev abbrev_no_spaces,unverified,RULE,T6,,74723101,2026-08-31,,"MDL 2004 is in neither the tracker nor maintenance/pre-effective-mdls.csv. Either the universe is missing an MDL or the number is a JPML motion docket. | filed in In re: OptumRx, Inc., 26-3780, ca6","names MDL [2004, 2804], none in the registry"
 493191836,2026-10-12,spelled_out,post_effective_mdl,RULE,T5a,3180,73443394,2026-08-31,,,"filed on docket 73443394, the docket of MDL 3180"
 493475675,2026-10-12,spelled_out,pre_effective_mdl,RULE,T5,3108,68837976,2026-08-31,,,CASE 0:24-md-03108-DWF-DJF Doc. 727 Filed 09/14/26 Page 1 of 2 UNITED STATES DISTRICT COURT DIST
+494101113,2026-10-19,abbrev abbrev_no_spaces,noise,RULE,T2,,70726295,2026-08-31,,,no literal '16.1' in the document or the docket entry
 495112311,2026-10-12,spelled_out,noise,RULE,T2,,68184377,2026-08-31,,,no literal '16.1' in the document or the docket entry
 495301957,2026-10-12,spelled_out,post_effective_mdl,RULE,T5a,3180,73443394,2026-08-31,,,"filed on docket 73443394, the docket of MDL 3180"
 495347969,2026-10-12,abbrev abbrev_no_spaces,noise,RULE,T2,,69415268,2026-08-31,,,no literal '16.1' in the document or the docket entry
@@ -199,3 +200,6 @@ document_id,first_seen,forms,category,method,rule,mdl_no,docket_id,rules_version
 496746048,2026-10-12,abbrev abbrev_no_spaces,post_effective_mdl,RULE,T5,3176,74701293,2026-08-31,,,"EASTERN DISTRICT OF TEXAS SHERMAN DIVISION In Re: Rare Breed Triggers Panel 4:26-md-03176 Litigation MDL 3176 ABC IP, LLC, and RARE BREED TRIGGERS, INC., Plaintiffs,"
 496746050,2026-10-12,abbrev abbrev_no_spaces,post_effective_mdl,RULE,T5a,3176,74701245,2026-08-31,,,"filed on docket 74701245, the docket of MDL 3176"
 496879080,2026-10-12,abbrev abbrev_no_spaces,noise,RULE,T2,,69782571,2026-08-31,,,no literal '16.1' in the document or the docket entry
+497114703,2026-10-19,abbrev abbrev_no_spaces,post_effective_mdl,RULE,T5,3176,73184099,2026-08-31,,,"FOR THE EASTERN DISTRICT OF TEXAS SHERMAN DIVISION IN RE: RARE BREED TRIGGERS CASE NO. 4:26-md-03176-ALM PATENT LITIGATION RARE BREED TRIGGERS, INC. et al., (CASE NO. 4:26-cv-00370-ALM)"
+497626209,2026-10-19,abbrev abbrev_no_spaces,noise,RULE,T2,,69338895,2026-08-31,,,no literal '16.1' in the document or the docket entry
+497707875,2026-10-19,abbrev abbrev_no_spaces,noise,RULE,T2,,74868877,2026-08-31,,,no literal '16.1' in the document or the docket entry
