@@ -147,9 +147,11 @@ document_id,first_seen,forms,category,method,rule,mdl_no,docket_id,rules_version
 493191836,2026-10-12,spelled_out,post_effective_mdl,RULE,T5a,3180,73443394,2026-08-31,,,"filed on docket 73443394, the docket of MDL 3180"
 493475675,2026-10-12,spelled_out,pre_effective_mdl,RULE,T5,3108,68837976,2026-08-31,,,CASE 0:24-md-03108-DWF-DJF Doc. 727 Filed 09/14/26 Page 1 of 2 UNITED STATES DISTRICT COURT DIST
 494101113,2026-10-19,abbrev abbrev_no_spaces,noise,RULE,T2,,70726295,2026-08-31,,,no literal '16.1' in the document or the docket entry
+494633299,2026-10-26,abbrev_no_spaces,noise,RULE,T2,,68006832,2026-08-31,,,no literal '16.1' in the document or the docket entry
 495112311,2026-10-12,spelled_out,noise,RULE,T2,,68184377,2026-08-31,,,no literal '16.1' in the document or the docket entry
 495301957,2026-10-12,spelled_out,post_effective_mdl,RULE,T5a,3180,73443394,2026-08-31,,,"filed on docket 73443394, the docket of MDL 3180"
 495347969,2026-10-12,abbrev abbrev_no_spaces,noise,RULE,T2,,69415268,2026-08-31,,,no literal '16.1' in the document or the docket entry
+495519095,2026-10-26,abbrev_no_spaces,pre_effective_mdl,RULE,T5,3108,68837976,2026-08-31,,,CASE 0:24-md-03108-DWF-DJF Doc. 726 Filed 09/11/26 Page 1 of 23 UNITED STATES DISTRICT COURT FOR
 495941441,2026-10-12,spelled_out,post_effective_mdl,RULE,T5,3176,72134477,2026-08-31,,,"T FOR THE EASTERN DISTRICT OF TEXAS SHERMAN DIVISION In Re: Rare Breed Triggers Patent 4:26-md-03176-ALM Litigation MDL 3176 ATRIUS DEVELOPMENT GROUP CORPORATION, INC.,"
 495941442,2026-10-12,spelled_out,post_effective_mdl,RULE,T1,3176,72140066,2026-08-31,,,identical to document 495941441 (sha1 db27554d4a89)
 495941443,2026-10-12,spelled_out,post_effective_mdl,RULE,T1,3176,72179036,2026-08-31,,,identical to document 495941442 (sha1 db27554d4a89)
@@ -201,5 +203,9 @@ document_id,first_seen,forms,category,method,rule,mdl_no,docket_id,rules_version
 496746050,2026-10-12,abbrev abbrev_no_spaces,post_effective_mdl,RULE,T5a,3176,74701245,2026-08-31,,,"filed on docket 74701245, the docket of MDL 3176"
 496879080,2026-10-12,abbrev abbrev_no_spaces,noise,RULE,T2,,69782571,2026-08-31,,,no literal '16.1' in the document or the docket entry
 497114703,2026-10-19,abbrev abbrev_no_spaces,post_effective_mdl,RULE,T5,3176,73184099,2026-08-31,,,"FOR THE EASTERN DISTRICT OF TEXAS SHERMAN DIVISION IN RE: RARE BREED TRIGGERS CASE NO. 4:26-md-03176-ALM PATENT LITIGATION RARE BREED TRIGGERS, INC. et al., (CASE NO. 4:26-cv-00370-ALM)"
+497250648,2026-10-26,abbrev_no_spaces,non_mdl,RULE,T7,,74723101,2026-08-31,,,": 26-3780 Document: 42-1 Filed: 09/25/2026 Page: 12 (12 of 15) • In Ohio County Commission v. Express Scripts, Inc., No. 5:24-CV-142, 2024 WL 5701504, at *2-3 (N.D. W.Va. Dec. 23, 2024), the Honorable John P. Bailey also reached the same conclusion as Judges Gleason"
 497626209,2026-10-19,abbrev abbrev_no_spaces,noise,RULE,T2,,69338895,2026-08-31,,,no literal '16.1' in the document or the docket entry
 497707875,2026-10-19,abbrev abbrev_no_spaces,noise,RULE,T2,,74868877,2026-08-31,,,no literal '16.1' in the document or the docket entry
+498013120,2026-10-26,abbrev_no_spaces,post_effective_mdl,RULE,T5,3176,73184099,2026-08-31,,,"FOR THE EASTERN DISTRICT OF TEXAS SHERMAN DIVISION In Re: Rare Breed Triggers Patent 4:26-md-03176-ALM Litigation MDL 3176 ABC IP, LLC, and RARE BREED TRIGGERS, INC.,"
+498146682,2026-10-26,abbrev_no_spaces frcp_acronym,post_effective_mdl,RULE,T5a,3176,73170267,2026-08-31,,,"filed on docket 73170267, the docket of MDL 3176"
+498222646,2026-10-26,abbrev_no_spaces,noise,RULE,T2,,73171557,2026-08-31,,,no literal '16.1' in the document or the docket entry
